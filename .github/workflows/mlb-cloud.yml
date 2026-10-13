@@ -2,7 +2,8 @@ name: MLB Forecast Lab — hourly baseball forecasts
 
 on:
   schedule:
-    - cron: '23 * * * *'
+schedule:
+  - cron: '*/5 * * * *'
   workflow_dispatch:
   push:
     branches: [master]
