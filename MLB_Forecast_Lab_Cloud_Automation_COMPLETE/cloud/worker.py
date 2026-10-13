@@ -197,7 +197,9 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
             'official_snapshot_collected':snap is not None,
             'starter_backfill':starter_backfill or {'status':'not performed'},
             'run_model_training_years':assets.get('training_years',[]),
-            'run_model_training_coverage':assets.get('coverage_note','not reported')}
+            'run_model_training_coverage':assets.get('coverage_note','not reported'),
+            'frozen_model_cache':assets.get('model_cache',{}),
+            'model_assets_build_seconds':assets.get('build_seconds')}
     rec=dict(game_id=id_,date=day,game_type=g_type,home=game['home'],away=game['away'],
         home_name=game['home_name'],away_name=game['away_name'],
         starting_pitchers={'home':game.get('home_pitcher') or 'Not announced',
@@ -385,6 +387,8 @@ def run(root=ROOT,now=None,network=True,fast=False):
             if games is None:
                 games=new_games(root)
                 assets=build_assets(games,root)
+                summary['model_assets_build_seconds']=assets.get('build_seconds')
+                summary['frozen_model_cache']=assets.get('model_cache')
             summary['events'].append(store_pregame(
                 match,utcnow() if network else now,games,root,assets,
                 starter_backfill=backfills.get(str(match['id'])),
