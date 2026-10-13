@@ -1,22 +1,48 @@
-name: MLB Forecast Lab — hourly baseball forecasts
+name: MLB Forecast Lab — game-time forecasts
 
 on:
   schedule:
-schedule:
-  - cron: '*/5 * * * *'
+    - cron: '*/5 * * * *'
+    - cron: '17 11 * * *'
   workflow_dispatch:
   push:
     branches: [master]
     paths:
-      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/**'
       - '.github/workflows/mlb-cloud.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_revision.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/revision_requests/**'
 
 concurrency:
   group: mlb-forecast-cloud
   cancel-in-progress: false
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      run_model: ${{ steps.gate.outputs.run_model }}
+      mode: ${{ steps.gate.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check official MLB schedule
+        id: gate
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event_name }}" = "push" ]; then
+            python cloud/preflight.py --manual --github-output "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "17 11 * * *" ]; then
+            python cloud/preflight.py --maintenance --github-output "$GITHUB_OUTPUT"
+          else
+            python cloud/preflight.py --github-output "$GITHUB_OUTPUT"
+          fi
+
   forecasts:
+    needs: check
+    if: needs.check.outputs.run_model == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 28
     permissions:
@@ -32,19 +58,41 @@ jobs:
           cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
       - name: Install Python model dependencies
         run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
-      - name: Refresh official data and lock pregame predictions
+      - name: Verify cloud forecasting safeguards
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-        run: python -m cloud.worker run
-      - name: Preserve data, locked predictions and calibration
+        run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
+      - name: Refresh verified MLB data and forecast before first pitch
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
+          if [ "${{ needs.check.outputs.mode }}" = "pregame" ]; then
+            python -m cloud.worker run --fast
+          else
+            python -m cloud.worker run
+          fi
+      - name: Preserve immutable predictions and updated data
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name 'mlb-forecast-bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A -- MLB_Forecast_Lab_Cloud_Automation_COMPLETE/
-          if ! git diff --cached --quiet; then
-            git commit -m 'MLB forecast: refresh official data and pregame records'
-            git push
+          if git diff --cached --quiet; then
+            echo 'No new data or pregame records.'
+          else
+            git commit -m 'MLB forecast: persist official data and timestamped pregame results'
+            for attempt in 1 2 3; do
+              if git pull --rebase origin master && git push origin HEAD:master; then
+                break
+              fi
+              git rebase --abort || true
+              if [ "$attempt" -eq 3 ]; then
+                echo 'The remote branch changed. Failing safely; please rerun.' >&2
+                exit 1
+              fi
+              sleep 5
+            done
           fi
-      - name: Upload forecast website
+      - name: Upload baseball forecast website
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site
@@ -59,6 +107,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - name: Deploy site to GitHub Pages
+      - name: Deploy forecast website
         id: deploy
         uses: actions/deploy-pages@v4

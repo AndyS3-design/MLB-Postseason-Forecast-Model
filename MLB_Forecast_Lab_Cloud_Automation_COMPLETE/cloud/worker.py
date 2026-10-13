@@ -61,6 +61,29 @@ def can_forecast(game,now):
     return str(game.get('id','')).isdigit() and game.get('away')!=game.get('home')
 
 
+def can_revise(game,now,original):
+    """Accept one revised, independently timestamped PRE-game snapshot."""
+    if not original or str(original.get('game_id'))!=str(game.get('id')):return False
+    if str(game.get('date'))!=str(original.get('date')):return False
+    if game.get('home')!=original.get('home') or game.get('away')!=original.get('away'):return False
+    if str(game.get('game_type','R')) not in ('R','F','D','L','W'):return False
+    if sanitize_status(game.get('status')) not in ('scheduled','pre-game','pregame','preview','warmup'):return False
+    try:
+        start=datetime.fromisoformat(str(game['start_utc']).replace('Z','+00:00'))
+        first=datetime.fromisoformat(str(original['forecast_created_utc']).replace('Z','+00:00'))
+        mins=(start-now).total_seconds()/60
+    except (ValueError,TypeError,KeyError):return False
+    return first<now and 12<=mins<=150
+
+def revision_requested(root,game):
+    path=Path(root)/'cloud_records'/'revision_requests'/f"{game.get('id')}.json"
+    try:
+        request=read_json(path,{}) or {}
+        return (request.get('game_id')==str(game.get('id')) and
+                request.get('date')==str(game.get('date')) and
+                request.get('kind')=='one_time_pregame_revision')
+    except (OSError,ValueError,TypeError):return False
+
 def latest_data_day(now):return now.astimezone(ET).date()
 
 
@@ -137,10 +160,22 @@ def game_evidence(game,now):
         return None
 
 
-def store_pregame(game,now,games,root,assets,starter_backfill=None):
-    id_=str(game['id']);target=STATE/'predictions'/f'{id_}.json'
-    if target.exists():return {'status':'already_frozen','game_id':id_}
-    if not can_forecast(game,now):return {'status':'outside_window','game_id':id_}
+def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=False):
+    id_=str(game['id'])
+    original_path=STATE/'predictions'/f'{id_}.json'
+    prior_record=read_json(original_path) if original_path.exists() else None
+    if revision:
+        if not can_revise(game,now,prior_record):
+            return {'status':'revision_not_pregame','game_id':id_}
+        revision_dir=STATE/'revisions'
+        revision_dir.mkdir(parents=True,exist_ok=True)
+        if any(revision_dir.glob(f'{id_}_*.json')):
+            return {'status':'already_revised','game_id':id_}
+        target=revision_dir/f"{id_}_{now.strftime('%Y%m%dT%H%M%SZ')}.json"
+    else:
+        target=original_path
+        if target.exists():return {'status':'already_frozen','game_id':id_}
+        if not can_forecast(game,now):return {'status':'outside_window','game_id':id_}
     day=game['date']
     snap=game_evidence(game,now)
     clean=clean_game_input(game,verified_pregame=True)
@@ -187,9 +222,12 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None):
                   'park_factor':result['adjustments']['park']['factor'],
                   'weather_factor':result['adjustments']['weather']['factor']},
         source='Official MLB pregame schedule; baseball-only model; no market inputs',
+        forecast_kind=('revised_pregame' if revision else 'original_pregame'),
+        original_forecast_created_utc=(prior_record.get('forecast_created_utc') if revision else None),
+        revision_reason=('Updated verified pitcher history and newer training inputs; original remains immutable' if revision else None),
         data_quality='LIMITED' if status['data_gaps'] else 'FEATURES AVAILABLE')
     encode_json(target,rec)
-    return {'status':'saved','game_id':id_,'away':rec['away'],'home':rec['home'],
+    return {'status':('revised_pregame_saved' if revision else 'saved'),'game_id':id_,'away':rec['away'],'home':rec['home'],
             'minutes_before_game':rec['minutes_before_game']}
 
 
@@ -247,15 +285,35 @@ def prospective_metrics(records):
 
 def render_site(root,now,summary):
     import shutil
-    entries=[]
+    originals=[]
     for f in (STATE/'predictions').glob('*.json'):
-        try:entries.append(read_json(f))
+        try:originals.append(read_json(f))
         except (ValueError,TypeError):pass
-    entries.sort(key=lambda r:(r.get('game_start_utc',''),r.get('game_id','')),reverse=True)
+    by_id={str(x.get('game_id')):x for x in originals}
+    revisions=[]
+    for f in (STATE/'revisions').glob('*.json'):
+        try:
+            r=read_json(f)
+            initial=by_id.get(str(r.get('game_id')))
+            if not initial:continue
+            r['original_comparison']={
+                'score':initial.get('projected_score'),
+                'expected_runs':initial.get('expected_runs'),
+                'predicted_home_win':initial.get('predicted_home_win'),
+                'starter_pitcher_history':initial.get('health',{}).get('starter_pitcher_history',{}),
+                'run_model_training_coverage':initial.get('health',{}).get('run_model_training_coverage','not reported')}
+            if initial.get('official_final'):
+                r['official_final']=initial['official_final']
+            revisions.append(r)
+        except (ValueError,TypeError):pass
+    entries=originals+revisions
+    entries.sort(key=lambda r:(r.get('game_start_utc',''),
+                   1 if r.get('forecast_kind')=='revised_pregame' else 0,
+                   r.get('forecast_created_utc','')),reverse=True)
     output={'updated_utc':now.isoformat(),
         'local_timezone':'America/New_York',
         'predictions':entries[:350],
-        'prospective_performance':prospective_metrics(entries),
+        'prospective_performance':prospective_metrics(originals),
         'operations':summary,
         'disclaimer':'Baseball-only research forecast. Past outcome never enters a pregame prediction. Unverified advanced inputs are marked missing.'}
     site=root/'site';site.mkdir(exist_ok=True,parents=True)
@@ -298,12 +356,16 @@ def run(root=ROOT,now=None,network=True,fast=False):
     upcoming=[]
     for match in candidate_games:
         gid=str(match.get('id') or '')
-        if gid in seen_ids or not can_forecast(match,now):
-            continue
+        if gid in seen_ids:continue
         seen_ids.add(gid)
-        if (STATE/'predictions'/f'{gid}.json').exists():
-            continue
-        upcoming.append(match)
+        original=STATE/'predictions'/f'{gid}.json'
+        wants_revision=(original.exists() and revision_requested(root,match) and
+            not any((STATE/'revisions').glob(f'{gid}_*.json')) and
+            can_revise(match,now,read_json(original)))
+        if wants_revision:
+            upcoming.append({**match,'_revision':True})
+        elif not original.exists() and can_forecast(match,now):
+            upcoming.append(match)
     # Run targeted official starter-history import *before* building model assets;
     # otherwise pitcher statistics added during this run would be invisible to
     # the current forecast. Strict previous-day cutoff applies to all imports.
@@ -325,7 +387,8 @@ def run(root=ROOT,now=None,network=True,fast=False):
                 assets=build_assets(games,root)
             summary['events'].append(store_pregame(
                 match,utcnow() if network else now,games,root,assets,
-                starter_backfill=backfills.get(str(match['id']))))
+                starter_backfill=backfills.get(str(match['id'])),
+                revision=bool(match.get('_revision'))))
         except Exception as exc:
             summary['events'].append({'status':'forecast_failed','game_id':match['id'],
                                       'error':str(exc)[:180]})
