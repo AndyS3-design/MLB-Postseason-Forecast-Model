@@ -3,6 +3,27 @@
   "local_timezone": "America/New_York",
   "operations": {
     "events": [],
+    "historical_game_logs": {
+      "available": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "downloaded": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "unavailable": {}
+    },
     "new_settlements": 0,
     "pitching_import_status": {
       "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
@@ -14,11 +35,11 @@
     "recent_boxscores": {
       "errors": [],
       "new_games": 26,
-      "recent_cached_games": 52,
+      "recent_cached_games": 78,
       "status": "ok"
     },
     "refreshed_finished_games": 2458,
-    "run_started_utc": "2026-10-13T22:33:55.397187+00:00",
+    "run_started_utc": "2026-10-13T22:46:30.231657+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -298,5 +319,5 @@
     "settled_games": 0,
     "status": "Awaiting prospective results"
   },
-  "updated_utc": "2026-10-13T22:33:55.397187+00:00"
+  "updated_utc": "2026-10-13T22:46:30.231657+00:00"
 }
