@@ -1,0 +1,107 @@
+name: MLB Forecast Lab — game-time forecasts
+
+on:
+  schedule:
+    # Lightweight MLB schedule checks every 5m. Only approaching games run the model.
+    - cron: '*/5 * * * *'
+    # Daily settlement, pitching data updates, and optional 2016–2022 bootstrap.
+    - cron: '17 11 * * *'
+  workflow_dispatch:
+
+# No push: do not recursively trigger the workflow when it commits fresh data.
+# Only one run can write locked records at a time, including manual runs.
+concurrency:
+  group: mlb-forecast-cloud
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      run_model: ${{ steps.gate.outputs.run_model }}
+      mode: ${{ steps.gate.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check official schedule without installing scientific dependencies
+        id: gate
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python cloud/preflight.py --manual --github-output "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "17 11 * * *" ]; then
+            python cloud/preflight.py --maintenance --github-output "$GITHUB_OUTPUT"
+          else
+            python cloud/preflight.py --github-output "$GITHUB_OUTPUT"
+          fi
+
+  forecasts:
+    needs: check
+    if: needs.check.outputs.run_model == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Install Python model dependencies
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Verify cloud tests
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_cloud cloud.test_v7 -q
+      - name: Refresh official data or freeze approaching pregame forecast
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          if [ "${{ needs.check.outputs.mode }}" = "pregame" ]; then
+            python -m cloud.worker run --fast
+          else
+            python -m cloud.worker run
+          fi
+      - name: Save new data and immutable pregame records (retry after remote moves)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'mlb-forecast-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- MLB_Forecast_Lab_Cloud_Automation_COMPLETE/
+          if git diff --cached --quiet; then
+            echo 'No new MLB data or forecasts to persist.'
+            exit 0
+          fi
+          git commit -m 'MLB forecast: store official data and timestamped pregame records'
+          for attempt in 1 2 3; do
+            # Never force-push, and never overwrite an already frozen pregame pick.
+            if git pull --rebase origin master && git push origin HEAD:master; then
+              exit 0
+            fi
+            git rebase --abort || true
+            sleep 4
+          done
+          echo 'Git branch changed and could not be reconciled safely. Rerun after reviewing conflicts.' >&2
+          exit 1
+      - name: Upload forecast website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site
+
+  deploy:
+    needs: forecasts
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy site to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

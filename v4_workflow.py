@@ -22,7 +22,8 @@ def build_assets(games,root):
     frame=historical_team_rows(enriched,hands)
     fit=train_frozen_run_model(frame)
     parks=park_training_factors(data)
-    return {'enriched':enriched,'hands':hands,'details_n':n,'fit':fit,'parks':parks,'fielding_games_matched':fielding_n}
+    return {'enriched':enriched,'hands':hands,'details_n':n,'fit':fit,'parks':parks,'fielding_games_matched':fielding_n,
+            'training_years':fit.training_years,'coverage_note':fit.coverage_note}
 
 
 def generate(games,root,day,match,assets=None,n=30000,

@@ -24,7 +24,7 @@ import pandas as pd
 from scipy.stats import poisson, nbinom
 from sklearn.ensemble import HistGradientBoostingRegressor
 
-SEASONS = (2023, 2024, 2025)
+SEASONS = tuple(range(2016, 2026))
 FEATURE_NAMES = [
     'home_rpg15', 'away_rpg15', 'home_ra15', 'away_ra15',
     'home_rpg45','away_rpg45','home_ra45','away_ra45',
@@ -69,6 +69,8 @@ def read_rows(data_dir: Path):
         elif tpath.exists():
             with open(tpath,encoding='latin-1',newline='') as f: rows=list(csv.reader(f))
         else:
+            if year < 2023:
+                continue  # optional older archives; coverage is reported explicitly by the fitted model
             raise FileNotFoundError(f'Missing gl{year}.zip or GL{year}.TXT in {data_dir}')
         for r in rows:
             if len(r)<105: continue
