@@ -1,0 +1,7 @@
+{
+  "updated_utc": "2026-10-13T00:00:00+00:00",
+  "predictions": [],
+  "prospective_performance": {"settled_games": 0, "status": "Awaiting prospective results"},
+  "operations": {"status": "Not deployed yet"},
+  "disclaimer": "Baseball-only model. No forecast records until the first scheduled worker run."
+}
