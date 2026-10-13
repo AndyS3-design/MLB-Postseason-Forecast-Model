@@ -13,15 +13,7 @@
         2021,
         2022
       ],
-      "downloaded": [
-        2016,
-        2017,
-        2018,
-        2019,
-        2020,
-        2021,
-        2022
-      ],
+      "downloaded": [],
       "unavailable": {}
     },
     "new_settlements": 0,
@@ -35,11 +27,11 @@
     "recent_boxscores": {
       "errors": [],
       "new_games": 26,
-      "recent_cached_games": 78,
+      "recent_cached_games": 104,
       "status": "ok"
     },
     "refreshed_finished_games": 2458,
-    "run_started_utc": "2026-10-13T22:46:30.231657+00:00",
+    "run_started_utc": "2026-10-13T22:49:01.272309+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -319,5 +311,5 @@
     "settled_games": 0,
     "status": "Awaiting prospective results"
   },
-  "updated_utc": "2026-10-13T22:46:30.231657+00:00"
+  "updated_utc": "2026-10-13T22:49:01.272309+00:00"
 }
