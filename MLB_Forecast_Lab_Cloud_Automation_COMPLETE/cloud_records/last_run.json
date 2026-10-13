@@ -1,13 +1,5 @@
 {
-  "events": [
-    {
-      "away": "CLE",
-      "game_id": "849813",
-      "home": "TBA",
-      "minutes_before_game": 111.1,
-      "status": "saved"
-    }
-  ],
+  "events": [],
   "known_pre_game_records": 1,
   "new_settlements": 0,
   "pitching_import_status": {
@@ -20,10 +12,10 @@
   "recent_boxscores": {
     "errors": [],
     "new_games": 26,
-    "recent_cached_games": 26,
+    "recent_cached_games": 52,
     "status": "ok"
   },
   "refreshed_finished_games": 2458,
-  "run_started_utc": "2026-10-13T22:08:24.861679+00:00",
+  "run_started_utc": "2026-10-13T22:33:55.397187+00:00",
   "status": "finished"
 }
