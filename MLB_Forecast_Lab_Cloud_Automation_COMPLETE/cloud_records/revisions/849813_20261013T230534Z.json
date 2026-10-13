@@ -1,0 +1,310 @@
+{
+  "away": "CLE",
+  "away_name": "Cleveland Guardians",
+  "data_quality": "FEATURES AVAILABLE",
+  "date": "2026-10-13",
+  "elo_home_win": 0.5862782964623655,
+  "expected_runs": {
+    "away": 3.476583333333333,
+    "home": 3.8985,
+    "total": 7.375083333333333
+  },
+  "features_cutoff_exclusive": "2026-10-13",
+  "forecast_created_utc": "2026-10-13T23:05:34.577667+00:00",
+  "forecast_kind": "revised_pregame",
+  "game_id": "849813",
+  "game_start_utc": "2026-10-14T00:00:00+00:00",
+  "game_type": "Postseason",
+  "health": {
+    "data_gaps": [],
+    "lineups_confirmed": {
+      "away": true,
+      "home": true
+    },
+    "official_snapshot_collected": true,
+    "pitcher_calibrated": true,
+    "run_model_training_coverage": "10 seasons: 2016\u20132025",
+    "run_model_training_years": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "starter_backfill": {
+      "cutoff_exclusive": "2026-10-13",
+      "errors": [],
+      "new_boxscores": 10,
+      "sides": {
+        "away": {
+          "game_logs_found": 32,
+          "pitcher_id": "MLB-800048",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 4,
+          "source": "MLB official completed game boxscores",
+          "status": "verified starter history"
+        },
+        "home": {
+          "game_logs_found": 32,
+          "pitcher_id": "MLB-642547",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 2,
+          "source": "MLB official completed game boxscores",
+          "status": "verified starter history"
+        }
+      },
+      "source": "MLB official game logs + completed game boxscores",
+      "status": "complete"
+    },
+    "starter_pitcher_history": {
+      "away": 8,
+      "home": 8
+    }
+  },
+  "home": "TBA",
+  "home_name": "Tampa Bay Rays",
+  "minutes_before_game": 54.4,
+  "model_commit": "59332347781c5d33069ddc7f06e90ddf9120f3f9",
+  "model_training_cutoff": "2023-24",
+  "model_version": "7.0.0-pregame-recency-weighted",
+  "original_forecast_created_utc": "2026-10-13T22:08:51.562004+00:00",
+  "predicted_home_win": 0.57475,
+  "projected_score": {
+    "away": 3,
+    "exact_probability": 0.04641666666666667,
+    "home": 4,
+    "sum": 7
+  },
+  "revision_reason": "Updated verified pitcher history and newer training inputs; original remains immutable",
+  "scenario": {
+    "park_factor": 1.0,
+    "postseason_factor": 0.8897990819777741,
+    "starter_weight": 0.25,
+    "weather_factor": 1.0
+  },
+  "score_grid": {
+    "away_axis": "columns",
+    "cap": 10,
+    "cells": [
+      [
+        0.0,
+        0.01225,
+        0.010833333333333334,
+        0.009166666666666667,
+        0.006333333333333333,
+        0.00425,
+        0.003416666666666667,
+        0.0018333333333333333,
+        0.0009166666666666666,
+        0.0010833333333333333,
+        0.00075
+      ],
+      [
+        0.017166666666666667,
+        0.0,
+        0.030166666666666668,
+        0.02275,
+        0.013083333333333334,
+        0.011416666666666667,
+        0.0069166666666666664,
+        0.003833333333333333,
+        0.002,
+        0.0015,
+        0.0014166666666666668
+      ],
+      [
+        0.014833333333333334,
+        0.041666666666666664,
+        0.0,
+        0.03941666666666667,
+        0.024583333333333332,
+        0.013416666666666667,
+        0.009583333333333333,
+        0.006583333333333333,
+        0.0035,
+        0.0011666666666666668,
+        0.0026666666666666666
+      ],
+      [
+        0.013833333333333333,
+        0.028583333333333332,
+        0.051333333333333335,
+        0.0,
+        0.033916666666666664,
+        0.019083333333333334,
+        0.011166666666666667,
+        0.006083333333333333,
+        0.003916666666666666,
+        0.00225,
+        0.002916666666666667
+      ],
+      [
+        0.010583333333333333,
+        0.018166666666666668,
+        0.033416666666666664,
+        0.04641666666666667,
+        0.0,
+        0.023916666666666666,
+        0.0105,
+        0.005916666666666666,
+        0.0035,
+        0.00175,
+        0.0025833333333333333
+      ],
+      [
+        0.007166666666666667,
+        0.016,
+        0.02,
+        0.021416666666666667,
+        0.033166666666666664,
+        0.0,
+        0.0135,
+        0.0055,
+        0.0045,
+        0.00175,
+        0.002416666666666667
+      ],
+      [
+        0.005333333333333333,
+        0.00925,
+        0.013583333333333333,
+        0.0135,
+        0.013916666666666667,
+        0.01775,
+        0.0,
+        0.006583333333333333,
+        0.0035833333333333333,
+        0.00175,
+        0.0020833333333333333
+      ],
+      [
+        0.0023333333333333335,
+        0.006083333333333333,
+        0.0069166666666666664,
+        0.009583333333333333,
+        0.007916666666666667,
+        0.006083333333333333,
+        0.008666666666666666,
+        0.0,
+        0.003,
+        0.0014166666666666668,
+        0.0013333333333333333
+      ],
+      [
+        0.0016666666666666668,
+        0.00325,
+        0.006083333333333333,
+        0.004166666666666667,
+        0.004166666666666667,
+        0.004416666666666667,
+        0.0026666666666666666,
+        0.006,
+        0.0,
+        0.0015833333333333333,
+        0.0018333333333333333
+      ],
+      [
+        0.0005,
+        0.0025833333333333333,
+        0.002416666666666667,
+        0.0030833333333333333,
+        0.0025833333333333333,
+        0.0025,
+        0.0016666666666666668,
+        0.0015833333333333333,
+        0.0021666666666666666,
+        0.0,
+        0.001
+      ],
+      [
+        0.0015,
+        0.0026666666666666666,
+        0.00475,
+        0.005,
+        0.002916666666666667,
+        0.0028333333333333335,
+        0.002916666666666667,
+        0.00175,
+        0.0016666666666666668,
+        0.0015833333333333333,
+        0.0020833333333333333
+      ]
+    ],
+    "home_axis": "rows",
+    "samples": 12000
+  },
+  "source": "Official MLB pregame schedule; baseball-only model; no market inputs",
+  "starting_pitchers": {
+    "away": "Parker Messick",
+    "home": "Freddy Peralta"
+  },
+  "team_indices": {
+    "CLE": {
+      "attack": 107,
+      "available": true,
+      "defense": 104,
+      "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+      "fielding_games": 0,
+      "games": 30,
+      "offense": 107,
+      "pitching": 126,
+      "pitching_games": 30,
+      "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+      "runs_allowed_per_game": 4.17,
+      "runs_scored_per_game": 4.83
+    },
+    "TBA": {
+      "attack": 100,
+      "available": true,
+      "defense": 121,
+      "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+      "fielding_games": 0,
+      "games": 30,
+      "offense": 100,
+      "pitching": 108,
+      "pitching_games": 30,
+      "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+      "runs_allowed_per_game": 3.33,
+      "runs_scored_per_game": 4.43
+    }
+  },
+  "total_distribution": {
+    "1": 0.029416666666666667,
+    "10": 0.0545,
+    "11": 0.06,
+    "12": 0.02825,
+    "13": 0.035083333333333334,
+    "14": 0.015916666666666666,
+    "15": 0.018166666666666668,
+    "16": 0.007916666666666667,
+    "17": 0.0085,
+    "18": 0.00425,
+    "19": 0.0033333333333333335,
+    "2": 0.025666666666666667,
+    "20": 0.0016666666666666668,
+    "21": 0.0023333333333333335,
+    "22": 0.0005833333333333334,
+    "23": 0.0004166666666666667,
+    "24": 0.00025,
+    "25": 8.333333333333333e-05,
+    "26": 8.333333333333333e-05,
+    "27": 0.00016666666666666666,
+    "28": 0.00016666666666666666,
+    "29": 8.333333333333333e-05,
+    "3": 0.09483333333333334,
+    "30": 8.333333333333333e-05,
+    "31": 8.333333333333333e-05,
+    "4": 0.06825,
+    "5": 0.13341666666666666,
+    "6": 0.09416666666666666,
+    "7": 0.13408333333333333,
+    "8": 0.07616666666666666,
+    "9": 0.10208333333333333
+  },
+  "under_6_5_probability": 0.44575
+}
