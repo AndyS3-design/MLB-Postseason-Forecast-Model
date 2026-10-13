@@ -1,6 +1,8 @@
 """End-to-end V4 matchup forecast. Official data wins over scenarios, missing is explicit."""
 from __future__ import annotations
 from datetime import datetime,timezone
+from time import perf_counter
+from cloud.v8_model_cache import load_or_train
 from pathlib import Path
 import json
 from matchup_model import loaded_details,enrich_games
@@ -15,15 +17,20 @@ from v63_postseason import context_for_game,with_context_rates
 
 
 def build_assets(games,root):
+    started=perf_counter()
     data=Path(root)/'data'
     details,hands,_=loaded_details(data)
     enriched,n=enrich_games(games,details,hands)
     enriched,fielding_n=add_fielding_errors(enriched,data)
-    frame=historical_team_rows(enriched,hands)
-    fit=train_frozen_run_model(frame)
+    # The scoring model is trained only on seasons through 2025.
+    # Rebuild 2026 game-specific features separately on EVERY forecast.
+    frame=historical_team_rows([g for g in enriched if int(g['year'])<=2025],hands)
+    fit,cache_report=load_or_train(root,frame)
     parks=park_training_factors(data)
-    return {'enriched':enriched,'hands':hands,'details_n':n,'fit':fit,'parks':parks,'fielding_games_matched':fielding_n,
-            'training_years':fit.training_years,'coverage_note':fit.coverage_note}
+    return {'enriched':enriched,'hands':hands,'details_n':n,'fit':fit,'parks':parks,
+            'fielding_games_matched':fielding_n,'training_years':fit.training_years,
+            'coverage_note':fit.coverage_note,'model_cache':cache_report,
+            'build_seconds':round(perf_counter()-started,3)}
 
 
 def generate(games,root,day,match,assets=None,n=30000,
@@ -123,7 +130,8 @@ def generate(games,root,day,match,assets=None,n=30000,
       personnel=personnel,training=base['training'],simulation=draws['config'],
       data_gaps=gaps,provenance={'official_snapshot':bool(official_snapshot),
         'boxscore_games_used':len(prior),
-        'cutoff_exclusive':str(day),'model_frozen_training':'2023-24',
+        'cutoff_exclusive':str(day),
+        'model_frozen_training':','.join(str(y) for y in assets['training_years']),
         'pitcher_coverage':{s:personnel[s]['starter']['known'] for s in ('home','away')},
         'fielding_games_matched':assets['fielding_games_matched'],
         'explicit_fielding_feature_selected_in_2024':('opp_field_errors15' in assets['fit'].features)},
