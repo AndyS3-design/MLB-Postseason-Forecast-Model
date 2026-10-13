@@ -1,0 +1,47 @@
+name: V8 Research — Walk-Forward Validation
+on:
+  push:
+    branches: ['research/v8-validation']
+    paths:
+      - '.github/workflows/mlb-v8-validation.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_walkforward.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v8_walkforward.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: research-v8-validation
+  cancel-in-progress: false
+jobs:
+  walkforward:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Install model dependencies
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Test validation methodology
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v8_walkforward cloud.test_cloud cloud.test_v7 -q
+      - name: Nested chronological test 2022–2025
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m cloud.v8_walkforward
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v8-walkforward-validation
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_validation/
+      - name: Preserve research metrics
+        run: |
+          git config user.name 'mlb-research-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_validation/
+          if ! git diff --cached --quiet; then
+            git commit -m 'research: publish 2022–2025 nested walk-forward metrics'
+            git pull --rebase origin research/v8-validation
+            git push origin HEAD:research/v8-validation
+          fi
