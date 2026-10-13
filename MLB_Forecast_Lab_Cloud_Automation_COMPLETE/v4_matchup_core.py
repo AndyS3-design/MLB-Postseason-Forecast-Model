@@ -1,6 +1,6 @@
 """MLB Prediction Lab V4: strictly pre-date matchup features and frozen scoring fit.
 
-Training 2023-24 only; 2025/2026 are RETROSPECTIVE evaluation sets.
+Optional 2016–2025 recency-weighted regular-season fit for prospective 2026 forecasts.
 Additional lineup/weather overlays are NOT backtest-calibrated by this model.
 """
 from __future__ import annotations
@@ -18,7 +18,7 @@ from sklearn.linear_model import PoissonRegressor
 from matchup_model import Team, Starter, Manager, as_date, safe_float, loaded_details, enrich_games
 from forecast_engine import historical_snapshot, elo_probability
 
-VERSION='4.0.0-research'
+VERSION='7.0.0-pregame-recency-weighted'
 FEATURES=['is_home','own_rpg15','own_rpg40','own_obp15','own_iso15','own_platoon_rpg','own_platoon_n',
     'opp_ra15','opp_bp_era','opp_bp_outs3','opp_bp_known3','opp_bp_used3',
     'opp_sp_era','opp_sp_kbb','opp_sp_innings','opp_sp_known','opp_sp_rest','own_rest',
@@ -125,6 +125,8 @@ class FrozenRunFit:
     training_rows:int
     validation_rows:int
     features:list[str]
+    training_years:list[int] | None = None
+    coverage_note:str = ""
 
 
 def _poisson_loss(actual,pred):
@@ -132,23 +134,51 @@ def _poisson_loss(actual,pred):
     return float(np.mean(p-y*np.log(p))) # differs from full NLL by constant only
 
 
+def _recency_weights(frame,reference_year,half_life_years=3.0):
+    # Historical seasons count less than recent ones. Both scaler and regressor
+    # receive these weights so the 2016 scoring environment cannot dominate.
+    age=np.maximum(0,reference_year-frame.year.to_numpy(dtype=float))
+    return np.power(0.5,age/half_life_years)
+
+
+def _weighted_poisson_fit(frame,columns,alpha,reference_year):
+    fit=make_pipeline(StandardScaler(),PoissonRegressor(alpha=alpha,max_iter=300))
+    w=_recency_weights(frame,reference_year)
+    X=frame[columns].to_numpy(dtype=float)
+    fit.fit(X,frame.runs_actual.to_numpy(dtype=float),
+            standardscaler__sample_weight=w,poissonregressor__sample_weight=w)
+    return fit
+
+
 def train_frozen_run_model(rows):
-    df=rows[(rows.game_type=='R')&(rows.year.isin([2023,2024]))].copy()
-    tr=df[df.year==2023];val=df[df.year==2024]
-    if len(tr)<3500 or len(val)<3500:raise ValueError('Need 2023 and 2024 regular season training games.')
-    X=tr[FEATURES].to_numpy(dtype=float);y=tr.runs_actual.to_numpy(dtype=float)
+    """Tune on 2024, then train regular-season data through 2025 for 2026.
+
+    2016–2022 files are optional; if incomplete, report the coverage explicitly.
+    2026 games are NEVER training labels. 2024 was used for model selection;
+    2025 has previously informed development and is not an untouched test.
+    """
+    df=rows[(rows.game_type=='R')&(rows.year>=2016)&(rows.year<=2025)].copy()
+    tr=df[df.year<=2023];val=df[df.year==2024]
+    if len(tr)<3500 or len(val)<3500:
+        raise ValueError('Need 2023 and 2024 regular-season training and validation games.')
     candidates=[(.1,True),(1.,True),(10.,True),(.1,False),(1.,False),(10.,False)]
     scored=[]
     for alpha,use_defense in candidates:
-        cols=FEATURES if use_defense else [f for f in FEATURES if not f.startswith('opp_field_errors') and not f.startswith('opp_errors_known')]
-        fit=make_pipeline(StandardScaler(),PoissonRegressor(alpha=alpha,max_iter=300))
-        fit.fit(tr[cols].to_numpy(dtype=float),y)
-        scored.append((_poisson_loss(val.runs_actual,fit.predict(val[cols].to_numpy(dtype=float))),alpha,use_defense))
+        cols=FEATURES if use_defense else [f for f in FEATURES
+             if not f.startswith('opp_field_errors') and not f.startswith('opp_errors_known')]
+        model=_weighted_poisson_fit(tr,cols,alpha,reference_year=2023)
+        p=model.predict(val[cols].to_numpy(dtype=float))
+        scored.append((_poisson_loss(val.runs_actual,p),alpha,use_defense))
     best_loss,chosen,defense=min(scored)
-    cols=FEATURES if defense else [f for f in FEATURES if not f.startswith('opp_field_errors') and not f.startswith('opp_errors_known')]
-    final=make_pipeline(StandardScaler(),PoissonRegressor(alpha=chosen,max_iter=300))
-    final.fit(df[cols].to_numpy(dtype=float),df.runs_actual.to_numpy(dtype=float))
-    return FrozenRunFit(final,chosen,best_loss,len(df),len(val),cols)
+    cols=FEATURES if defense else [f for f in FEATURES
+         if not f.startswith('opp_field_errors') and not f.startswith('opp_errors_known')]
+    final=_weighted_poisson_fit(df,cols,chosen,reference_year=2025)
+    years=sorted(int(x) for x in df.year.unique())
+    missing=sorted(set(range(2016,2026))-set(years))
+    coverage=('10 seasons: 2016–2025' if not missing else
+              f'{len(years)} seasons loaded; missing years {missing}')
+    return FrozenRunFit(final,chosen,best_loss,len(df),len(val),cols,
+                        training_years=years,coverage_note=coverage)
 
 
 def predict_rates(fit:FrozenRunFit,rows):

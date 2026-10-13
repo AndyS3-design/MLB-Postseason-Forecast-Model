@@ -18,12 +18,13 @@ from v6_replay import clean_game_input,historical_cutoff_assets
 from v6_strength import pregame_history_only,team_indices
 from v6_display import display_forecast
 from cloud.refresh import current_season_results,append_future_years,all_finals
+from cloud.starter_backfill import backfill_match_starters
 
 ROOT=Path(__file__).resolve().parents[1]
 STATE=ROOT/'cloud_records'
 ET=ZoneInfo('America/New_York')
-MIN_LEAD_MINUTES=12
-MAX_LEAD_HOURS=4
+MIN_LEAD_MINUTES=8
+MAX_LEAD_MINUTES=30
 N_SIMULATIONS=12000
 
 
@@ -47,14 +48,14 @@ def sanitize_status(status):
 
 
 def can_forecast(game,now):
-    """Accept ONLY verified scheduled matches in 12min–4hr lead window."""
+    """Accept ONLY verified scheduled matches within 8–30 minutes of first pitch."""
     if str(game.get('game_type','R')) not in ('R','F','D','L','W'):return False
     try:
         dt=datetime.fromisoformat(str(game.get('start_utc','')).replace('Z','+00:00'))
         if dt.tzinfo is None:return False
         minutes=(dt-now).total_seconds()/60
     except (ValueError,TypeError):return False
-    if not MIN_LEAD_MINUTES<=minutes<=MAX_LEAD_HOURS*60:return False
+    if not MIN_LEAD_MINUTES<=minutes<=MAX_LEAD_MINUTES:return False
     if sanitize_status(game.get('status')) not in ('scheduled','pre-game','pregame','preview','warmup'):
         return False
     return str(game.get('id','')).isdigit() and game.get('away')!=game.get('home')
@@ -136,7 +137,7 @@ def game_evidence(game,now):
         return None
 
 
-def store_pregame(game,now,games,root,assets):
+def store_pregame(game,now,games,root,assets,starter_backfill=None):
     id_=str(game['id']);target=STATE/'predictions'/f'{id_}.json'
     if target.exists():return {'status':'already_frozen','game_id':id_}
     if not can_forecast(game,now):return {'status':'outside_window','game_id':id_}
@@ -158,7 +159,10 @@ def store_pregame(game,now,games,root,assets):
             'starter_pitcher_history':result['provenance']['pitcher_coverage'],
             'lineups_confirmed':{s:len(result['personnel'][s]['lineup'])==9 for s in ('home','away')},
             'pitcher_calibrated':bool((root/'outputs'/'v62_pitcher_calibration.json').exists()),
-            'official_snapshot_collected':snap is not None}
+            'official_snapshot_collected':snap is not None,
+            'starter_backfill':starter_backfill or {'status':'not performed'},
+            'run_model_training_years':assets.get('training_years',[]),
+            'run_model_training_coverage':assets.get('coverage_note','not reported')}
     rec=dict(game_id=id_,date=day,game_type=g_type,home=game['home'],away=game['away'],
         home_name=game['home_name'],away_name=game['away_name'],
         starting_pitchers={'home':game.get('home_pitcher') or 'Not announced',
@@ -261,12 +265,17 @@ def render_site(root,now,summary):
     return len(entries)
 
 
-def run(root=ROOT,now=None,network=True):
+def run(root=ROOT,now=None,network=True,fast=False):
     root=Path(root);now=now or utcnow();STATE.mkdir(parents=True,exist_ok=True)
     (STATE/'predictions').mkdir(exist_ok=True,parents=True)
     summary={'run_started_utc':now.isoformat(),'status':'in progress','events':[]}
     today=latest_data_day(now)
-    if network:
+    if network and not fast:
+        try:
+            from cloud.history_bootstrap import ensure_history
+            summary["historical_game_logs"]=ensure_history(root/"data")
+        except Exception as exc:
+            summary["events"].append(f"Historical game logs unavailable: {str(exc)[:160]}")
         try:
             count=current_season_results(root,today)
             summary['refreshed_finished_games']=count
@@ -280,19 +289,43 @@ def run(root=ROOT,now=None,network=True):
     games=None;assets=None
     candidate_games=[]
     if network:
-        for offset in (-1,0,1):
+        for offset in ((0,1) if fast else (-1,0,1)):
             dt=now.astimezone(ET).date()+timedelta(days=offset)
             if dt.year<2026:continue
             try:candidate_games+=fetch_schedule(dt)
             except Exception as exc:summary['events'].append(f'Schedule unavailable for {dt}: {str(exc)[:130]}')
+    seen_ids=set()
+    upcoming=[]
     for match in candidate_games:
-        if not can_forecast(match,now):continue
-        if (STATE/'predictions'/f"{match['id']}.json").exists():continue
+        gid=str(match.get('id') or '')
+        if gid in seen_ids or not can_forecast(match,now):
+            continue
+        seen_ids.add(gid)
+        if (STATE/'predictions'/f'{gid}.json').exists():
+            continue
+        upcoming.append(match)
+    # Run targeted official starter-history import *before* building model assets;
+    # otherwise pitcher statistics added during this run would be invisible to
+    # the current forecast. Strict previous-day cutoff applies to all imports.
+    backfills={}
+    if network:
+        for match in upcoming:
+            try:
+                backfills[str(match['id'])]=backfill_match_starters(
+                    root/'data',match,match['date'])
+            except Exception as exc:
+                backfills[str(match['id'])]={'status':'unavailable',
+                    'error':str(exc)[:180]}
+    if backfills:
+        summary['starter_history_backfill']=backfills
+    for match in upcoming:
         try:
             if games is None:
                 games=new_games(root)
                 assets=build_assets(games,root)
-            summary['events'].append(store_pregame(match,utcnow() if network else now,games,root,assets))
+            summary['events'].append(store_pregame(
+                match,utcnow() if network else now,games,root,assets,
+                starter_backfill=backfills.get(str(match['id']))))
         except Exception as exc:
             summary['events'].append({'status':'forecast_failed','game_id':match['id'],
                                       'error':str(exc)[:180]})
@@ -307,8 +340,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command',choices=['run','render','calibrate'])
     parser.add_argument('--offline',action='store_true')
+    parser.add_argument('--fast',action='store_true',help='Pregame only: skip expensive data refresh')
     args=parser.parse_args()
-    if args.command=='run':result=run(network=not args.offline)
+    if args.command=='run':result=run(network=not args.offline,fast=args.fast)
     elif args.command=='render':
         result={'known_records':render_site(ROOT,utcnow(),{'status':'render only'})}
     else:

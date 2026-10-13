@@ -10,7 +10,7 @@ from ingest_mlb import COLUMNS
 
 UTC=datetime.timezone.utc
 
-def match(now,delta=95,game_id='77777'):
+def match(now,delta=20,game_id='77777'):
     return dict(id=game_id,date=now.date().isoformat(),home='MIL',away='LAN',
         home_name='Milwaukee Brewers',away_name='Los Angeles Dodgers',
         start_utc=(now+datetime.timedelta(minutes=delta)).isoformat(),
@@ -26,7 +26,7 @@ class CloudTests(unittest.TestCase):
     def test_no_late_or_too_early_predictions(self):
         self.assertFalse(can_forecast(match(self.now,5),self.now))
         self.assertFalse(can_forecast(match(self.now,-5),self.now))
-        self.assertFalse(can_forecast(match(self.now,270),self.now))
+        self.assertFalse(can_forecast(match(self.now,95),self.now))
 
     def test_no_live_or_final(self):
         for status in ('In Progress','Final','Game Over','Delayed Start'):
