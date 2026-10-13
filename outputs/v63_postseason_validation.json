@@ -1,0 +1,37 @@
+{
+  "cutoff_exclusive": "2026-10-13",
+  "model_fit": "2023-2024 regular only",
+  "status": "retrospective development diagnostics, NOT a prospective holdout",
+  "groups": {
+    "2025": {
+      "team_game_rows": 94,
+      "approximate_games": 47,
+      "rate_without_postseason": {
+        "mae_runs_per_team": 2.4445509330612114,
+        "poisson_score_no_factorial": -1.4432453323395094
+      },
+      "rate_with_postseason": {
+        "mae_runs_per_team": 2.3260660482159397,
+        "poisson_score_no_factorial": -1.4796189237899913
+      },
+      "mean_factor": 0.9205417607223473,
+      "snapshot_rows_2026": 0,
+      "mae_improvement_positive_is_better": 0.11848488484527175
+    },
+    "2026": {
+      "team_game_rows": 56,
+      "approximate_games": 28,
+      "rate_without_postseason": {
+        "mae_runs_per_team": 2.0853458839741372,
+        "poisson_score_no_factorial": -0.8256544635818217
+      },
+      "rate_with_postseason": {
+        "mae_runs_per_team": 1.932581269674443,
+        "poisson_score_no_factorial": -0.8743316988615911
+      },
+      "mean_factor": 0.918429037342107,
+      "snapshot_rows_2026": 4,
+      "mae_improvement_positive_is_better": 0.15276461429969412
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "model": "v4 frozen Poisson team-runs 2023-24",
+  "as_of_exclusive": "2026-10-13",
+  "training_rows": 9710,
+  "validation_tuned_2024_score": -1.9435786548007363,
+  "detailed_team_rows_matched": 19470,
+  "fielding_games_matched": 9735,
+  "defense_feature_selected_in_2024": true,
+  "validation": {
+    "2025_R": {
+      "status": "retrospective holdout, not prospectively frozen",
+      "games": 2425,
+      "team_run_mae": 2.491739377395694,
+      "constant_4_5_run_mae": 2.551546391752577,
+      "mae_improvement": 0.05980701435688296,
+      "improvement_95CI_day_bootstrap": [
+        0.047485439154255994,
+        0.07140401602128223
+      ],
+      "regulation_winner_proxy_brier": 0.24437786401641295,
+      "pitcher_rows_with_prior": 4481,
+      "notes": "Game dates are isolated in feature building. Advanced lineup/weather overlays and inning-level Monte Carlo not evaluated here."
+    },
+    "2025_P": {
+      "status": "retrospective holdout, not prospectively frozen",
+      "games": 47,
+      "team_run_mae": 2.4445509330612114,
+      "constant_4_5_run_mae": 2.425531914893617,
+      "mae_improvement": -0.019019018167594215,
+      "improvement_95CI_day_bootstrap": [
+        -0.07314831691883097,
+        0.03246346099869804
+      ],
+      "regulation_winner_proxy_brier": 0.24709484180317878,
+      "pitcher_rows_with_prior": 0,
+      "notes": "Game dates are isolated in feature building. Advanced lineup/weather overlays and inning-level Monte Carlo not evaluated here."
+    },
+    "2026_R": {
+      "status": "retrospective holdout, not prospectively frozen",
+      "games": 2429,
+      "team_run_mae": 2.4975471590116602,
+      "constant_4_5_run_mae": 2.5372581309180733,
+      "mae_improvement": 0.03971097190641304,
+      "improvement_95CI_day_bootstrap": [
+        0.02969510693762733,
+        0.049860300825100935
+      ],
+      "regulation_winner_proxy_brier": 0.24638831486206977,
+      "pitcher_rows_with_prior": 4481,
+      "notes": "Game dates are isolated in feature building. Advanced lineup/weather overlays and inning-level Monte Carlo not evaluated here."
+    },
+    "2026_P": {
+      "status": "retrospective holdout, not prospectively frozen",
+      "games": 28,
+      "team_run_mae": 2.0853458839741372,
+      "constant_4_5_run_mae": 2.2142857142857144,
+      "mae_improvement": 0.12893983031157719,
+      "improvement_95CI_day_bootstrap": null,
+      "regulation_winner_proxy_brier": 0.2423688357913058,
+      "pitcher_rows_with_prior": 50,
+      "notes": "Game dates are isolated in feature building. Advanced lineup/weather overlays and inning-level Monte Carlo not evaluated here."
+    }
+  },
+  "original_run_model_2025": {
+    "n_games": 2425,
+    "team_run_mae": 2.51895208871262,
+    "v4_team_run_mae": 2.491739377395694,
+    "v4_minus_original_mae": -0.02721271131692582,
+    "old_minus_v4_mae_day_bootstrap_95CI": [
+      0.012912765472000957,
+      0.04362737045681071
+    ],
+    "matched_team_observations": 4850,
+    "note": "Same 2025 regulation-game population; still retrospective model-development data."
+  },
+  "warnings": [
+    "No automatic model promotion",
+    "Historical holdouts inspected during development; not clean prospective evaluation",
+    "Individual hitter and weather overlays require separate holdout snapshots before calibration",
+    "This tests expected regulation runs, not the entire inning simulator, and is not a profit test."
+  ]
+}

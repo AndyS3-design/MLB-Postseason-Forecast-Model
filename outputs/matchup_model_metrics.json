@@ -1,0 +1,136 @@
+{
+  "status": "RESEARCH / non-deployed comparison to existing Elo baseline",
+  "details_rows_applied": 19470,
+  "handed_pitchers": 2449,
+  "observations": 9868,
+  "fit": {
+    "validation_brier": 0.2440971828401495,
+    "validation_elo_brier": 0.24455237472209412,
+    "regularization_C": 0.003,
+    "train_games": 4855,
+    "validation_games": 2427
+  },
+  "splits": {
+    "2025_regular": {
+      "n": 2425,
+      "elo": {
+        "n": 2425,
+        "accuracy": 0.5567010309278351,
+        "brier": 0.24402762580655998,
+        "log_loss": 0.6808452846764852,
+        "ece_10": 0.02377820782646902,
+        "mean_pred": 0.5281212084302693,
+        "actual_rate": 0.5430927835051547
+      },
+      "expanded": {
+        "n": 2425,
+        "accuracy": 0.5558762886597938,
+        "brier": 0.24390522141551474,
+        "log_loss": 0.6806827030144287,
+        "ece_10": 0.02159953571244062,
+        "mean_pred": 0.5216092843776798,
+        "actual_rate": 0.5430927835051547
+      },
+      "starter_observed_games": 2130,
+      "handedness_known_games": 2425,
+      "brier_improvement_elo_minus_expanded": 0.00012240439104524437,
+      "brier_improvement_ci_95": [
+        -0.0017402616181742565,
+        0.002075267757556307
+      ]
+    },
+    "2025_postseason": {
+      "n": 47,
+      "elo": {
+        "n": 47,
+        "accuracy": 0.5106382978723404,
+        "brier": 0.24746456072987788,
+        "log_loss": 0.6880324427080695,
+        "ece_10": 0.03563906502085492,
+        "mean_pred": 0.5403854702857666,
+        "actual_rate": 0.5531914893617021
+      },
+      "expanded": {
+        "n": 47,
+        "accuracy": 0.5319148936170213,
+        "brier": 0.24607744775390375,
+        "log_loss": 0.6852615693217359,
+        "ece_10": 0.023392225816328494,
+        "mean_pred": 0.5297992635453738,
+        "actual_rate": 0.5531914893617021
+      },
+      "starter_observed_games": 0,
+      "handedness_known_games": 0,
+      "brier_improvement_elo_minus_expanded": 0.0013871129759741307,
+      "brier_improvement_ci_95": [
+        -0.004777128641900652,
+        0.0076397506441057755
+      ]
+    },
+    "2026_regular": {
+      "n": 2429,
+      "elo": {
+        "n": 2429,
+        "accuracy": 0.5504322766570605,
+        "brier": 0.2462732448761191,
+        "log_loss": 0.6856790120371182,
+        "ece_10": 0.017787164393189947,
+        "mean_pred": 0.5279065414896095,
+        "actual_rate": 0.5286125977768629
+      },
+      "expanded": {
+        "n": 2429,
+        "accuracy": 0.5516673528200906,
+        "brier": 0.245721712177211,
+        "log_loss": 0.6844815516473463,
+        "ece_10": 0.012268825798585115,
+        "mean_pred": 0.5226033287294605,
+        "actual_rate": 0.5286125977768629
+      },
+      "starter_observed_games": 2128,
+      "handedness_known_games": 2429,
+      "brier_improvement_elo_minus_expanded": 0.0005515326989080915,
+      "brier_improvement_ci_95": [
+        -0.001303667357736333,
+        0.0024138149312102073
+      ]
+    },
+    "2026_postseason": {
+      "n": 28,
+      "elo": {
+        "n": 28,
+        "accuracy": 0.6071428571428571,
+        "brier": 0.23853603714281943,
+        "log_loss": 0.6701289582044,
+        "ece_10": 0.05894338876542318,
+        "mean_pred": 0.5409212389467294,
+        "actual_rate": 0.5357142857142857
+      },
+      "expanded": {
+        "n": 28,
+        "accuracy": 0.5357142857142857,
+        "brier": 0.24811744455283605,
+        "log_loss": 0.6893397546817821,
+        "ece_10": 0.012891093147251648,
+        "mean_pred": 0.5228231925670339,
+        "actual_rate": 0.5357142857142857
+      },
+      "starter_observed_games": 24,
+      "handedness_known_games": 26,
+      "brier_improvement_elo_minus_expanded": -0.009581407410016618,
+      "brier_improvement_ci_95": [
+        -0.01933579430714539,
+        0.005804458011713411
+      ]
+    }
+  },
+  "method": "Logistic winner classifier; fixed chronologically lagged team/starter/bullpen/manager features; 2024 C tuning, 2023-24 refit, 2025-26 untouched tests",
+  "warnings": [
+    "No historical YES quotes; Brier is NOT profitability",
+    "Without supplemental pitching data, team runs while a pitcher started is only a proxy, not ERA",
+    "Without starter handedness, offense-vs-handedness feature defaults to neutral",
+    "Bullpen pitcher count is not equivalent to actual workload",
+    "2026 imported schedule rows omit starter identities unless enriched",
+    "Do not deploy advanced winner model without independent holdout improvement"
+  ]
+}

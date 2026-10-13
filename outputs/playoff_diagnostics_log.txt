@@ -1,0 +1,49 @@
+{
+  "status": "completed_single_postseason_holdout",
+  "n_games": 47,
+  "win_correct": 23,
+  "elo_win_accuracy": 0.48936170212765956,
+  "elo_win_accuracy_wilson95": [
+    0.3527532433660351,
+    0.6275778241062712
+  ],
+  "brier_comparison_vs_constant": {
+    "winner": {
+      "improvement": 0.00013293734362767795,
+      "ci95": [
+        -0.011664525504975433,
+        0.012557178385539287
+      ],
+      "bootstrap_type": "calendar-date clustered; postseason seasons not independent"
+    },
+    "under_6_5": {
+      "improvement": 0.007900450219431867,
+      "ci95": [
+        -0.007550142449723589,
+        0.021752226703586706
+      ],
+      "bootstrap_type": "calendar-date clustered; postseason seasons not independent"
+    }
+  },
+  "rest_difference_descriptive_only": [
+    {
+      "group": "home_has_2plus_extra_days",
+      "n": 5,
+      "home_wins": 2,
+      "home_win_rate": 0.4
+    },
+    {
+      "group": "away_has_2plus_extra_days",
+      "n": 2,
+      "home_wins": 1,
+      "home_win_rate": 0.5
+    },
+    {
+      "group": "rest_difference_less_than_2_days",
+      "n": 40,
+      "home_wins": 23,
+      "home_win_rate": 0.575
+    }
+  ],
+  "caveat": "Only one 2025 postseason: 47 observations, clustered by series/teams and calendar dates. No sportsbook/Kalshi odds. No causal rest inference."
+}

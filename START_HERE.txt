@@ -1,0 +1,44 @@
+MLB PREDICTION LAB - FINAL SCORE ADD-ON
+October 12, 2026
+
+This add-on is for the existing upgraded MLB Prediction Lab v2 project.
+
+1. Stop Streamlit in Developer PowerShell with Ctrl+C.
+2. Make a full BACKUP of your existing MLB_Backtest_Expanded_2026_Postseason_Markets folder.
+3. Extract this ZIP. Copy the 5 Python files alongside your existing dashboard.py,
+   replacing dashboard.py and run_all.py when asked. The three new Python files
+   (score_projection.py, score_backtest.py, test_score_projection.py) are additive.
+4. Optionally copy outputs/score_metrics_2025.json to your existing outputs folder.
+   Or regenerate it in the next steps.
+5. DO NOT replace your data/ folder or your 2026 importer/matchup_model.py.
+6. In Visual Studio Developer PowerShell (inside the project folder):
+
+   py -m unittest discover -q
+   py score_backtest.py
+   py run_all.py
+   py -m streamlit run dashboard.py
+
+7. Select a matchup. In Game forecasts expand:
+    "Projected final score — experimental"
+   For scores evaluation open "Backtest & data quality".
+
+SCOPE AND IMPORTANT LIMITATIONS
+- Elo remains the primary winner forecast.
+- Experimental score probabilities come from historical run scoring (2023-24 fitted),
+  with a within-total adjustment to align win chance to Elo.
+- The score display uses a representative exact score consistent with the Elo pick;
+  it is not a reliably predictable result.
+- Tied regulation scores get estimated extra-inning runs. All extra runs are assigned
+  to the extra-inning winner as a simplification; actual teams can both score.
+- Score model is not calibrated for betting, does not use verified present-day
+  lineups/weather, and is not a validated profitable trading model.
+- The extended matchup model and detailed pitcher/bullpen importers are UNCHANGED.
+  This score module does NOT claim to incorporate their pitcher matchup effects.
+- The 2025 score test is NOT a fresh pristine evaluation: this season has been
+  studied during development of earlier models.
+- The real 2026 data is only available on the user's computer. Python tests and
+  the 2025 historical holdout were run with the included 2023-25 logs.
+
+Verified on original 2023-25 logs: 45 tests passed. Complete run_all pipeline succeeds.
+2025 score holdout: 2,425 games; MAE score model 2.5245 runs/team,
+constant rate baseline 2.5319; exact score top-choice hit 3.46% vs 3.42% baseline.

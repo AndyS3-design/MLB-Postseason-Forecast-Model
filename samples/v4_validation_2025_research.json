@@ -1,0 +1,65 @@
+{
+  "model": "v4 frozen Poisson team-runs 2023-24",
+  "as_of_exclusive": "2026-10-13",
+  "training_rows": 9710,
+  "validation_tuned_2024_score": -1.9396370403950933,
+  "detailed_team_rows_matched": 0,
+  "fielding_games_matched": 7280,
+  "defense_feature_selected_in_2024": true,
+  "validation": {
+    "2025_R": {
+      "status": "retrospective holdout, not prospectively frozen",
+      "games": 2425,
+      "team_run_mae": 2.4941753506158615,
+      "constant_4_5_run_mae": 2.551546391752577,
+      "mae_improvement": 0.05737104113671565,
+      "improvement_95CI_day_bootstrap": [
+        0.046770396505945985,
+        0.06775792125205655
+      ],
+      "regulation_winner_proxy_brier": 0.24466511354504658,
+      "pitcher_rows_with_prior": 0,
+      "notes": "Game dates are isolated in feature building. Advanced lineup/weather overlays and inning-level Monte Carlo not evaluated here."
+    },
+    "2025_P": {
+      "status": "retrospective holdout, not prospectively frozen",
+      "games": 47,
+      "team_run_mae": 2.354951388584085,
+      "constant_4_5_run_mae": 2.404255319148936,
+      "mae_improvement": 0.04930393056485105,
+      "improvement_95CI_day_bootstrap": [
+        -0.0042732639676557075,
+        0.09529599248566939
+      ],
+      "regulation_winner_proxy_brier": 0.2474671523583658,
+      "pitcher_rows_with_prior": 0,
+      "notes": "Game dates are isolated in feature building. Advanced lineup/weather overlays and inning-level Monte Carlo not evaluated here."
+    },
+    "2026_R": {
+      "status": "not available",
+      "games": 0
+    },
+    "2026_P": {
+      "status": "not available",
+      "games": 0
+    }
+  },
+  "original_run_model_2025": {
+    "n_games": 2425,
+    "team_run_mae": 2.5145696578887438,
+    "v4_team_run_mae": 2.4941753506158615,
+    "v4_minus_original_mae": -0.020394307272882273,
+    "old_minus_v4_mae_day_bootstrap_95CI": [
+      0.006246059611359244,
+      0.03543513765932735
+    ],
+    "matched_team_observations": 4850,
+    "note": "Same 2025 regulation-game population; still retrospective model-development data."
+  },
+  "warnings": [
+    "No automatic model promotion",
+    "Historical holdouts inspected during development; not clean prospective evaluation",
+    "Individual hitter and weather overlays require separate holdout snapshots before calibration",
+    "This tests expected regulation runs, not the entire inning simulator, and is not a profit test."
+  ]
+}

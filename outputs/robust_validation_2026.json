@@ -1,0 +1,429 @@
+{
+  "status": "COMPLETED",
+  "target_year": 2026,
+  "cutoff_exclusive": "2026-10-12",
+  "training_years": [
+    2023,
+    2024
+  ],
+  "candidate_definitions": {
+    "poisson": "Frozen 2023-24 scoring means, alpha=0",
+    "validated_nb": "Frozen scoring means, dispersion estimated on 2024 only",
+    "wide_nb": "Same scoring means, 1.5x dispersion, PREDECLARED stress test",
+    "constant_nb": "2023-24 constant runs baseline, with the same Elo adjustment"
+  },
+  "no_auto_model_promotion": true,
+  "partial_test_mode": false,
+  "models_have_seen_holdouts_in_development": true,
+  "limitations": [
+    "Both 2025 and 2026 were previously examined during iterative development; do not claim pristine independent validation.",
+    "Winner probabilities in all four score distributions are tilted to Elo. Winner Brier is therefore IDENTICAL for those four distributions.",
+    "Expanded winner model is evaluated on the same game IDs; optional imported pitcher data may change its results when added.",
+    "2024 run-dispersion validation is not an independently unseen season.",
+    "Extra innings allocate all net extra runs to the winner, a known approximation.",
+    "Predictions do not include live weather, complete confirmed batting lineups, or Kalshi execution prices.",
+    "Intervals are central discrete predictive ranges, not parameter-uncertainty confidence intervals.",
+    "Postseason sample is very small and should not support promotion decisions."
+  ],
+  "splits": {
+    "regular": {
+      "n": 2429,
+      "models": {
+        "poisson": {
+          "home_brier": 0.2462732448761191,
+          "under_brier": 0.22819469342748366,
+          "exact_log_loss": 5.173014899352563,
+          "run_mae": 2.5211540355141326,
+          "total_crps": 2.5934401937985863,
+          "team_runs_crps": 1.792541509319556,
+          "exact_hit": 0.02181967888019761,
+          "pi80_coverage": 0.6965829559489501,
+          "pi80_width": 6.318924111431316,
+          "pi90_coverage": 0.8139151914368052,
+          "pi90_width": 8.225332784410593,
+          "pi80_total_coverage": 0.6797035817208728,
+          "pi80_total_width": 7.886372993001235,
+          "pi90_total_coverage": 0.7789213668176205,
+          "pi90_total_width": 10.112391930835734
+        },
+        "validated_nb": {
+          "home_brier": 0.24627324487611915,
+          "under_brier": 0.2164944700749631,
+          "exact_log_loss": 4.833697606764955,
+          "run_mae": 2.516759533475982,
+          "total_crps": 2.516167800904573,
+          "team_runs_crps": 1.741748583375006,
+          "exact_hit": 0.030053519967064634,
+          "pi80_coverage": 0.8272265678605736,
+          "pi80_width": 8.399890215452174,
+          "pi90_coverage": 0.9120351310553039,
+          "pi90_width": 10.742555235350624,
+          "pi80_total_coverage": 0.7978592013174146,
+          "pi80_total_width": 10.419102511321531,
+          "pi90_total_coverage": 0.9069575957184026,
+          "pi90_total_width": 13.431453272951831
+        },
+        "wide_nb": {
+          "home_brier": 0.24627324487611915,
+          "under_brier": 0.21621911012209358,
+          "exact_log_loss": 4.82185252896424,
+          "run_mae": 2.516289640856071,
+          "total_crps": 2.5109691017600118,
+          "team_runs_crps": 1.7401604863075715,
+          "exact_hit": 0.029641827912721283,
+          "pi80_coverage": 0.8567311650885138,
+          "pi80_width": 9.119665157129132,
+          "pi90_coverage": 0.9452449567723343,
+          "pi90_width": 11.852477013860298,
+          "pi80_total_coverage": 0.84767393989296,
+          "pi80_total_width": 11.571428571428571,
+          "pi90_total_coverage": 0.9246603540551668,
+          "pi90_total_width": 14.508851379168382
+        },
+        "constant_nb": {
+          "home_brier": 0.2462732448761191,
+          "under_brier": 0.21634497399182068,
+          "exact_log_loss": 4.831458637620038,
+          "run_mae": 2.52243213168205,
+          "total_crps": 2.5072595205069748,
+          "team_runs_crps": 1.738821120939213,
+          "exact_hit": 0.027171675586661177,
+          "pi80_coverage": 0.8353231782626596,
+          "pi80_width": 8.691368189927267,
+          "pi90_coverage": 0.9138191299574586,
+          "pi90_width": 10.897351447783725,
+          "pi80_total_coverage": 0.8110333470564018,
+          "pi80_total_width": 11.0,
+          "pi90_total_coverage": 0.9176615891313298,
+          "pi90_total_width": 14.0
+        }
+      },
+      "paired_95pct_ci_delta_vs_validated_nb": {
+        "poisson": {
+          "total_crps": [
+            0.06490867689665798,
+            0.08956874671870992
+          ],
+          "team_runs_crps": [
+            0.04503924948508848,
+            0.05719665221261006
+          ],
+          "exact_log_loss": [
+            0.30613475466246515,
+            0.38008595251460636
+          ],
+          "under_brier": [
+            0.00785820980074314,
+            0.015221822517915987
+          ]
+        },
+        "wide_nb": {
+          "total_crps": [
+            -0.009507829968707462,
+            -0.0007408301855519983
+          ],
+          "team_runs_crps": [
+            -0.003919623252468217,
+            0.0006687111230865667
+          ],
+          "exact_log_loss": [
+            -0.02102956121572272,
+            -0.004041294753373501
+          ],
+          "under_brier": [
+            -0.001447905121928324,
+            0.001001962316243992
+          ]
+        },
+        "constant_nb": {
+          "total_crps": [
+            -0.027698026522408666,
+            0.009990021148962072
+          ],
+          "team_runs_crps": [
+            -0.010029957797466273,
+            0.0048191757029421535
+          ],
+          "exact_log_loss": [
+            -0.012411052264137317,
+            0.008663639282281173
+          ],
+          "under_brier": [
+            -0.00229809692227087,
+            0.0020537512439027543
+          ]
+        }
+      },
+      "selected": false,
+      "winner_models": {
+        "elo": {
+          "brier": 0.2462732448761191,
+          "accuracy": 0.5504322766570605
+        },
+        "expanded": {
+          "brier": 0.245721712177211,
+          "accuracy": 0.5516673528200906,
+          "both_starters_have_prior_detail": 2128
+        }
+      },
+      "winner_brier_expanded_minus_elo_ci_95": [
+        -0.0024194945588587274,
+        0.0012119743309525071
+      ],
+      "winner_consistency": "All score candidates adjusted to Elo; expanded winner model remains a separate comparison."
+    },
+    "postseason": {
+      "n": 26,
+      "models": {
+        "poisson": {
+          "home_brier": 0.23594678633717917,
+          "under_brier": 0.26527609816851044,
+          "exact_log_loss": 4.515191749548769,
+          "run_mae": 2.134473355638513,
+          "total_crps": 2.041793302462708,
+          "team_runs_crps": 1.4262253546816395,
+          "exact_hit": 0.07692307692307693,
+          "pi80_coverage": 0.7307692307692306,
+          "pi80_width": 6.1923076923076925,
+          "pi90_coverage": 0.8846153846153846,
+          "pi90_width": 8.166666666666668,
+          "pi80_total_coverage": 0.7307692307692307,
+          "pi80_total_width": 7.769230769230769,
+          "pi90_total_coverage": 0.8461538461538461,
+          "pi90_total_width": 10.0
+        },
+        "validated_nb": {
+          "home_brier": 0.23594678633717914,
+          "under_brier": 0.24529584994173054,
+          "exact_log_loss": 4.293903335104226,
+          "run_mae": 2.1068727608833067,
+          "total_crps": 1.9566512718958966,
+          "team_runs_crps": 1.3566062836964279,
+          "exact_hit": 0.038461538461538464,
+          "pi80_coverage": 0.8846153846153846,
+          "pi80_width": 8.243589743589743,
+          "pi90_coverage": 0.9358974358974359,
+          "pi90_width": 10.410256410256409,
+          "pi80_total_coverage": 0.8461538461538461,
+          "pi80_total_width": 10.192307692307692,
+          "pi90_total_coverage": 0.9230769230769231,
+          "pi90_total_width": 13.0
+        },
+        "wide_nb": {
+          "home_brier": 0.23594678633717914,
+          "under_brier": 0.24199239973338071,
+          "exact_log_loss": 4.295889133027203,
+          "run_mae": 2.0998417592139806,
+          "total_crps": 1.9440174852157868,
+          "team_runs_crps": 1.3461447316712272,
+          "exact_hit": 0.038461538461538464,
+          "pi80_coverage": 0.8974358974358974,
+          "pi80_width": 8.807692307692308,
+          "pi90_coverage": 0.9743589743589743,
+          "pi90_width": 11.589743589743591,
+          "pi80_total_coverage": 0.8846153846153846,
+          "pi80_total_width": 11.23076923076923,
+          "pi90_total_coverage": 0.9230769230769231,
+          "pi90_total_width": 14.0
+        },
+        "constant_nb": {
+          "home_brier": 0.23594678633717917,
+          "under_brier": 0.2467719695021996,
+          "exact_log_loss": 4.385027774690504,
+          "run_mae": 2.216901575994125,
+          "total_crps": 2.0719386617626996,
+          "team_runs_crps": 1.4091462272304314,
+          "exact_hit": 0.038461538461538464,
+          "pi80_coverage": 0.8717948717948717,
+          "pi80_width": 8.743589743589743,
+          "pi90_coverage": 0.9487179487179488,
+          "pi90_width": 10.87179487179487,
+          "pi80_total_coverage": 0.8461538461538461,
+          "pi80_total_width": 11.0,
+          "pi90_total_coverage": 0.9230769230769231,
+          "pi90_total_width": 14.0
+        }
+      },
+      "paired_95pct_ci_delta_vs_validated_nb": {
+        "poisson": {
+          "total_crps": null,
+          "team_runs_crps": null,
+          "exact_log_loss": null,
+          "under_brier": null
+        },
+        "wide_nb": {
+          "total_crps": null,
+          "team_runs_crps": null,
+          "exact_log_loss": null,
+          "under_brier": null
+        },
+        "constant_nb": {
+          "total_crps": null,
+          "team_runs_crps": null,
+          "exact_log_loss": null,
+          "under_brier": null
+        }
+      },
+      "selected": false,
+      "winner_models": {
+        "elo": {
+          "brier": 0.23594678633717914,
+          "accuracy": 0.6153846153846154
+        },
+        "expanded": {
+          "brier": 0.2497677398158172,
+          "accuracy": 0.5,
+          "both_starters_have_prior_detail": 24
+        }
+      },
+      "winner_brier_expanded_minus_elo_ci_95": null,
+      "winner_consistency": "All score candidates adjusted to Elo; expanded winner model remains a separate comparison."
+    },
+    "all": {
+      "n": 2455,
+      "models": {
+        "poisson": {
+          "home_brier": 0.24616388116043178,
+          "under_brier": 0.228587408915576,
+          "exact_log_loss": 5.166048136869915,
+          "run_mae": 2.517058842977772,
+          "total_crps": 2.587597904929041,
+          "team_runs_crps": 1.7886619899629022,
+          "exact_hit": 0.02240325865580448,
+          "pi80_coverage": 0.6969450101832994,
+          "pi80_width": 6.317583163611677,
+          "pi90_coverage": 0.814663951120163,
+          "pi90_width": 8.224711473183978,
+          "pi80_total_coverage": 0.6802443991853361,
+          "pi80_total_width": 7.885132382892057,
+          "pi90_total_coverage": 0.779633401221996,
+          "pi90_total_width": 10.111201629327903
+        },
+        "validated_nb": {
+          "home_brier": 0.24616388116043178,
+          "under_brier": 0.21679949487192277,
+          "exact_log_loss": 4.827980844621094,
+          "run_mae": 2.5124185737662437,
+          "total_crps": 2.5102421676034625,
+          "team_runs_crps": 1.7376696832562102,
+          "exact_hit": 0.03014256619144603,
+          "pi80_coverage": 0.8278343516632723,
+          "pi80_width": 8.398234894772571,
+          "pi90_coverage": 0.9122878479293958,
+          "pi90_width": 10.739035980991176,
+          "pi80_total_coverage": 0.7983706720977597,
+          "pi80_total_width": 10.416700610997964,
+          "pi90_total_coverage": 0.9071283095723014,
+          "pi90_total_width": 13.426883910386966
+        },
+        "wide_nb": {
+          "home_brier": 0.24616388116043178,
+          "under_brier": 0.2164920655314188,
+          "exact_log_loss": 4.816282244526619,
+          "run_mae": 2.5118791948590466,
+          "total_crps": 2.5049647261876498,
+          "team_runs_crps": 1.7359876106983883,
+          "exact_hit": 0.029735234215885947,
+          "pi80_coverage": 0.8571622539035981,
+          "pi80_width": 9.116361167684998,
+          "pi90_coverage": 0.9455532926001359,
+          "pi90_width": 11.84969450101833,
+          "pi80_total_coverage": 0.8480651731160896,
+          "pi80_total_width": 11.567820773930753,
+          "pi90_total_coverage": 0.924643584521385,
+          "pi90_total_width": 14.503462321792261
+        },
+        "constant_nb": {
+          "home_brier": 0.24616388116043178,
+          "under_brier": 0.21666721508480233,
+          "exact_log_loss": 4.826730652920988,
+          "run_mae": 2.5191963701961493,
+          "total_crps": 2.5026491977667096,
+          "team_runs_crps": 1.7353296556697921,
+          "exact_hit": 0.027291242362525458,
+          "pi80_coverage": 0.8357094365241006,
+          "pi80_width": 8.691921249151392,
+          "pi90_coverage": 0.9141887304820093,
+          "pi90_width": 10.897080787508488,
+          "pi80_total_coverage": 0.8114052953156823,
+          "pi80_total_width": 11.0,
+          "pi90_total_coverage": 0.9177189409368636,
+          "pi90_total_width": 14.0
+        }
+      },
+      "paired_95pct_ci_delta_vs_validated_nb": {
+        "poisson": {
+          "total_crps": [
+            0.06495449799925261,
+            0.08946723392769783
+          ],
+          "team_runs_crps": [
+            0.04506533449627444,
+            0.05726066556171509
+          ],
+          "exact_log_loss": [
+            0.3007353649110018,
+            0.37488930658657466
+          ],
+          "under_brier": [
+            0.008233506384340178,
+            0.015032291321547313
+          ]
+        },
+        "wide_nb": {
+          "total_crps": [
+            -0.009801367627058188,
+            -0.0007508689215415412
+          ],
+          "team_runs_crps": [
+            -0.004087712545774593,
+            0.0005431885063568373
+          ],
+          "exact_log_loss": [
+            -0.020160364557171812,
+            -0.002884914982319664
+          ],
+          "under_brier": [
+            -0.0014007423081656152,
+            0.0008816629388811909
+          ]
+        },
+        "constant_nb": {
+          "total_crps": [
+            -0.02613567238270326,
+            0.010622257752304298
+          ],
+          "team_runs_crps": [
+            -0.008961159432648582,
+            0.004363823119911489
+          ],
+          "exact_log_loss": [
+            -0.01026504510901342,
+            0.007725692236082274
+          ],
+          "under_brier": [
+            -0.002308357198991884,
+            0.0018763965534459273
+          ]
+        }
+      },
+      "selected": false,
+      "winner_models": {
+        "elo": {
+          "brier": 0.24616388116043178,
+          "accuracy": 0.5511201629327902
+        },
+        "expanded": {
+          "brier": 0.24576456216442233,
+          "accuracy": 0.5511201629327902,
+          "both_starters_have_prior_detail": 2152
+        }
+      },
+      "winner_brier_expanded_minus_elo_ci_95": [
+        -0.002037724946545466,
+        0.0014604628370570444
+      ],
+      "winner_consistency": "All score candidates adjusted to Elo; expanded winner model remains a separate comparison."
+    }
+  }
+}

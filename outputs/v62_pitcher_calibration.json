@@ -1,0 +1,80 @@
+{
+  "version": "6.2-starter-rate-2024-selected",
+  "selected_weight": 0.25,
+  "reference_era": 4.35,
+  "run_model_alpha": 1.0,
+  "run_model_features": [
+    "is_home",
+    "own_rpg15",
+    "own_rpg40",
+    "own_obp15",
+    "own_iso15",
+    "own_platoon_rpg",
+    "own_platoon_n",
+    "opp_ra15",
+    "opp_bp_era",
+    "opp_bp_outs3",
+    "opp_bp_known3",
+    "opp_bp_used3",
+    "opp_sp_era",
+    "opp_sp_kbb",
+    "opp_sp_innings",
+    "opp_sp_known",
+    "opp_sp_rest",
+    "own_rest",
+    "opp_manager_hook",
+    "opp_manager_bp_use",
+    "elo_advantage",
+    "month"
+  ],
+  "tuning_season": 2024,
+  "training_season": 2023,
+  "diagnostic_holdout_season": 2025,
+  "observed_starter_coverage_2024": 3881,
+  "observed_starter_coverage_2025": 3897,
+  "validation_2024": [
+    {
+      "weight": 0.0,
+      "mae": 2.415323622937373,
+      "mean_poisson_log_loss_omitting_factorial": -1.9432567860140677
+    },
+    {
+      "weight": 0.25,
+      "mae": 2.4143684774686514,
+      "mean_poisson_log_loss_omitting_factorial": -1.9433844891909056
+    },
+    {
+      "weight": 0.5,
+      "mae": 2.416389675566789,
+      "mean_poisson_log_loss_omitting_factorial": -1.9410613226334554
+    },
+    {
+      "weight": 0.75,
+      "mae": 2.4212553081452364,
+      "mean_poisson_log_loss_omitting_factorial": -1.9362539461225903
+    },
+    {
+      "weight": 1.0,
+      "mae": 2.4288233541959827,
+      "mean_poisson_log_loss_omitting_factorial": -1.9288981900089714
+    }
+  ],
+  "holdout_2025": {
+    "n_games": 2425,
+    "legacy": {
+      "mae": 2.490898068618827,
+      "mean_poisson_log_loss_omitting_factorial": -2.0482892866818574
+    },
+    "selected": {
+      "mae": 2.4915483427751495,
+      "mean_poisson_log_loss_omitting_factorial": -2.049147004396632
+    }
+  },
+  "notes": [
+    "No 2025/2026 result was used to select the pitcher correction weight.",
+    "Smoothed ERA and innings projections were available before each historical game.",
+    "Results reflect retrospective development; fresh prospective tests remain necessary.",
+    "Regular-season run error does not establish a postseason or betting advantage."
+  ],
+  "detailed_team_game_rows_matched": 14560
+}

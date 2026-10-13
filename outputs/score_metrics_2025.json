@@ -1,0 +1,34 @@
+{
+  "n": 2425,
+  "train_seasons": [
+    2023,
+    2024
+  ],
+  "holdout_season": 2025,
+  "mean_run_absolute_error_per_team": {
+    "score_model": 2.5280250396662733,
+    "constant_team_run_baseline": 2.5314531038705823
+  },
+  "most_likely_exact_score_hit_rate": {
+    "score_model": 0.03422680412371134,
+    "constant_team_run_baseline": 0.0334020618556701
+  },
+  "exact_score_log_loss": {
+    "score_model": 4.837579722038706,
+    "constant_team_run_baseline": 4.839142958125437
+  },
+  "under_6_5_brier": {
+    "score_model": 0.22274264217177886,
+    "constant_team_run_baseline": 0.22351018322958024
+  },
+  "baseline_regulation_home_runs": 4.387847579814624,
+  "baseline_regulation_away_runs": 4.385993820803296,
+  "caveats": [
+    "The exact-score model is exploratory, not calibrated.",
+    "Extra innings are simplified: all extra runs assigned to winner.",
+    "Score model uses old 2023-24 regular-season training, 2025 test.",
+    "Elo determines winner marginal; run distribution determines score totals.",
+    "2025 has informed previous model development; not a pristine untouched evaluation.",
+    "No live lineup, weather, injuries, or independently verified pitcher matchups."
+  ]
+}

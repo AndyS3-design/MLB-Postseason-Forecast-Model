@@ -1,0 +1,451 @@
+{
+  "status": "COMPLETED",
+  "target_year": 2026,
+  "cutoff_exclusive": "2026-10-12",
+  "training_seasons": [
+    2023,
+    2024
+  ],
+  "limitations": [
+    "No 2026 final scores are used to fit the run scoring model.",
+    "Past completed game scores can enter the next game date feature history (normal chronological updating).",
+    "Some missing regulation innings in earlier MLB API game records use past final runs as a noisy proxy.",
+    "Same-day results never enter that day\u2019s forecasts.",
+    "The exact-score model uses simplified extra-inning run allocation.",
+    "Elo winner probabilities are used to adjust the score distribution.",
+    "Calibration of the single most likely score is not full score-matrix calibration.",
+    "2025 results were consulted during model development; 2026 is a more independent test but not a proof of wagering profitability.",
+    "No actual historical betting prices or fees were tested."
+  ],
+  "regular_2026_or_requested_year": {
+    "n": 2429,
+    "mean_absolute_error_per_team": {
+      "score_model": 2.516759533475982,
+      "constant_runs_baseline": 2.52243213168205,
+      "model_minus_baseline": -0.005672598206067914
+    },
+    "top_score_correct": {
+      "score_model": 0.030053519967064634,
+      "constant_runs_baseline": 0.027171675586661177,
+      "model_minus_baseline": 0.0028818443804034567
+    },
+    "exact_score_log_loss": {
+      "score_model": 4.833697606764955,
+      "constant_runs_baseline": 4.831458637620038,
+      "model_minus_baseline": 0.002238969144916503
+    },
+    "display_score_correct": {
+      "score_model": 0.027171675586661177,
+      "constant_runs_baseline": 0.027171675586661177,
+      "model_minus_baseline": 0.0
+    },
+    "under_6_5_brier": {
+      "score_model": 0.2164944700749631,
+      "constant_runs_baseline": 0.21634497399182068,
+      "model_minus_baseline": 0.00014949608314243634
+    },
+    "home_win_brier": {
+      "score_model": 0.24627324487611915,
+      "constant_runs_baseline": 0.2462732448761191,
+      "model_minus_baseline": 5.551115123125783e-17
+    },
+    "exact_score_top_pick_calibration": [
+      {
+        "range": "0.0%\u20132.0%",
+        "games": 9,
+        "mean_predicted_probability": 0.019491669121327507,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.2991527535509594
+        ]
+      },
+      {
+        "range": "2.0%\u20133.0%",
+        "games": 1205,
+        "mean_predicted_probability": 0.027042977367477808,
+        "observed_frequency": 0.030705394190871368,
+        "correct_top_scores": 37,
+        "observed_95pct_wilson": [
+          0.022357706967482082,
+          0.042035841368379276
+        ]
+      },
+      {
+        "range": "3.0%\u20134.0%",
+        "games": 1141,
+        "mean_predicted_probability": 0.033239401823413534,
+        "observed_frequency": 0.03067484662576687,
+        "correct_top_scores": 35,
+        "observed_95pct_wilson": [
+          0.022137607224867344,
+          0.042361796011353266
+        ]
+      },
+      {
+        "range": "4.0%\u20135.0%",
+        "games": 70,
+        "mean_predicted_probability": 0.04252628615553998,
+        "observed_frequency": 0.014285714285714285,
+        "correct_top_scores": 1,
+        "observed_95pct_wilson": [
+          0.0025261814032348645,
+          0.07658369703926908
+        ]
+      },
+      {
+        "range": "5.0%\u20136.0%",
+        "games": 4,
+        "mean_predicted_probability": 0.052782161078871494,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.48990002040399916
+        ]
+      }
+    ],
+    "displayed_winning_score_calibration": [
+      {
+        "range": "0.0%\u20132.0%",
+        "games": 42,
+        "mean_predicted_probability": 0.018633821651394874,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.08380161250916197
+        ]
+      },
+      {
+        "range": "2.0%\u20133.0%",
+        "games": 1288,
+        "mean_predicted_probability": 0.026313748567837456,
+        "observed_frequency": 0.02251552795031056,
+        "correct_top_scores": 29,
+        "observed_95pct_wilson": [
+          0.015721799293631704,
+          0.03214908518632312
+        ]
+      },
+      {
+        "range": "3.0%\u20134.0%",
+        "games": 1026,
+        "mean_predicted_probability": 0.03331192592374847,
+        "observed_frequency": 0.03508771929824561,
+        "correct_top_scores": 36,
+        "observed_95pct_wilson": [
+          0.025450860466793145,
+          0.04819308633046188
+        ]
+      },
+      {
+        "range": "4.0%\u20135.0%",
+        "games": 69,
+        "mean_predicted_probability": 0.04256187915870381,
+        "observed_frequency": 0.014492753623188406,
+        "correct_top_scores": 1,
+        "observed_95pct_wilson": [
+          0.002562858644330382,
+          0.07763307335057362
+        ]
+      },
+      {
+        "range": "5.0%\u20136.0%",
+        "games": 4,
+        "mean_predicted_probability": 0.052782161078871494,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.48990002040399916
+        ]
+      }
+    ],
+    "overall_displayed_score_predicted_probability": 0.029642100851694195,
+    "overall_displayed_score_actual_hit_rate": 0.027171675586661177,
+    "overall_top_pick_predicted_probability": 0.030414301731420682,
+    "overall_top_pick_actual_hit_rate": 0.030053519967064634
+  },
+  "postseason_2026_or_requested_year": {
+    "n": 26,
+    "mean_absolute_error_per_team": {
+      "score_model": 2.106872760883306,
+      "constant_runs_baseline": 2.216901575994125,
+      "model_minus_baseline": -0.11002881511081863
+    },
+    "top_score_correct": {
+      "score_model": 0.038461538461538464,
+      "constant_runs_baseline": 0.038461538461538464,
+      "model_minus_baseline": 0.0
+    },
+    "exact_score_log_loss": {
+      "score_model": 4.293903335104226,
+      "constant_runs_baseline": 4.385027774690504,
+      "model_minus_baseline": -0.09112443958627736
+    },
+    "display_score_correct": {
+      "score_model": 0.038461538461538464,
+      "constant_runs_baseline": 0.038461538461538464,
+      "model_minus_baseline": 0.0
+    },
+    "under_6_5_brier": {
+      "score_model": 0.24529584994173054,
+      "constant_runs_baseline": 0.2467719695021996,
+      "model_minus_baseline": -0.001476119560469058
+    },
+    "home_win_brier": {
+      "score_model": 0.23594678633717914,
+      "constant_runs_baseline": 0.23594678633717917,
+      "model_minus_baseline": -2.7755575615628914e-17
+    },
+    "exact_score_top_pick_calibration": [
+      {
+        "range": "2.0%\u20133.0%",
+        "games": 5,
+        "mean_predicted_probability": 0.029028255591264197,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.43449149475208104
+        ]
+      },
+      {
+        "range": "3.0%\u20134.0%",
+        "games": 19,
+        "mean_predicted_probability": 0.033201237529613924,
+        "observed_frequency": 0.05263157894736842,
+        "correct_top_scores": 1,
+        "observed_95pct_wilson": [
+          0.009351752490529969,
+          0.2463921533654521
+        ]
+      },
+      {
+        "range": "4.0%\u20135.0%",
+        "games": 2,
+        "mean_predicted_probability": 0.04152423659484093,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.6576280471103807
+        ]
+      }
+    ],
+    "displayed_winning_score_calibration": [
+      {
+        "range": "2.0%\u20133.0%",
+        "games": 7,
+        "mean_predicted_probability": 0.02796643633784499,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.35433884297520657
+        ]
+      },
+      {
+        "range": "3.0%\u20134.0%",
+        "games": 17,
+        "mean_predicted_probability": 0.033491273724527724,
+        "observed_frequency": 0.058823529411764705,
+        "correct_top_scores": 1,
+        "observed_95pct_wilson": [
+          0.01046013064516424,
+          0.269825452035628
+        ]
+      },
+      {
+        "range": "4.0%\u20135.0%",
+        "games": 2,
+        "mean_predicted_probability": 0.04152423659484093,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.6576280471103807
+        ]
+      }
+    ],
+    "overall_displayed_score_predicted_probability": 0.03262173772582954,
+    "overall_displayed_score_actual_hit_rate": 0.038461538461538464,
+    "overall_top_pick_predicted_probability": 0.03303897170033336,
+    "overall_top_pick_actual_hit_rate": 0.038461538461538464
+  },
+  "combined": {
+    "n": 2455,
+    "mean_absolute_error_per_team": {
+      "score_model": 2.5124185737662437,
+      "constant_runs_baseline": 2.5191963701961493,
+      "model_minus_baseline": -0.006777796429905614
+    },
+    "top_score_correct": {
+      "score_model": 0.03014256619144603,
+      "constant_runs_baseline": 0.027291242362525458,
+      "model_minus_baseline": 0.0028513238289205704
+    },
+    "exact_score_log_loss": {
+      "score_model": 4.827980844621094,
+      "constant_runs_baseline": 4.826730652920988,
+      "model_minus_baseline": 0.0012501917001062068
+    },
+    "display_score_correct": {
+      "score_model": 0.027291242362525458,
+      "constant_runs_baseline": 0.027291242362525458,
+      "model_minus_baseline": 0.0
+    },
+    "under_6_5_brier": {
+      "score_model": 0.21679949487192277,
+      "constant_runs_baseline": 0.21666721508480233,
+      "model_minus_baseline": 0.0001322797871204373
+    },
+    "home_win_brier": {
+      "score_model": 0.24616388116043178,
+      "constant_runs_baseline": 0.24616388116043178,
+      "model_minus_baseline": 0.0
+    },
+    "exact_score_top_pick_calibration": [
+      {
+        "range": "0.0%\u20132.0%",
+        "games": 9,
+        "mean_predicted_probability": 0.019491669121327507,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.2991527535509594
+        ]
+      },
+      {
+        "range": "2.0%\u20133.0%",
+        "games": 1210,
+        "mean_predicted_probability": 0.027051180996501722,
+        "observed_frequency": 0.030578512396694214,
+        "correct_top_scores": 37,
+        "observed_95pct_wilson": [
+          0.022264987564132085,
+          0.041863313855097575
+        ]
+      },
+      {
+        "range": "3.0%\u20134.0%",
+        "games": 1160,
+        "mean_predicted_probability": 0.03323877671860129,
+        "observed_frequency": 0.03103448275862069,
+        "correct_top_scores": 36,
+        "observed_95pct_wilson": [
+          0.02250000806649685,
+          0.04266487347752082
+        ]
+      },
+      {
+        "range": "4.0%\u20135.0%",
+        "games": 72,
+        "mean_predicted_probability": 0.042498451445520564,
+        "observed_frequency": 0.013888888888888888,
+        "correct_top_scores": 1,
+        "observed_95pct_wilson": [
+          0.002455888640432169,
+          0.07456780284286987
+        ]
+      },
+      {
+        "range": "5.0%\u20136.0%",
+        "games": 4,
+        "mean_predicted_probability": 0.052782161078871494,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.48990002040399916
+        ]
+      }
+    ],
+    "displayed_winning_score_calibration": [
+      {
+        "range": "0.0%\u20132.0%",
+        "games": 42,
+        "mean_predicted_probability": 0.018633821651394874,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.08380161250916197
+        ]
+      },
+      {
+        "range": "2.0%\u20133.0%",
+        "games": 1295,
+        "mean_predicted_probability": 0.0263226820152429,
+        "observed_frequency": 0.022393822393822392,
+        "correct_top_scores": 29,
+        "observed_95pct_wilson": [
+          0.01563657604983941,
+          0.031976312234613447
+        ]
+      },
+      {
+        "range": "3.0%\u20134.0%",
+        "games": 1043,
+        "mean_predicted_probability": 0.03331484913814276,
+        "observed_frequency": 0.03547459252157239,
+        "correct_top_scores": 37,
+        "observed_95pct_wilson": [
+          0.02584484408145129,
+          0.04851368351240818
+        ]
+      },
+      {
+        "range": "4.0%\u20135.0%",
+        "games": 71,
+        "mean_predicted_probability": 0.04253264979070767,
+        "observed_frequency": 0.014084507042253521,
+        "correct_top_scores": 1,
+        "observed_95pct_wilson": [
+          0.0024905391347781955,
+          0.07556230847938292
+        ]
+      },
+      {
+        "range": "5.0%\u20136.0%",
+        "games": 4,
+        "mean_predicted_probability": 0.052782161078871494,
+        "observed_frequency": 0.0,
+        "correct_top_scores": 0,
+        "observed_95pct_wilson": [
+          0.0,
+          0.48990002040399916
+        ]
+      }
+    ],
+    "overall_displayed_score_predicted_probability": 0.02967365708742842,
+    "overall_displayed_score_actual_hit_rate": 0.027291242362525458,
+    "overall_top_pick_predicted_probability": 0.03044209864351507,
+    "overall_top_pick_actual_hit_rate": 0.03014256619144603
+  },
+  "day_cluster_bootstrap_95pct_delta_model_minus_baseline": {
+    "mean_absolute_error_per_team": [
+      -0.01856095674250057,
+      0.0038577437853395073
+    ],
+    "exact_score_log_loss": [
+      -0.008433156870200815,
+      0.01128487541551461
+    ],
+    "under_6_5_brier": [
+      -0.001978666280322094,
+      0.0021013230570362967
+    ],
+    "top_score_correct": [
+      -0.004059390360250658,
+      0.010236261209936325
+    ],
+    "display_score_correct": [
+      -0.00614694587330508,
+      0.006126389664979191
+    ]
+  }
+}

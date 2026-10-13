@@ -1,0 +1,7 @@
+{
+  "status": "unavailable",
+  "n_quotes": 0,
+  "n_trades": 0,
+  "reason": "No timestamped historical executable YES asks + fees were supplied. Odds cannot be inferred from game results.",
+  "note": "Sportsbook opening/closing lines are not Kalshi fillable quotes; record those separately as market calibration baselines."
+}
