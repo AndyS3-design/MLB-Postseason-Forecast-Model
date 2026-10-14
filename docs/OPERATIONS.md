@@ -90,6 +90,10 @@ For failures, inspect `check` → `forecasts` → `forecast_health`, and `cloud_
 
 See [V9 monitoring definitions](V9_PROSPECTIVE_MONITOR.md).
 
+## Public Pages availability after deployment
+
+A successful `deploy-pages` step is not proof that the live site is reachable. After each forecast publication, the `public_site_health` job checks the actual Pages URL and the public `data.json` for HTTP availability, valid dashboard markup and the expected V17 data fields. It retries brief Pages propagation delays but fails if a persistent 404 remains. See [Pages outage audit and exact verified project URL](PAGES_DEPLOYMENT_HEALTH.md).
+
 ## V17 source and schedule audit
 
 The scheduler now opens its cheap wake window at 39 minutes and retains a recovery opportunity until 10 minutes before scheduled first pitch. The actual forecast is still rejected unless completed in the worker's original 8–30-minute window. GitHub scheduling is best effort; this improves opportunities, not guaranteed uptime. After a new pregame run, inspect the version, actual UTC completion timestamp and starters/lineups source coverage. Do not backdate a late missed final.
