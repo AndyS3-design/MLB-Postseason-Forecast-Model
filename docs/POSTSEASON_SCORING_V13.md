@@ -26,7 +26,7 @@ The prior **261 official completed postseason games** are stored in `data/offici
 
 Each forecast calculates a historical **combined scoring ratio** from completed postseason seasons strictly earlier than the target season, using up to the previous **six seasons**, weighted by observed numbers of completed games. Its current 2026 component includes official **final games from dates strictly before the predicted game's ET calendar date**. Results on the predicted date, later games, revised outcomes and the actual final are never passed into that game's forecast.
 
-The historical ratio is combined with the current season's *previously completed* postoperative ratio using a fixed, conservative prior of **80 equivalent games**:
+The historical ratio is combined with the current season's *previously completed* postseason ratio using a fixed, conservative prior of **80 equivalent games**:
 
 ```text
 current_weight = previous_completed_postseason_games / (previous_completed_postseason_games + 80)
