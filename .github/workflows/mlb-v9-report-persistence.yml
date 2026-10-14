@@ -1,0 +1,37 @@
+name: V9 CI — Report Persistence
+on:
+  push:
+    branches: ['fix/v9-capture-report-tracking']
+    paths:
+      - '.github/workflows/mlb-v9-report-persistence.yml'
+      - '.gitignore'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/coverage_latest.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify genuine report is tracked and not ignored
+        run: |
+          set -euo pipefail
+          p=MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/coverage_latest.json
+          test -f "$p"
+          if git check-ignore -q "$p"; then
+            echo 'The prospective coverage report must not be ignored' >&2
+            exit 1
+          fi
+          git ls-files --error-unmatch "$p"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE')
+          a=json.loads((root/'cloud_records/coverage_latest.json').read_text())
+          b=json.loads((root/'site/data.json').read_text())['prospective_capture']
+          assert a==b
+          assert a['tracking_start_date']=='2026-10-14'
+          assert a['capture_fraction'] is None if a['completed_imported_games']==0 else True
+          print('Coverage report tracked and matches published website data')
+          PY
