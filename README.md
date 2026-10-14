@@ -10,6 +10,8 @@ MLB Forecast Lab is a Python research project that ingests historical and curren
 
 > **Status:** Working public deployment; prospective accuracy evaluation is in progress. The model is experimental. More historical data or a successful individual prediction does **not** establish improved forecasting accuracy.
 
+See [V17 reliability, research and provenance](docs/RELIABILITY_AND_VALIDATION_V17.md) for the next-stage scoring validation and the preserved research-only comparison against neutral contextual overlays.
+
 ## What it does
 
 - **Baseball-only inputs:** Retrosheet historical game logs, official MLB game results and pregame information; no sportsbook odds or prediction-market prices in the deployed forecasting pipeline.
