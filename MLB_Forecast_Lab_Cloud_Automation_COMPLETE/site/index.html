@@ -47,8 +47,9 @@ async function renderUpcomingGames(){
         const status=String(g.status?.detailedState||'Scheduled');
         const started=Date.now()>=start.getTime();
         const message=hasFinal?'Final pregame forecast saved'+(hasPreliminary?' (preliminary also preserved)':'')+'; select a version above.':
+          started?(hasPreliminary?'Only the preliminary was captured; the final window was missed and cannot be backdated.':
+                   'First pitch has passed; no new pregame prediction may be backdated.'):
           hasPreliminary?'Preliminary forecast available now. Final targeted around '+fmt.format(near)+' ET; no final saved yet.':
-          started?'First pitch has passed; no new prediction may be backdated.':
           'Preliminary targeted after 10 AM Eastern (at least 45 minutes before first pitch); final targeted around '+fmt.format(near)+' ET. GitHub timing is best effort.';
         const away=esc(g.teams?.away?.team?.name||'Away');
         const home=esc(g.teams?.home?.team?.name||'Home');
