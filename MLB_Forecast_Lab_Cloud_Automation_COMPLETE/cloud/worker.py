@@ -282,7 +282,7 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
         total_distribution=f['total_pmf'],
         total_line_probabilities=half_run_line_probabilities(f['total_pmf']),
         score_grid=f['score_grid'],
-        modal_exact_scores=f['modal_exact_scores'],
+        modal_exact_scores=f.get('modal_exact_scores',[]),
         projected_score_method='unconditional_simulated_exact_mode',
         team_indices=indices.get('teams',{}),health=status,
         scenario={'postseason_factor':result['adjustments']['postseason_scoring'].get('factor',1.),
