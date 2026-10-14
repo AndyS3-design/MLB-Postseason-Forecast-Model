@@ -33,6 +33,7 @@ ALLOWED_STATES={'preview','pre-game','pregame','scheduled','warmup'}
 def find_approaching_games(now,fetcher=None):
     if fetcher is None:fetcher=fetch_schedule
     matches=[]
+    seen_ids=set()
     # UTC dates avoid missing a game in another local timezone, including DST.
     for day in {now.date(),(now+timedelta(days=1)).date()}:
         payload=fetcher(day)
@@ -45,8 +46,10 @@ def find_approaching_games(now,fetcher=None):
                     start=datetime.fromisoformat(game['gameDate'].replace('Z','+00:00'))
                     lead=(start-now).total_seconds()/60
                 except (ValueError,KeyError,TypeError):continue
-                if MIN_LEAD_MINUTES<=lead<=MAX_LEAD_MINUTES:
-                    matches.append({'id':str(game.get('gamePk','')),
+                game_id=str(game.get('gamePk') or '')
+                if MIN_LEAD_MINUTES<=lead<=MAX_LEAD_MINUTES and game_id.isdigit() and game_id not in seen_ids:
+                    seen_ids.add(game_id)
+                    matches.append({'id':game_id,
                                     'starts_utc':start.isoformat(),
                                     'lead_minutes':round(lead,1)})
     return matches
