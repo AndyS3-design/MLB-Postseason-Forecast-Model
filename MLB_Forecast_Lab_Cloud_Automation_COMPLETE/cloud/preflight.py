@@ -21,14 +21,19 @@ APP_ROOT=Path(__file__).resolve().parents[1]
 EASTERN=ZoneInfo('America/New_York')
 
 API='https://statsapi.mlb.com/api/v1/schedule'
-MIN_LEAD_MINUTES=16
-MAX_LEAD_MINUTES=31
+# GitHub cron and runner startup are best-effort. Wake the job earlier, and
+# keep a late recovery opportunity. The WORKER still independently requires
+# the original prediction to finish inside its strict 8–30-minute window.
+# This is a scheduling envelope, not permission to backdate a forecast.
+MIN_LEAD_MINUTES=10
+MAX_LEAD_MINUTES=39
 GAME_TYPES={'R','F','D','L','W'}
 ALLOWED_STATES={'preview','pre-game','pregame','scheduled','warmup'}
 
 def find_approaching_games(now,fetcher=None):
     if fetcher is None:fetcher=fetch_schedule
     matches=[]
+    seen_ids=set()
     # UTC dates avoid missing a game in another local timezone, including DST.
     for day in {now.date(),(now+timedelta(days=1)).date()}:
         payload=fetcher(day)
@@ -41,8 +46,10 @@ def find_approaching_games(now,fetcher=None):
                     start=datetime.fromisoformat(game['gameDate'].replace('Z','+00:00'))
                     lead=(start-now).total_seconds()/60
                 except (ValueError,KeyError,TypeError):continue
-                if MIN_LEAD_MINUTES<=lead<=MAX_LEAD_MINUTES:
-                    matches.append({'id':str(game.get('gamePk','')),
+                game_id=str(game.get('gamePk') or '')
+                if MIN_LEAD_MINUTES<=lead<=MAX_LEAD_MINUTES and game_id.isdigit() and game_id not in seen_ids:
+                    seen_ids.add(game_id)
+                    matches.append({'id':game_id,
                                     'starts_utc':start.isoformat(),
                                     'lead_minutes':round(lead,1)})
     return matches

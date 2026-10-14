@@ -16,6 +16,9 @@ def variants(game_type):
     result=[('without_extra_starter_correction',
              {'starter_correction_override':0.0},
              'Original scoring model with no additional calibrated starter correction')]
+    result.append(('without_experimental_context',
+                   {'exploratory_overlay_enabled':False},
+                   'Same frozen run model with lineup, roster bullpen, park and weather overlay factors neutralized'))
     if str(game_type)!='R':
         result.append(('historic_postseason_only',
                        {'include_2026_snapshot':False},

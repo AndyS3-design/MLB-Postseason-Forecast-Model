@@ -105,3 +105,16 @@ Full evidence and caveats: [V13 official scoring study](POSTSEASON_SCORING_V13.m
 - [x] Keep expected total, favorite probability and exact-score chance distinct; add 2026 real-record regression coverage.
 
 [Distribution presentation evidence](SCORE_AND_TOTAL_ODDS_V14.md).
+
+## V17 empirical validation and reliability upgrade
+
+- [x] Widen low-cost official pregame wake gate to 10–39 minutes; unchanged strict 8–30 minute completion gate.
+- [x] Add original-only full-PMF prospective evaluation for all half-run thresholds and run bias, with version composition.
+- [x] Add season-separated 2020–25 archival total-run dispersion research (simple benchmark only, not game-specific production validation).
+- [x] Use official same-pregame hitter handedness fallback, never inferred late bios.
+- [x] Save a new neutral-experimental-overlay pregame shadow for subsequent independent comparison.
+- [x] Correct canonical renamed GitHub repository links and add verification/limitations runbook.
+- [ ] Accumulate dozens of untouched settled originals; verify 8–30-minute final capture before increasing complexity.
+- [ ] Retest all newly proposed bullpen/weather/park and team/inning dispersion coefficients prospectively before deploying them.
+
+[Read V17 reliability and validation](RELIABILITY_AND_VALIDATION_V17.md).

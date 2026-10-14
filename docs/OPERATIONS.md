@@ -2,7 +2,7 @@
 
 **Live site:** https://andys3-design.github.io/MLB_Backtest_Expanded_2026_Postseason_Markets/
 
-**Repository:** https://github.com/AndyS3-design/MLB_Backtest_Expanded_2026_Postseason_Markets
+**Repository:** https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model
 
 **Branch:** `master` · **Workflow:** `.github/workflows/mlb-cloud.yml`
 
@@ -12,7 +12,7 @@ The project uses GitHub Actions for scheduled compute and GitHub Pages for the p
 
 ### Normal scheduled behavior
 
-- `*/5 * * * *`: cheap schedule check every five minutes; heavy forecasting only if the check finds a game roughly 16–31 minutes before start.
+- `*/5 * * * *`: cheap schedule check every five minutes; heavy forecasting only if the check finds a game roughly 10–39 minutes before start; the separate worker still enforces an 8–30-minute completion window.
 - `17 11 * * *`: daily maintenance at **11:17 UTC**, refreshing the historical/current baseball state and settling finished games.
 - Worker acceptance for a *new original* forecast: generally **8–30 minutes before** the scheduled first pitch, with a valid pregame status.
 - Manual workflow runs trigger full maintenance and deployment. **Manual runs do not automatically replace existing forecasts.**
@@ -89,3 +89,9 @@ The dashboard also displays a cumulative **pregame capture rate** starting Octob
 For failures, inspect `check` → `forecasts` → `forecast_health`, and `cloud_records/last_run.json`. GitHub schedules are best effort: do not backdate missed games. Also remember that an absent API final is **not** evidence that no prediction was captured; the monitor distinguishes these cases.
 
 See [V9 monitoring definitions](V9_PROSPECTIVE_MONITOR.md).
+
+## V17 source and schedule audit
+
+The scheduler now opens its cheap wake window at 39 minutes and retains a recovery opportunity until 10 minutes before scheduled first pitch. The actual forecast is still rejected unless completed in the worker's original 8–30-minute window. GitHub scheduling is best effort; this improves opportunities, not guaranteed uptime. After a new pregame run, inspect the version, actual UTC completion timestamp and starters/lineups source coverage. Do not backdate a late missed final.
+
+The renamed GitHub repository is https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model. The GitHub Pages URL shown above remains the previously configured address; verify Pages configuration and deployment URL separately before changing the public link.
