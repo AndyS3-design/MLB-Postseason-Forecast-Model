@@ -1,0 +1,58 @@
+name: V15 diagnostic — full 2026 hitter history
+on:
+  push:
+    branches: ['audit/v15-lineup-effect']
+    paths:
+      - '.github/workflows/mlb-v15-full-batter-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  assess:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install NumPy for existing lineup adjustment
+        run: python -m pip install numpy
+      - name: Compute lineup factors from strictly earlier-date official hitter logs
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python - <<'PY'
+          import concurrent.futures,json,urllib.request,urllib.parse
+          from pathlib import Path
+          from v4_sources import lineup_factor
+          rec=json.loads(Path('cloud_records/lineup_previews/849811_20261014T213917Z.json').read_text())
+          official=rec['lineup_evidence']['confirmed_lineups']
+          ids={p['id'] for side in ('away','home') for p in official[side]}
+          def history(pid):
+            query=urllib.parse.urlencode({'stats':'gameLog','group':'hitting','season':2026,'sportIds':1,'gameType':'R,F,D,L,W'})
+            req=urllib.request.Request(f'https://statsapi.mlb.com/api/v1/people/{pid}/stats?{query}',headers={'User-Agent':'MLB Forecast Lab historical lineup audit'})
+            with urllib.request.urlopen(req,timeout=30) as r: data=json.load(r)
+            rows=[]
+            for block in data.get('stats',[]):
+              for split in block.get('splits',[]):
+                if not split.get('date','')<'2026-10-14':continue
+                stat=split.get('stat') or {}
+                def i(k):return max(0,int(stat.get(k) or 0))
+                ab=i('atBats');bb=i('baseOnBalls');hbp=i('hitByPitch');sf=i('sacFlies')
+                pa=ab+bb+hbp+sf
+                if not pa:continue
+                hits=i('hits');doubles=i('doubles');triples=i('triples');hr=i('homeRuns')
+                singles=max(0,hits-doubles-triples-hr)
+                rows.append((split['date'],pa,.69*bb+.72*hbp+.89*singles+1.27*doubles+1.62*triples+2.10*hr))
+            latest=sorted(rows,key=lambda x:x[0])[-60:]
+            pa=sum(v[1] for v in latest)
+            total=sum(v[2] for v in latest)
+            return pid,{'id':pid,'observed_pa':pa,'estimated_woba':(total+150*.32)/(pa+150),'games':len(latest)}
+          with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+            results=dict(pool.map(history,sorted(ids)))
+          for side in ('away','home'):
+            lineup=official[side]
+            data=[results[x['id']] for x in lineup]
+            estimate=lineup_factor(lineup,data,'L')
+            print(side,'number of verified players',len(data),'PA',sum(x['observed_pa'] for x in data),'factor',estimate['factor'],'status',estimate['status'],'mean',estimate.get('mean_woba'),'per batter PA',[x['observed_pa'] for x in data])
+          PY
