@@ -1,0 +1,40 @@
+name: V15 diagnostic — lineup contribution
+on:
+  push:
+    branches: ['audit/v15-lineup-effect']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-lineup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install NumPy used in historical lineup analysis
+        run: python -m pip install numpy
+      - name: Show how nine confirmed hitters affect the existing scoring model
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from v4_sources import load_prior_boxscores,batter_history,lineup_factor
+          root=Path.cwd()
+          frozen=json.loads((root/'cloud_records/lineup_previews/849811_20261014T213917Z.json').read_text())
+          prior=load_prior_boxscores(root/'data','2026-10-14')
+          print('prior cached games available',len(prior))
+          for side,team in [('away','MIL'),('home','LAN')]:
+            lineup=frozen['lineup_evidence']['confirmed_lineups'][side]
+            ids=[p['id'] for p in lineup]
+            batters=batter_history(prior,team,ids,'2026-10-14','L')
+            adj=lineup_factor(lineup,batters,'L')
+            print(side,'team',team,'players',len(lineup),
+                  'total prior hitter PA',sum(p['observed_pa'] for p in batters),
+                  'factor',adj['factor'],'status',adj['status'])
+            print(side,'sample per hitter',[(l['name'],b['observed_pa'])
+                  for l,b in zip(lineup,batters)])
+          PY
