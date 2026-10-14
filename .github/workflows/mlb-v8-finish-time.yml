@@ -1,0 +1,26 @@
+name: V8 CI — Strict Before-First-Pitch Timestamp
+on:
+  push:
+    branches: ['hardening/v8-forecast-finish-time']
+    paths:
+      - '.github/workflows/mlb-v8-finish-time.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_forecast_finish_time.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Simulate forecasts that cross first pitch and run full safeguards
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_forecast_finish_time cloud.test_v8_cache cloud.test_v8_evaluate cloud.test_v8_bullpen cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q

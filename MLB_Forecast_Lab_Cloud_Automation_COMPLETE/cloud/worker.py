@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse,csv,hashlib,json,os,subprocess,sys,traceback
 from datetime import date,datetime,timedelta,timezone
 from pathlib import Path
+from time import monotonic
 from zoneinfo import ZoneInfo
 import numpy as np
 
@@ -178,6 +179,9 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
         target=original_path
         if target.exists():return {'status':'already_frozen','game_id':id_}
         if not can_forecast(game,now):return {'status':'outside_window','game_id':id_}
+    # Use monotonic elapsed time so simulated or offline UTC snapshots remain
+    # testable, while a long real network/model call cannot be backdated.
+    computation_start=monotonic()
     day=game['date']
     snap=game_evidence(game,now)
     clean=clean_game_input(game,verified_pregame=True)
@@ -190,7 +194,9 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
     f=result['forecast'];score=display_forecast(f,game['away'],game['home'],6.5)
     indices=team_indices(games,day,game['away'],game['home'],data_dir=root/'data')
     start=datetime.fromisoformat(game['start_utc'].replace('Z','+00:00'))
-    if now>=start:raise RuntimeError('Forecast finished too late; refusing to freeze')
+    finished_at=now+timedelta(seconds=max(0.,monotonic()-computation_start))
+    if finished_at>=start:
+        raise RuntimeError('Forecast computation crossed first pitch; refusing to save a pregame record')
     g_type='Postseason' if game.get('game_type')!='R' else 'Regular season'
     status={'data_gaps':result['data_gaps'],
             'starter_pitcher_history':result['provenance']['pitcher_coverage'],
@@ -207,8 +213,8 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
         home_name=game['home_name'],away_name=game['away_name'],
         starting_pitchers={'home':game.get('home_pitcher') or 'Not announced',
                            'away':game.get('away_pitcher') or 'Not announced'},
-        game_start_utc=start.isoformat(),forecast_created_utc=now.isoformat(),
-        minutes_before_game=round((start-now).total_seconds()/60,1),
+        game_start_utc=start.isoformat(),forecast_created_utc=finished_at.isoformat(),
+        minutes_before_game=round((start-finished_at).total_seconds()/60,1),
         model_version=result['model_version'],model_commit=os.getenv('GITHUB_SHA','local'),
         model_training_cutoff=result['provenance']['model_frozen_training'],
         features_cutoff_exclusive=day,
@@ -231,6 +237,12 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
         original_forecast_created_utc=(prior_record.get('forecast_created_utc') if revision else None),
         revision_reason=('Updated verified pitcher history and newer training inputs; original remains immutable' if revision else None),
         data_quality='LIMITED' if status['data_gaps'] else 'FEATURES AVAILABLE')
+    # A second deadline check covers formatting and payload preparation time.
+    final_check=now+timedelta(seconds=max(0.,monotonic()-computation_start))
+    if final_check>=start:
+        raise RuntimeError('Forecast record would be persisted after first pitch; refusing')
+    rec['forecast_created_utc']=final_check.isoformat()
+    rec['minutes_before_game']=round((start-final_check).total_seconds()/60,1)
     encode_json(target,rec)
     return {'status':('revised_pregame_saved' if revision else 'saved'),'game_id':id_,'away':rec['away'],'home':rec['home'],
             'minutes_before_game':rec['minutes_before_game']}
