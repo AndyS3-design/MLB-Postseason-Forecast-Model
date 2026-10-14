@@ -4,7 +4,7 @@
 
 **Current repository:** [MLB-Postseason-Forecast-Model](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model). Original pregame predictions and experiment records are immutable, and accuracy claims require independent prospective evidence.
 
-[Live forecast dashboard](https://andys3-design.github.io/MLB_Backtest_Expanded_2026_Postseason_Markets/) · [GitHub Actions runs](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model/actions) · [Documentation index](docs/README.md)
+[Live forecast dashboard](https://andys3-design.github.io/MLB-Postseason-Forecast-Model/) · [GitHub Actions runs](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model/actions) · [Documentation index](docs/README.md)
 
 MLB Forecast Lab is a Python research project that ingests historical and current MLB data, builds run-scoring and win-probability forecasts, simulates possible scores, and saves **time-stamped predictions before first pitch**. A GitHub Actions workflow runs independently of a personal computer and publishes a phone-friendly GitHub Pages site.
 
@@ -29,7 +29,7 @@ See [V17 reliability, research and provenance](docs/RELIABILITY_AND_VALIDATION_V
 
 The maintained cloud application is inside [`MLB_Forecast_Lab_Cloud_Automation_COMPLETE/`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/), **not** the older root-level `dashboard.py` or `index.html`.
 
-1. To **view** forecasts, open the [live dashboard](https://andys3-design.github.io/MLB_Backtest_Expanded_2026_Postseason_Markets/).
+1. To **view** forecasts, open the [live dashboard](https://andys3-design.github.io/MLB-Postseason-Forecast-Model/).
 2. To **run the cloud workflow**, go to [Actions](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model/actions) → **MLB Forecast Lab — game-time forecasts** → **Run workflow** on `master`.
 3. To **test locally** from the repository root (Python 3.12 recommended):
 
