@@ -85,3 +85,14 @@ Details: [V10 independent MLB schedule audit](OFFICIAL_SCHEDULE_AUDIT.md).
 - [ ] Verify CI and the first live two-stage prediction pair; future two-stage capture depends on GitHub Actions schedule reliability.
 
 Method and limitations: [two-stage forecasts](TWO_STAGE_FORECASTS.md).
+
+## V13 official postseason run correction
+
+- [x] Verify individual official finals for all postseason games in 2020–2025 plus 2026 games through October 13 (290 official games total).
+- [x] Compare day-exclusive 2022–2025 scoring ratios and conservative adaptive parameters on 171 completed historical games; report limitations.
+- [x] Wire a versioned 2020–2025 and earlier-date current-season postseason scoring context into new model runs, without touching frozen preliminary/original files.
+- [x] Display the most frequent winner-consistent simulated scoreline instead of forcing an illustrative score near the rounded mean.
+- [x] Add prospective no-current-adaptation shadow variant and timing/leakage regression coverage.
+- [ ] Collect future truly prospective original forecasts and score them against the frozen historical-only variant to determine whether adaptive postseason correction actually improves accuracy.
+
+Full evidence and caveats: [V13 official scoring study](POSTSEASON_SCORING_V13.md).

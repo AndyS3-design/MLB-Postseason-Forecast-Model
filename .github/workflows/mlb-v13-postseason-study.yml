@@ -1,0 +1,52 @@
+name: V13 Research — 2020–2026 Official Postseason Scoring
+on:
+  push:
+    branches: ['research/v13-2020-2026-postseason-scoring']
+    paths:
+      - '.github/workflows/mlb-v13-postseason-study.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v13_postseason_study.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: mlb-v13-historical-study
+  cancel-in-progress: false
+jobs:
+  official-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build chronological scoring evidence using official MLB archives
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m cloud.v13_postseason_study --as-of-exclusive 2026-10-14
+      - name: Verify saved study
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python - <<'PY'
+          import json,csv
+          from pathlib import Path
+          p=Path('outputs/v13_postseason')
+          data=json.loads((p/'comparison.json').read_text())
+          rows=list(csv.DictReader((p/'official_postseason_2020_2026.csv').open()))
+          assert [x['year'] for x in data['season_totals']]==list(range(2020,2027))
+          assert len({x['game_id'] for x in rows})==len(rows)
+          assert all(x['post_games']>=30 for x in data['season_totals'] if x['year']<=2025)
+          assert data['selected_candidate']['n']>100
+          print('Study passed with',len(rows),'unique official finals')
+          PY
+      - name: Commit standalone research report to research branch
+        run: |
+          set -euo pipefail
+          git config user.name 'mlb-forecast-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v13_postseason
+          git diff --cached --quiet && exit 0
+          git commit -m 'Research V13: official 2020-2026 postseason sample and chronological scoring study'
+          git pull --rebase origin research/v13-2020-2026-postseason-scoring
+          git push origin HEAD:research/v13-2020-2026-postseason-scoring

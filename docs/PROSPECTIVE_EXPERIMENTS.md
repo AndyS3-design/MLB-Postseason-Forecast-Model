@@ -27,7 +27,7 @@ If research computation would run past first pitch, it is skipped. The main pred
 | `without_extra_starter_correction` | Disables **only** the optional additive pitcher correction calibrated to 0.25 | The learned run model still contains team/starter features; this is **not** a “no pitching” model |
 | `without_postseason_context` | For playoff games only, suppresses the league-level run reduction applied in the main forecast | Same teams, starters, historical model, and verified pregame information |
 
-Both use the existing game-simulation engine and 12,000 simulations each. The main published forecast is unaffected.
+V13 also introduces a `historic_postseason_only` challenger that uses the verified 2020–2025 playoff adjustment but intentionally excludes current-2026 score adaptation. All alternatives use the same simulation engine and 12,000 simulations each; no challenger overwrites the original. The main published forecast is unaffected.
 
 ## How future results are evaluated
 

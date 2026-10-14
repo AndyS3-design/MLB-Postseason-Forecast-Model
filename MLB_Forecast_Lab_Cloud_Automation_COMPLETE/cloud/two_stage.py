@@ -88,6 +88,7 @@ def paired_stage_metrics(root):
             originals[path.stem] = record
 
     paired = []
+    excluded_model_version_mismatch = 0
     for game_id, early in previews.items():
         final = originals.get(game_id)
         if not final or not _identity(early, final):
@@ -96,6 +97,11 @@ def paired_stage_metrics(root):
             if not timestamp(early["forecast_created_utc"]) < timestamp(final["forecast_created_utc"]):
                 continue
         except (TypeError, ValueError, KeyError):
+            continue
+        if early.get("model_version") != final.get("model_version"):
+            # V13 can deploy between a morning preview and tonight's final.
+            # Model improvements must not be mislabeled as fresher lineups.
+            excluded_model_version_mismatch += 1
             continue
         if final.get("official_final"):
             paired.append((early, final))
@@ -120,6 +126,7 @@ def paired_stage_metrics(root):
         "preliminary_without_final_count": sum(gid not in originals for gid in previews),
         "invalid_preliminary_files": invalid,
         "paired_settled_games": n,
+        "excluded_model_version_mismatch": excluded_model_version_mismatch,
         **({k: round(v / n, 5) for k, v in sums.items()} if n else {}),
-        "notes": "Paired comparisons only; final originals are the primary forecast. Small samples cannot establish improvement.",
+        "notes": "Paired same-version comparisons only; transitions between model versions are excluded to avoid confusing new coefficients with fresher pregame data.",
     }

@@ -12,7 +12,7 @@ MLB Forecast Lab is a Python research project that ingests historical and curren
 
 - **Baseball-only inputs:** Retrosheet historical game logs, official MLB game results and pregame information; no sportsbook odds or prediction-market prices in the deployed forecasting pipeline.
 - **Historical training:** Supports 2016–2025 regular-season records with recency-weighted Poisson regression (roughly a 3-year weighting half-life). Training coverage is recorded for each new forecast.
-- **Game-specific context:** Previous team performance, starting-pitcher history, bullpen data, postseason run environment, and available lineup information. Missing or experimental inputs are identified instead of silently invented.
+- **Game-specific context:** Previous team performance, starting-pitcher history, bullpen data, a historically tested postseason scoring context from official 2020–2025 games plus only earlier completed 2026 games, and available lineup information. Missing or experimental inputs are identified instead of silently invented.
 - **Simulation:** Runs 12,000 simulated games per cloud forecast, publishing expected runs, a representative projected score, winner probabilities and a distribution of possible totals.
 - **Two-stage game-day forecasts (V12):** Publishes an immutable preliminary preview after 10 AM Eastern when sufficient time remains, then independently calculates a final original approximately 20 minutes before first pitch. Both versions are timestamped and accessible; only the final counts toward primary accuracy. The final is not guaranteed if GitHub misses its cutoff.
 - **Pregame integrity:** Saves the original final forecast with its actual creation time and model version. One-off revisions, when authorized before first pitch, are stored separately; the original is never overwritten.
@@ -71,7 +71,7 @@ Read [two-stage forecasting](docs/TWO_STAGE_FORECASTS.md) for preliminary/final 
 
 The [V8 measured-results report](docs/V8_RESULTS.md) documents the complete **28-game 2026 postseason retrospective replay** (64.3% winners correct, but a total-run MAE of 2.713 and worse run-error metrics than a simple historical playoff-average baseline) and a **2022–2025 chronological test** on 19,404 team-game observations. These are exploratory studies, **not** evidence of guaranteed or independently verified live accuracy.
 
-The current dashboard includes **prospective-only accuracy and data-quality tracking**. New pitcher and bullpen research diagnostics do not automatically alter forecast probabilities.
+The [V13 official postseason scoring study](docs/POSTSEASON_SCORING_V13.md) covers 290 official completed playoff games from 2020 through October 13, 2026. It selects a conservative, time-gated scoring correction on 2022–2025 data and keeps current-season results strictly before each forecast date. The current dashboard includes **prospective-only accuracy and data-quality tracking**. New pitcher and bullpen research diagnostics do not automatically alter forecast probabilities.
 
 ## Data credit and limitations
 

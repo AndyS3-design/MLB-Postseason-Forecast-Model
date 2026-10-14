@@ -1,0 +1,94 @@
+name: V13 CI — Postseason Model Calibration & Integrity
+on:
+  push:
+    branches: ['research/v13-2020-2026-postseason-scoring']
+    paths:
+      - '.github/workflows/mlb-v13-context-validation.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v13_postseason_context.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v13_postseason_context.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/official_postseason_2020_2025.csv'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_simulation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v6_display.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v13_score_presentation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_challengers.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v8_challengers.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/two_stage.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v12_two_stage.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v13-context-validation.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v13_postseason_context.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v13_postseason_context.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  calibrated-scoring:
+    runs-on: ubuntu-latest
+    timeout-minutes: 26
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Install forecast dependencies
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Run full original/early/final timing and calibration safety tests
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python -m unittest cloud.test_v13_postseason_context cloud.test_v13_score_presentation cloud.test_v12_two_stage cloud.test_v11_daily cloud.test_v10_schedule_audit cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v8_challengers cloud.test_forecast_finish_time cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
+      - name: Verify calibrated genuine simulator produces a valid outcome
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from extended_eval import all_games
+          from cloud.refresh import append_future_years
+          from v6_replay import clean_game_input, historical_cutoff_assets
+          from v6_strength import pregame_history_only
+          from v4_workflow import build_assets,generate
+          from cloud.v13_postseason_context import context_for_game
+          root=Path.cwd()
+          games=append_future_years(all_games(root/'data',True),root)
+          assets=build_assets(games,root)
+          day='2026-10-14'
+          prior=pregame_history_only(games,day)
+          match=clean_game_input({'id':'study-not-a-real-pregame-original',
+             'date':day,'home':'LAN','away':'MIL','game_type':'L'},verified_pregame=False)
+          result=generate(prior,root,day,match,
+             assets=historical_cutoff_assets(assets,day),n=12000,official_snapshot=None)
+          f=result['forecast']
+          p=result['adjustments']['postseason_scoring']
+          assert p['historic_games_used']==261
+          assert p['current_prior_games_used']>=29
+          assert f['total_expected_runs']>0
+          assert 0<=f['home_win_probability']<=1
+          assert p['factor']<.89
+          assert f['v6_display_score']['home']==f['representative_score']['home']
+          assert f['v6_display_score']['away']==f['representative_score']['away']
+          print('EXAMPLE MODAL SCORE',f['v6_display_score'],flush=True)
+          print('REAL MODEL DIAGNOSTIC (NOT A SAVED PREGAME PREDICTION)',
+                'expected runs',round(f['total_expected_runs'],3),
+                'postseason factor',round(p['factor'],5),
+                'model version',result['model_version'])
+          PY
+
+      - name: Validate revised scoreboard browser code
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html')
+          html=p.read_text()
+          assert 'MOST COMMON WINNER-ALIGNED SCORE' in html
+          assert 'excluded_model_version_mismatch' in html
+          Path('/tmp/mlb_v13.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/mlb_v13.js

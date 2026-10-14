@@ -8,7 +8,7 @@
 | 2026 completed games and current MLB schedule | Official MLB data endpoints | Team form, prior results, matchup identity and scheduled first pitch; game-day/future scores excluded from pregame features. |
 | Starting-pitcher game history | Retrosheet detailed records and MLB official prior-game boxscores | Historical starter outings, innings/outs, earned runs and available strikeout/walk information. |
 | Pregame starters and batting orders | MLB schedule and pregame snapshots where provided | Inputs are used only when available before the forecast time. Unconfirmed information remains a limitation. |
-| Postseason scoring context | Included `data/postseason_context_2022_2026.csv` | A shrinkage-based research adjustment. Same-season snapshots must be available before the forecast date; not a proven causal factor. |
+| Postseason scoring context | Verified official 2020–2025 postseason finals in `data/official_postseason_2020_2025.csv`; earlier-date 2026 official finals | Chronologically tested adaptive scoring adjustment; the current season's same-day/future results are excluded, and full game-specific prospective improvement remains unproven. |
 
 **Retrosheet notice:** The information used here was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may contact Retrosheet at https://www.retrosheet.org/.
 
@@ -20,7 +20,7 @@
 4. Use the game's baseball inputs to simulate **12,000** possible outcomes (`cloud/worker.py`).
 5. Save winner probability, mean team and combined runs, total-run probabilities, an illustrative score, the snapshot time, model version and coverage metadata.
 
-The simulated **mean run total** may be fractional and need not equal the integer sum of the **illustrative score**. The score is one possible outcome, not the expected value rounded team-by-team or the exact-score mode in all cases.
+The simulated **mean run total** may be fractional and need not equal the integer sum of the **illustrative score**. The score is the most common exact simulated score on the model favorite's winning side; it is not the mean total or a guarantee. The underlying full-game expected runs are shown separately.
 
 ## Historical training policy
 
@@ -44,3 +44,7 @@ The selected optional starter correction weight comes from the historical calibr
 The implementation is **not** pitch-by-pitch and does not prove that each lineup, park, weather or postseason adjustment improves accuracy. Bullpen roster and late lineup information may be partial. New data should be treated as a testable input, not a reason to force a prediction toward the known final score.
 
 For metric definitions and forward-looking validation, see [Validation](VALIDATION.md).
+
+## New 2020–2026 scoring study (V13)
+
+The previous fixed postseason context was replaced by the documented [V13 official postseason scoring calibration](POSTSEASON_SCORING_V13.md). It uses all six previous completed seasons (2020–2025), applies day-exclusive current-postseason updates with conservative smoothing, and preserves the new formula's model version in every genuine new forecast. The selection method is an aggregate scoring study rather than an independent proof of a new full-model accuracy advantage.
