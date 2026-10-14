@@ -64,6 +64,7 @@
     "window_start_date": "2026-10-14"
   },
   "operations": {
+    "daily_maintenance": "complete",
     "events": [],
     "historical_game_logs": {
       "available": [
@@ -78,7 +79,7 @@
       "downloaded": [],
       "unavailable": {}
     },
-    "new_settlements": 1,
+    "new_settlements": 0,
     "official_schedule_audit_status": "not_started",
     "pitching_import_status": {
       "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
@@ -94,7 +95,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2459,
-    "run_started_utc": "2026-10-14T15:51:02.415769+00:00",
+    "run_started_utc": "2026-10-14T15:55:43.272704+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -758,5 +759,5 @@
     "winner_brier": 0.18648
   },
   "shadow_comparisons": {},
-  "updated_utc": "2026-10-14T15:51:02.415769+00:00"
+  "updated_utc": "2026-10-14T15:55:43.272704+00:00"
 }
