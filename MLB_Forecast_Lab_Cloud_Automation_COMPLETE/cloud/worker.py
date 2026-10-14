@@ -23,6 +23,7 @@ from cloud.starter_backfill import backfill_match_starters
 from cloud.v8_bullpen_health import matchup_workload
 from cloud.v8_evaluate import from_files as prospective_health_report
 from cloud.v8_challengers import save_shadow_forecasts,attach_shadows,evaluate_pair as challenger_metrics
+from cloud.v9_tracking import summarize as prospective_capture_report
 
 ROOT=Path(__file__).resolve().parents[1]
 STATE=ROOT/'cloud_records'
@@ -340,8 +341,12 @@ def render_site(root,now,summary):
     entries.sort(key=lambda r:(r.get('game_start_utc',''),
                    1 if r.get('forecast_kind')=='revised_pregame' else 0,
                    r.get('forecast_created_utc','')),reverse=True)
+    # Start an independent capture-rate denominator on the day this monitor launches.
+    # Historic 2026 playoff replays are NOT retroactively called missed forecasts.
+    capture=prospective_capture_report(root,now.astimezone(ET).date())
     output={'updated_utc':now.isoformat(),
         'local_timezone':'America/New_York',
+        'prospective_capture':capture,
         'predictions':entries[:350],
         'prospective_performance':prospective_metrics(originals),
         'model_health':prospective_health_report(root),
@@ -350,6 +355,7 @@ def render_site(root,now,summary):
         'disclaimer':'Baseball-only research forecast. Past outcome never enters a pregame prediction. Unverified advanced inputs are marked missing.'}
     site=root/'site';site.mkdir(exist_ok=True,parents=True)
     encode_json(site/'data.json',output)
+    encode_json(root/'cloud_records'/'coverage_latest.json',capture)
     if not (site/'index.html').exists():raise FileNotFoundError('site/index.html missing')
     (site/'.nojekyll').touch()
     return len(entries)
