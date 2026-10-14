@@ -6,6 +6,8 @@ These are the **maintained** documents for the baseball-only GitHub Actions + Gi
 |---|---|
 | [Architecture](ARCHITECTURE.md) | Data flow, worker, simulation, immutable records and static dashboard |
 | [Model and data](MODEL_AND_DATA.md) | Historical inputs, training, pitching, probabilities and data provenance |
+| [V17 scoring study results](V17_SCORING_RESULTS.md) | Official postseason totals, Poisson vs overdispersed negative-binomial comparisons |
+| [Dependency policy](DEPENDENCY_POLICY.md) | Tested Python 3.12 CI lock, safe updates and supply-chain limitations |
 | [V17 reliability and validation](RELIABILITY_AND_VALIDATION_V17.md) | Final-window safety, full-PMF prospective calibration, postseason dispersion study and shadow experiments |
 | [V14 score and total odds](SCORE_AND_TOTAL_ODDS_V14.md) | Why exact-score mode differs from mean expected runs and 3.5–6.5 over/under odds |
 | [V13 official postseason scoring](POSTSEASON_SCORING_V13.md) | MLB 2020–2026 actual runs, chronological adjustment selection, genuine-simulation checks and scoreline presentation |
