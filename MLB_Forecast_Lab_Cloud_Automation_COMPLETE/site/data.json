@@ -52,7 +52,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2458,
-    "run_started_utc": "2026-10-14T00:42:42.553811+00:00",
+    "run_started_utc": "2026-10-14T00:55:36.650299+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -657,10 +657,39 @@
       "under_6_5_probability": 0.37958333333333333
     }
   ],
+  "prospective_capture": {
+    "as_of_exclusive_et_date": "2026-10-13",
+    "capture_fraction": null,
+    "capture_window_fraction": null,
+    "captured_pending_settlement_ids": [],
+    "captured_within_8_to_30_min_window": 0,
+    "completed_imported_games": 0,
+    "games_with_valid_original_pregame_forecast": 0,
+    "games_without_valid_original": 0,
+    "identity_or_result_conflicts": [],
+    "late_or_invalid_originals": [],
+    "missing_originals": [],
+    "notes": [
+      "This metric is not prediction accuracy. It measures the capture rate among imported official final games.",
+      "Missing game predictions are counted only after the official final enters local data.",
+      "Historical games before monitoring launch are excluded from this prospective capture rate.",
+      "GitHub scheduled jobs are best effort; missed windows must not be backdated.",
+      "Shadow records never count as additional original forecasts."
+    ],
+    "originals_awaiting_settlement": 0,
+    "originals_without_imported_final": 0,
+    "paired_shadow_files_for_captured_games": 0,
+    "periods": {},
+    "scope": "Only official completed MLB games already imported by the cloud service",
+    "settled_original_forecasts": 0,
+    "status": "waiting_for_completed_games",
+    "tracking_start_date": "2026-10-14",
+    "unreadable_original_files": []
+  },
   "prospective_performance": {
     "settled_games": 0,
     "status": "Awaiting prospective results"
   },
   "shadow_comparisons": {},
-  "updated_utc": "2026-10-14T00:42:42.553811+00:00"
+  "updated_utc": "2026-10-14T00:55:36.650299+00:00"
 }
