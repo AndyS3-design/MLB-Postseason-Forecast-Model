@@ -44,7 +44,9 @@ def score_originals(originals):
     """Return neutral/unavailable explicitly when insufficient prospective data."""
     valid={}
     for item in originals:
-        if not isinstance(item,dict) or not valid_original(item):
+        if (not isinstance(item,dict) or
+                item.get('forecast_kind') not in ('original_pregame',None) or
+                not valid_original(item)):
             continue
         gid=str(item.get('game_id',''))
         if gid in valid:
