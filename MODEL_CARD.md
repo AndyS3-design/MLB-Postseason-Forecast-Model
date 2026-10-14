@@ -33,3 +33,7 @@ The estimator uses only results from dates **strictly before** the target game. 
 - Retrosheet information was obtained free of charge from and is copyrighted by Retrosheet (https://www.retrosheet.org/).
 
 See [architecture](docs/ARCHITECTURE.md), [data/methods](docs/MODEL_AND_DATA.md), [validation](docs/VALIDATION.md) and [operations](docs/OPERATIONS.md).
+
+## Prospective V8 experiments
+
+The live worker also saves separately timestamped **research-only** variants for eligible new games: no additional starter correction, and no postseason run adjustment during playoff games. These variants cannot replace or revise the official original prediction. Paired Brier and run-error comparisons will be reported when new game results accumulate. See [prospective experiment protocol](docs/PROSPECTIVE_EXPERIMENTS.md).

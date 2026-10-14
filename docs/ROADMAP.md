@@ -49,3 +49,12 @@ Any algorithm change prompted by observing a game's outcome should be logged as 
 - [ ] Gather a substantial untouched cohort of live original forecasts; evaluate calibration and uncertainty.
 
 See [V8 measured evidence](V8_RESULTS.md).
+
+## V8.1 prospective A/B research (implemented, awaiting future results)
+
+- [x] Save research variants separately before first pitch; preserve frozen original prediction.
+- [x] Compare no additional starter correction and (postseason only) no postseason scoring context.
+- [x] Show paired accuracy metrics in the cloud dashboard when new official finals are available.
+- [ ] Collect a meaningful new, independent sample and evaluate uncertainty before selecting a better production formula.
+
+Methodology: [Prospective experiments](PROSPECTIVE_EXPERIMENTS.md).
