@@ -98,10 +98,18 @@ def should_run(now,manual=False,maintenance=False,fetcher=None,catchup=False,roo
     if catchup:return {'run':True,'reason':'catch-up official results maintenance','approaching_games':[], 'preliminary_games':[]}
     try:
         matches=find_approaching_games(now,fetcher)
-        preliminary=find_preliminary_games(now,root=root,fetcher=fetcher)
     except Exception as exc:
         # Fail closed. The next scheduled gate will retry, no fabricated matchups.
-        return {'run':False,'reason':'schedule fetch failed: '+str(exc)[:140], 'approaching_games':[], 'preliminary_games':[]}
+        return {'run':False,'reason':'schedule fetch failed: '+str(exc)[:140],
+                'approaching_games':[], 'preliminary_games':[]}
+    # An early-preview API failure must never suppress a valid FINAL window.
+    try:
+        preliminary=find_preliminary_games(now,root=root,fetcher=fetcher)
+    except Exception as exc:
+        if not matches:
+            return {'run':False,'reason':'early schedule fetch failed: '+str(exc)[:140],
+                    'approaching_games':[], 'preliminary_games':[]}
+        preliminary=[]
     return {'run':bool(matches or preliminary),
             'reason':'pregame window' if matches else 'early preliminary preview' if preliminary else 'no approaching games',
             'approaching_games':matches, 'preliminary_games':preliminary}
