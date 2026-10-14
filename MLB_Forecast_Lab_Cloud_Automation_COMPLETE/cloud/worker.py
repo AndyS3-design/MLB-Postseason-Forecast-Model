@@ -27,6 +27,7 @@ from cloud.v8_challengers import save_shadow_forecasts,attach_shadows,evaluate_p
 from cloud.v9_tracking import summarize as prospective_capture_report
 from cloud.v10_schedule_audit import reconcile as official_schedule_reconciliation
 from cloud.two_stage import eligible_preliminary, paired_stage_metrics
+from cloud.official_hitter_history import collect_verified_lineup_history
 from v4_matchup_core import VERSION
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -205,7 +206,7 @@ def game_evidence(game,now):
         return None
 
 
-def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=False,shadows_enabled=False,preliminary=False,preliminary_update=False,lineup_update=False):
+def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=False,shadows_enabled=False,preliminary=False,preliminary_update=False,lineup_update=False,verified_lineup_history=False):
     id_=str(game['id'])
     original_path=STATE/'predictions'/f'{id_}.json'
     prior_record=read_json(original_path) if original_path.exists() else None
@@ -267,13 +268,17 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
                 len(snap.get('confirmed_lineups',{}).get(side,[]))==9
                 for side in ('home','away'))):
         return {'status':'lineup_refresh_waiting_for_both_official_orders','game_id':id_}
+    hitter_history={'status':'not_requested','by_side':{},'prior_pa':{}}
+    if verified_lineup_history and snap and any(snap.get('is_official_lineup',{}).values()):
+        hitter_history=collect_verified_lineup_history(snap,day)
     clean=clean_game_input(game,verified_pregame=True)
     # Important: future events are filtered from the game history and enriched assets.
     prior=pregame_history_only(games,day)
     prior_assets=historical_cutoff_assets(assets,day)
     result=generate(prior,root,day,clean,assets=prior_assets,n=N_SIMULATIONS,
                     official_snapshot=snap,postseason_context_enabled=True,
-                    include_2026_snapshot=True)
+                    include_2026_snapshot=True,
+                    official_lineup_history=hitter_history.get('by_side'))
     if (preliminary_update or lineup_update) and result['model_version']!=VERSION:
         raise RuntimeError('One-time update returned unexpected model version')
     f=result['forecast'];score=display_forecast(f,game['away'],game['home'],6.5)
@@ -288,6 +293,7 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
             'lineups_confirmed':{s:len(result['personnel'][s]['lineup'])==9 for s in ('home','away')},
             'pitcher_calibrated':bool((root/'outputs'/'v62_pitcher_calibration.json').exists()),
             'official_snapshot_collected':snap is not None,
+            'official_hitter_history':{k:v for k,v in hitter_history.items() if k!='by_side'},
             'starter_backfill':starter_backfill or {'status':'not performed'},
             'run_model_training_years':assets.get('training_years',[]),
             'run_model_training_coverage':assets.get('coverage_note','not reported'),
@@ -312,7 +318,13 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
         lineup_evidence=({'captured_utc':snap['captured_utc'],
             'official_source':snap['source'],
             'confirmed_lineups':snap['confirmed_lineups']}
-            if lineup_update else None),
+            if snap and any(snap.get('is_official_lineup',{}).values()) else None),
+        lineup_adjustment={
+            side:{'factor':result['personnel'][side].get('lineup_adjustment',{}).get('factor',1.),
+                  'status':result['personnel'][side].get('lineup_adjustment',{}).get('status'),
+                  'prior_plate_appearances':result['personnel'][side].get('lineup_adjustment',{}).get('n',0),
+                  'history_source':result['personnel'][side].get('lineup_history_source')}
+            for side in ('home','away')},
         under_6_5_probability=float(f['under_6_5_probability']),
         total_distribution=f['total_pmf'],
         total_line_probabilities=half_run_line_probabilities(f['total_pmf']),
@@ -356,7 +368,8 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
         # Failure of an experimental challenger can never erase or rewrite it.
         try:
             shadow_status=save_shadow_forecasts(root,game,rec,now,computation_start,
-                prior,clean,prior_assets,snapshot=snap,clock=monotonic,n=N_SIMULATIONS)
+                prior,clean,prior_assets,snapshot=snap,clock=monotonic,n=N_SIMULATIONS,
+                lineup_history=hitter_history.get('by_side'))
         except Exception as exc:
             shadow_status={'status':'error','message':str(exc)[:160]}
     return {'status':('lineup_confirmed_saved' if lineup_update else 'preliminary_updated_saved' if preliminary_update else 'preliminary_saved' if preliminary else 'revised_pregame_saved' if revision else 'saved'),'game_id':id_,
@@ -669,7 +682,8 @@ def run(root=ROOT,now=None,network=True,fast=False):
                 shadows_enabled=not bool(match.get('_preliminary') or match.get('_preliminary_update') or match.get('_lineup_update')),
                 preliminary=bool(match.get('_preliminary')),
                 preliminary_update=bool(match.get('_preliminary_update')),
-                lineup_update=bool(match.get('_lineup_update'))))
+                lineup_update=bool(match.get('_lineup_update')),
+                verified_lineup_history=bool(network)))
         except Exception as exc:
             summary['events'].append({'status':'forecast_failed','game_id':match['id'],
                                       'error':str(exc)[:180]})

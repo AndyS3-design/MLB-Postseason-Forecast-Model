@@ -59,7 +59,7 @@ def evaluate_pair(originals):
 
 def save_shadow_forecasts(root,game,original,now,started_monotonic,prior,clean,assets,
                           snapshot=None,generator:Callable=generate,clock=monotonic,
-                          n=12000,min_time_left=75):
+                          n=12000,min_time_left=75,lineup_history=None):
     """Create a separate immutable record if ALL comparisons finish before first pitch.
 
     Primary original forecast is saved before invoking this function. A failure
@@ -87,7 +87,7 @@ def save_shadow_forecasts(root,game,original,now,started_monotonic,prior,clean,a
             return {'status':'insufficient_pregame_window','finished_variants':len(forecast)}
         try:
             result=generator(prior,root,game['date'],clean,assets=assets,n=n,
-                             official_snapshot=snapshot,**kwargs)
+                             official_snapshot=snapshot,official_lineup_history=lineup_history,**kwargs)
             f=result['forecast']
             values={'home_win_probability':float(f['home_win_probability']),
                     'total_expected_runs':float(f['total_expected_runs']),

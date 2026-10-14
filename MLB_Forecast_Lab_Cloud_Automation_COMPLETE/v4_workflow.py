@@ -37,7 +37,7 @@ def generate(games,root,day,match,assets=None,n=30000,
     official_snapshot=None,park_enabled=False,park_override=None,
     temperature=None,wind_mph=None,wind_direction='neutral',roof_closed=False,
     postseason_context_enabled=True,include_2026_snapshot=True,
-    starter_correction_override=None):
+    starter_correction_override=None,official_lineup_history=None):
     root=Path(root);data=root/'data';assets=assets or build_assets(games,root)
     home,away=match['home'],match['away']
     home_sp=match.get('home_pitcher_id') or ''
@@ -54,10 +54,24 @@ def generate(games,root,day,match,assets=None,n=30000,
         bull=relief_snapshot(prior,team,day,ids)
         lineup=(official_snapshot or {}).get('confirmed_lineups',{}).get(side) or []
         if not (official_snapshot or {}).get('is_official_lineup',{}).get(side,False):lineup=[]
-        batter_data=batter_history(prior,team,[p['id'] for p in lineup],day,opp_hand) if lineup else []
+        verified_profiles=(official_lineup_history or {}).get(side) or []
+        # Use official, strictly prior-date game logs only when all nine
+        # verified player IDs agree with the currently announced batting order.
+        if (len(lineup)==9 and len(verified_profiles)==9 and
+                [str(v.get('id')) for v in verified_profiles]==
+                [str(p.get('id')) for p in lineup] and
+                all(v.get('cutoff_exclusive')==str(day)[:10]
+                    for v in verified_profiles)):
+            batter_data=verified_profiles
+            history_source='official_complete_2026_game_logs'
+        else:
+            batter_data=batter_history(prior,team,[p['id'] for p in lineup],day,opp_hand) if lineup else []
+            history_source='cached_prior_boxscores_or_neutral'
+
         lineup_factor_data=lineup_factor(lineup,batter_data,opp_hand)
         personnel[side]=dict(starter=sp,bullpen=bull,lineup=lineup,
-                             lineup_batters=batter_data,lineup_adjustment=lineup_factor_data)
+                             lineup_batters=batter_data,lineup_adjustment=lineup_factor_data,
+                             lineup_history_source=history_source)
     w=scenario_weather(temperature,wind_mph,wind_direction,roof_closed)
     park={'factor':1.,'status':'Neutral: park not enabled or not verified'}
     if park_override is not None:

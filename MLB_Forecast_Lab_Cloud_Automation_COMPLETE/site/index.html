@@ -188,13 +188,20 @@ if((updatedPreliminary||lineupPreliminary)&&early){
    :'<div class="prose">A complete valid distribution is unavailable. No odds are fabricated.</div>';
  let bullpen=g.health?.bullpen_workload||{};
 let lineupInfo='';
- if(lineupPreliminary){
-   const orders=g.lineup_evidence?.confirmed_lineups||{};
+ if(g.lineup_evidence?.confirmed_lineups &&
+       ['home','away'].some(side=>(g.lineup_evidence.confirmed_lineups[side]||[]).length===9)){
+   const orders=g.lineup_evidence.confirmed_lineups;
    lineupInfo='<div class="card"><h3>Confirmed batting orders in this simulation</h3><div class="two-col">'+
      ['away','home'].map(side=>'<div><strong>'+esc(side==='away'?g.away_name:g.home_name)+'</strong><div class="prose">'+
        (orders[side]||[]).map((p,i)=>(i+1)+'. '+esc(p.name)).join(' · ')+'</div></div>').join('')+
      '</div><p class="prose">Official MLB pregame snapshot captured '+esc(g.lineup_evidence?.captured_utc||'unknown')+
-     '. The batting-order adjustment is experimental, and the final forecast is calculated separately closer to first pitch.</p></div>';
+     '. Historical player adjustments are experimental, not validated accuracy gains.</p>'+
+     '<div class="prose">'+['away','home'].map(side=>{
+       const x=g.lineup_adjustment?.[side];
+       return esc(side==='away'?g.away_name:g.home_name)+': '+(x?
+        (num(x.factor)+'× scoring-rate adjustment from '+esc(x.prior_plate_appearances)+' earlier-game PAs · '+esc(x.history_source||'source unknown'))
+        :'Prior-hitter adjustment not separately recorded in this earlier frozen forecast.');
+     }).join(' | ')+'</div></div>';
  }
  let bullpenDetail=Object.keys(bullpen).length?`<p><strong>Pregame bullpen workload (research-only):</strong> Away: ${esc(bullpen.away?.relievers_in_sample??0)} historical relievers, ${esc(bullpen.away?.total_reported_pitches_last_3d??0)} past-three-day pitches, roster ${bullpen.away?.roster_verified?'verified':'unverified'}; home: ${esc(bullpen.home?.relievers_in_sample??0)} relievers, ${esc(bullpen.home?.total_reported_pitches_last_3d??0)} pitches, roster ${bullpen.home?.roster_verified?'verified':'unverified'}. Fatigue thresholds are experimental and do not change the projected runs.</p>`:'';
 let shadows=g.shadow_forecasts||{};

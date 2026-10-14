@@ -72,8 +72,9 @@ jobs:
           assert f['total_expected_runs']>0
           assert 0<=f['home_win_probability']<=1
           assert p['factor']<.89
-          assert f['v6_display_score']['home']==f['representative_score']['home']
-          assert f['v6_display_score']['away']==f['representative_score']['away']
+          assert f['v6_display_score']['home']==f['modal_exact_scores'][0]['home']
+          assert f['v6_display_score']['away']==f['modal_exact_scores'][0]['away']
+          assert abs(f['v6_display_score']['probability']-f['modal_exact_scores'][0]['probability'])<1e-10
           print('EXAMPLE MODAL SCORE',f['v6_display_score'],flush=True)
           print('REAL MODEL DIAGNOSTIC (NOT A SAVED PREGAME PREDICTION)',
                 'expected runs',round(f['total_expected_runs'],3),
@@ -87,7 +88,7 @@ jobs:
           from pathlib import Path
           p=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html')
           html=p.read_text()
-          assert 'MOST COMMON WINNER-ALIGNED SCORE' in html
+          assert 'HIGHEST-PROBABILITY EXACT SCORE' in html
           assert 'excluded_model_version_mismatch' in html
           Path('/tmp/mlb_v13.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
           PY
