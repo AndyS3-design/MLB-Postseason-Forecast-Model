@@ -370,6 +370,7 @@ def render_site(root,now,summary):
                         'score':early.get('projected_score'),
                         'expected_runs':early.get('expected_runs'),
                         'predicted_home_win':early.get('predicted_home_win'),
+                        'model_version':early.get('model_version'),
                         'forecast_created_utc':early.get('forecast_created_utc')}
                 if matched.get('official_final'):
                     early['official_final']=matched['official_final']
