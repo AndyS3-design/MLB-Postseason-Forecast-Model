@@ -1,0 +1,6 @@
+{
+  "kind": "one_time_confirmed_lineup_refresh",
+  "game_id": "849811",
+  "date": "2026-10-14",
+  "reason": "Official MLB pregame feed now lists both starting batting orders (nine batters each); create a separate real lineup-informed simulation before first pitch without overwriting frozen originals."
+}
