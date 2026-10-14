@@ -5,7 +5,7 @@ Reports every requested half-run threshold, calibration buckets and reliability.
 All scores are computed from immutable original distribution fields.
 """
 from __future__ import annotations
-import math
+import math,random
 from collections import defaultdict
 from cloud.v8_evaluate import valid_original
 
@@ -93,6 +93,25 @@ def score_originals(originals):
     exp=[x[6] for x in settled]
     result['winner']={'brier':_brier(preds,winners),'elo_brier_same_games':_brier(elo,winners),
                       'calibration':_calibration(preds,winners)}
+    deltas=[(pr-yy)**2-(ee-yy)**2 for pr,ee,yy in zip(preds,elo,winners)]
+    result['winner']['brier_delta_vs_elo']=round(sum(deltas)/n,6)
+    by_day=defaultdict(list)
+    for idx,row in enumerate(settled):
+        by_day[str(row[0].get('date') or 'unknown')].append(deltas[idx])
+    # Resampling calendar days preserves within-day game correlation. Do NOT
+    # attach a confidence interval to a one-series/single-day comparison.
+    if n>=30 and len(by_day)>=10:
+        days=sorted(by_day);rng=random.Random(1701);draws=[]
+        for _ in range(2000):
+            chosen=[rng.choice(days) for _ in days]
+            values=[v for day in chosen for v in by_day[day]]
+            draws.append(sum(values)/len(values))
+        draws.sort()
+        result['winner']['paired_date_bootstrap_95_delta_vs_elo']=[
+            round(draws[49],6),round(draws[1949],6)]
+    else:
+        result['winner']['paired_date_bootstrap_95_delta_vs_elo']=None
+    result['winner']['paired_date_bootstrap_note']='Positive delta favors Elo. Only shown after at least 30 games on 10 dates; retrospective development history limits causal claims.'
     result['combined_runs']={'mae':round(sum(abs(a-b) for a,b in zip(exp,obs))/n,5),
                              'signed_bias':round(sum(a-b for a,b in zip(exp,obs))/n,5),
                              'mean_forecast':round(sum(exp)/n,5),
