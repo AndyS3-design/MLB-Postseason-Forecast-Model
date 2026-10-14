@@ -133,7 +133,12 @@ class CloudTests(unittest.TestCase):
             finally:worker.STATE=old
 
     def test_prospective_metrics_tiny_sample_unreliable(self):
-        records=[{'date':'2026-10-12','evaluation':{'correct_winner':True,
+        records=[{'game_id':'77777','date':'2026-10-12','home':'MIL','away':'LAN',
+                  'forecast_kind':'original_pregame',
+                  'forecast_created_utc':'2026-10-12T22:40:00+00:00',
+                  'game_start_utc':'2026-10-12T23:00:00+00:00',
+                  'official_final':{'home':3,'away':2},
+                  'evaluation':{'correct_winner':True,
                   'winner_brier':.16,'elo_brier':.21,'abs_run_error_per_team':1.,
                   'under_6_5_brier':.25}}]
         x=prospective_metrics(records)
@@ -157,3 +162,4 @@ class CloudTests(unittest.TestCase):
             finally:worker.STATE=old
 
 if __name__=='__main__':unittest.main()
+

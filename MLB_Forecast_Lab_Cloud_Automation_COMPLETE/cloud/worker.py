@@ -28,6 +28,8 @@ from cloud.v9_tracking import summarize as prospective_capture_report
 from cloud.v10_schedule_audit import reconcile as official_schedule_reconciliation
 from cloud.two_stage import eligible_preliminary, paired_stage_metrics
 from cloud.v17_prospective import score_originals as evaluate_full_distribution
+from cloud.v8_evaluate import valid_original
+from cloud.preflight import official_schedule_days
 from cloud.official_hitter_history import collect_verified_lineup_history
 from v4_matchup_core import VERSION
 
@@ -404,22 +406,80 @@ def settle(root):
 
 
 def prospective_metrics(records):
-    evaluated=[r for r in records if r.get('evaluation')]
-    if not evaluated:return {'settled_games':0,'status':'Awaiting prospective results'}
+    """Score genuine settled originals once; require enough independent dates.
+
+    Duplicate original game IDs fail closed: exclude every copy instead of
+    choosing a potentially updated forecast. Legacy originals without a kind
+    remain eligible when their identity and pregame timestamps are valid.
+    """
+    originals={};excluded={}
+    def exclude(reason,count=1):excluded[reason]=excluded.get(reason,0)+count
+    def valid_metric(value):
+        try:
+            return (not isinstance(value,bool) and isinstance(value,(int,float))
+                    and np.isfinite(float(value)) and value>=0)
+        except (OverflowError,TypeError,ValueError):return False
+    for rec in records:
+        if not isinstance(rec,dict):
+            exclude('malformed_record');continue
+        if rec.get('forecast_kind') not in ('original_pregame',None):
+            exclude('not_original');continue
+        gid=rec.get('game_id')
+        if isinstance(gid,bool) or not isinstance(gid,(str,int)) or not str(gid).strip():
+            exclude('invalid_identity');continue
+        originals.setdefault(str(gid).strip(),[]).append(rec)
+    evaluated=[]
+    for copies in originals.values():
+        if len(copies)!=1:
+            exclude('duplicate_original',len(copies));continue
+        rec=copies[0]
+        try:
+            day=rec['date']
+            if not isinstance(day,str) or date.fromisoformat(day).isoformat()!=day:
+                raise ValueError('Invalid official game date')
+            if not all(isinstance(rec.get(side),str) and rec[side].strip()
+                       for side in ('home','away')) or rec['home']==rec['away']:
+                raise ValueError('Invalid teams')
+        except (KeyError,TypeError,ValueError):
+            exclude('invalid_identity');continue
+        if not valid_original(rec):
+            exclude('invalid_pregame_timestamp');continue
+        evaluation=rec.get('evaluation')
+        if not evaluation:continue
+        final=rec.get('official_final')
+        if (not isinstance(final,dict) or
+                any(isinstance(final.get(side),bool) or not isinstance(final.get(side),int)
+                    or final[side]<0 for side in ('home','away')) or
+                final['home']==final['away']):
+            exclude('malformed_final');continue
+        fields=('winner_brier','elo_brier','abs_run_error_per_team','under_6_5_brier')
+        if (not isinstance(evaluation,dict) or
+                not isinstance(evaluation.get('correct_winner'),bool) or
+                any(not valid_metric(evaluation.get(key)) for key in fields) or
+                any(evaluation[key]>1 for key in ('winner_brier','elo_brier','under_6_5_brier'))):
+            exclude('malformed_evaluation');continue
+        evaluated.append(rec)
+    dates={r['date'] for r in evaluated}
+    if not evaluated:
+        return {'settled_games':0,'settled_dates':0,'excluded':excluded,
+                'status':'Awaiting prospective results'}
     e=[r['evaluation'] for r in evaluated];n=len(e)
     brier=np.array([x['winner_brier'] for x in e]);base=np.array([x['elo_brier'] for x in e]);
     err=np.array([x['abs_run_error_per_team'] for x in e]);
-    result=dict(settled_games=n,accuracy=round(float(np.mean([x['correct_winner'] for x in e])),4),
+    result=dict(settled_games=n,settled_dates=len(dates),excluded=excluded,
+        accuracy=round(float(np.mean([x['correct_winner'] for x in e])),4),
         winner_brier=round(float(brier.mean()),5),elo_brier=round(float(base.mean()),5),
         run_mae_per_team=round(float(err.mean()),3),
         under_6_5_brier=round(float(np.mean([x['under_6_5_brier'] for x in e])),5),
-        status='Insufficient games for uncertainty interval' if n<30 else 'Confidence interval available')
-    if n>=30:
+        status=('Insufficient games for uncertainty interval' if n<30 else
+                'Insufficient independent dates for uncertainty interval' if len(dates)<10 else
+                'Confidence interval available'))
+    if n>=30 and len(dates)>=10:
         delta=base-brier
         # Grouped resampling by game DATE, not individual bets; avoid fake precision.
         bydate={}
         for r in evaluated:bydate.setdefault(r['date'],[]).append(r['evaluation']['elo_brier']-r['evaluation']['winner_brier'])
-        d=list(bydate);rng=np.random.default_rng(2026)
+        d=sorted(bydate);rng=np.random.default_rng(2026)
         boot=[]
         for _ in range(1000):
             dates=rng.choice(d,len(d),replace=True)
@@ -435,8 +495,13 @@ def render_site(root,now,summary):
     import shutil
     originals=[]
     for f in (STATE/'predictions').glob('*.json'):
-        try:originals.append(read_json(f))
-        except (ValueError,TypeError):pass
+        try:
+            rec=read_json(f)
+            # Frozen originals have exactly one canonical file per MLB game.
+            # Ignore misplaced copies before any report can count them twice.
+            if isinstance(rec,dict) and str(rec.get('game_id'))==f.stem:
+                originals.append(rec)
+        except (OSError,ValueError,TypeError):pass
     attach_shadows(originals,root)
     by_id={str(x.get('game_id')):x for x in originals}
     preliminary_records=[]
@@ -620,8 +685,7 @@ def run(root=ROOT,now=None,network=True,fast=False):
     games=None;assets=None
     candidate_games=[]
     if network:
-        for offset in ((0,1) if fast else (-1,0,1)):
-            dt=now.astimezone(ET).date()+timedelta(days=offset)
+        for dt in official_schedule_days(now):
             if dt.year<2026:continue
             try:candidate_games+=fetch_schedule(dt)
             except Exception as exc:summary['events'].append(f'Schedule unavailable for {dt}: {str(exc)[:130]}')
@@ -723,3 +787,4 @@ def main():
     print(json.dumps(result,indent=2,default=str))
 
 if __name__=='__main__':main()
+

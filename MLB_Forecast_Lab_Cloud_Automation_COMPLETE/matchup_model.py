@@ -24,6 +24,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from backtest import metrics
 from extended_eval import K, HOME_ELO, OFFSEASON
+from v4_batting import complete_batting
 
 
 def as_date(d):
@@ -127,6 +128,7 @@ class Team:
     def signals(self,day,opponent_hand):
         recent=list(self.history)
         last15=recent[-15:];last40=recent[-40:]
+        batting15=[x for x in last15 if x['batting_known']]
         split=[x for x in recent if x['opp_hand']==opponent_hand] if opponent_hand in ('L','R') else []
         def obp(sample):
             hits=sum(x['hits'] for x in sample); walks=sum(x['walks'] for x in sample)
@@ -145,7 +147,8 @@ class Team:
         return dict(rpg15=avg([x['scored'] for x in last15],4.5),
             ra15=avg([x['allowed'] for x in last15],4.5),
             rpg40=avg([x['scored'] for x in last40],4.5),
-            obp15=obp(last15),iso15=iso(last15),
+            obp15=obp(batting15),iso15=iso(batting15),
+            batting_known15=len(batting15),batting_missing15=len(last15)-len(batting15),
             split_rpg=avg([x['scored'] for x in split[-30:]],4.5),
             split_n=len(split[-30:]),rest=rest,
             # Relief pitchers used is a proxy for bullpen usage, NOT actual workload.
@@ -162,9 +165,12 @@ class Team:
         def optional(k):
             v=game.get(side+'_'+k)
             return safe_float(v) if v is not None and not pd.isna(v) else None
+        batting=complete_batting(game,side)
+        def bat(k):return batting[k] if batting is not None else None
         self.history.append(dict(day=day,scored=scored,allowed=allowed,
-            hits=field('hits'),walks=field('walks'),hbp=field('hbp'),ab=field('ab'),
-            sf=field('sf'),doubles=field('2b'),triples=field('3b'),hr=field('hr'),
+            hits=bat('hits'),walks=bat('walks'),hbp=bat('hbp'),ab=bat('ab'),
+            sf=bat('sf'),doubles=bat('2b'),triples=bat('3b'),hr=bat('hr'),
+            batting_known=batting is not None,
             relievers=max(0,field('pitchers_used')-1),opp_hand=opponent_hand,
             bp_outs=optional('bp_outs'),bp_er=optional('bp_er')))
         self.last=day
@@ -423,3 +429,4 @@ if __name__=='__main__':
     from extended_eval import all_games
     root=Path(__file__).resolve().parent
     print(json.dumps(backtest_expanded(all_games(root/'data',True),root/'data',root/'outputs')[0],indent=2))
+

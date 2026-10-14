@@ -6,6 +6,7 @@ These are the **maintained** documents for the baseball-only GitHub Actions + Gi
 |---|---|
 | [Architecture](ARCHITECTURE.md) | Data flow, worker, simulation, immutable records and static dashboard |
 | [Model and data](MODEL_AND_DATA.md) | Historical inputs, training, pitching, probabilities and data provenance |
+| [V18 forecast integrity](V18_FORECAST_INTEGRITY.md) | Game-date scheduling, refresh retries, current batting features, home-inning exposure and date-cluster uncertainty |
 | [V17 scoring study results](V17_SCORING_RESULTS.md) | Official postseason totals, Poisson vs overdispersed negative-binomial comparisons |
 | [Dependency policy](DEPENDENCY_POLICY.md) | Tested Python 3.12 CI lock, safe updates and supply-chain limitations |
 | [V17 reliability and validation](RELIABILITY_AND_VALIDATION_V17.md) | Final-window safety, full-PMF prospective calibration, postseason dispersion study and shadow experiments |
@@ -22,3 +23,4 @@ These are the **maintained** documents for the baseball-only GitHub Actions + Gi
 **Maintained source of truth:** `../MLB_Forecast_Lab_Cloud_Automation_COMPLETE/` and `../.github/workflows/mlb-cloud.yml`. The root `README.md` is the project front page.
 
 **Documentation policy:** Describe implemented functionality and measured results separately. Do not promote historical research or one-off examples into claims of demonstrated future accuracy.
+

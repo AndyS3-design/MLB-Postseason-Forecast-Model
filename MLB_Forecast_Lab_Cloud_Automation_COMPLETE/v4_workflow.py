@@ -11,6 +11,7 @@ from v4_sources import (load_prior_boxscores,batter_history,lineup_factor,relief
     pitcher_snapshot,scenario_weather)
 from v4_park import park_training_factors
 from v4_defense import add_fielding_errors
+from v4_batting import add_team_batting,batting_history_report,recent_batting_coverage
 from v4_simulation import play_games,summarize,seed_for
 from v62_pitching import read_calibration,apply_to_base
 from cloud.v13_postseason_context import context_for_game,with_context_rates
@@ -22,6 +23,7 @@ def build_assets(games,root):
     details,hands,_=loaded_details(data)
     enriched,n=enrich_games(games,details,hands)
     enriched,fielding_n=add_fielding_errors(enriched,data)
+    enriched,batting_report=add_team_batting(enriched,data)
     # The scoring model is trained only on seasons through 2025.
     # Rebuild 2026 game-specific features separately on EVERY forecast.
     frame=historical_team_rows([g for g in enriched if int(g['year'])<=2025],hands)
@@ -29,6 +31,7 @@ def build_assets(games,root):
     parks=park_training_factors(data)
     return {'enriched':enriched,'hands':hands,'details_n':n,'fit':fit,'parks':parks,
             'fielding_games_matched':fielding_n,'training_years':fit.training_years,
+            'batting_coverage':batting_report,
             'coverage_note':fit.coverage_note,'model_cache':cache_report,
             'build_seconds':round(perf_counter()-started,3)}
 
@@ -135,7 +138,15 @@ def generate(games,root,day,match,assets=None,n=30000,
     draws=play_games(**params)
     forecast=summarize(draws)
     gaps=[]
+    batting_coverage={side:recent_batting_coverage(assets['enriched'],day,match[side])
+                      for side in ('home','away')}
     for side in ('home','away'):
+        batting=batting_coverage[side]
+        if not batting['prior_team_games']:
+            gaps.append(f'{side} rolling batting features use league priors: no earlier-date team games this season')
+        elif batting['missing_team_games']:
+            gaps.append(f"{side} rolling batting totals unavailable for {batting['missing_team_games']} of "
+                        f"{batting['prior_team_games']} recent prior games; OBP/ISO use verified totals and league priors")
         if personnel[side]['starter']['known']<3:gaps.append(f'{side} starter fewer than three known previous starts')
         if len(personnel[side]['lineup'])!=9:
             gaps.append(f'{side} batting order not confirmed before first pitch')
@@ -167,6 +178,8 @@ def generate(games,root,day,match,assets=None,n=30000,
         'model_frozen_training':','.join(str(y) for y in assets['training_years']),
         'pitcher_coverage':{s:personnel[s]['starter']['known'] for s in ('home','away')},
         'fielding_games_matched':assets['fielding_games_matched'],
+        'batting_history':batting_history_report(assets['enriched'],cutoff=day),
+        'recent_team_batting':batting_coverage,
         'explicit_fielding_feature_selected_in_2024':('opp_field_errors15' in assets['fit'].features)},
       warnings=['This is a research forecast, not a validated betting model.',
         'V6.2 starter adjustment is 2024-selected and must be validated on new, untouched games; do NOT assume elite pitchers always mean an under.',
@@ -175,3 +188,4 @@ def generate(games,root,day,match,assets=None,n=30000,
         '2025 and 2026 results already influenced development, so future prospective tests are required.',
         'The simulation approximates innings, defensive alignment, and extra innings; it is not pitch-by-pitch.'])
     return result
+
