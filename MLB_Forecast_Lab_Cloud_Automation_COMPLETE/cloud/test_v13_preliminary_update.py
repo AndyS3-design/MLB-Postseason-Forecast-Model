@@ -17,9 +17,9 @@ class PreliminaryUpdateTests(unittest.TestCase):
    newest=model_output(.51);newest['model_version']=worker.VERSION
    final=model_output(.52);final['model_version']=worker.VERSION
    args=(g,EARLY,[],root,{'enriched':[]})
-   with patch.object(worker,'STATE',root/'cloud_records'),\\
-        patch.object(worker,'game_evidence',return_value=None),\\
-        patch.object(worker,'generate',side_effect=[from_old,newest,final]),\\
+   with patch.object(worker,'STATE',root/'cloud_records'),\
+        patch.object(worker,'game_evidence',return_value=None),\
+        patch.object(worker,'generate',side_effect=[from_old,newest,final]),\
         patch.object(worker,'team_indices',return_value={'teams':{}}):
     a=worker.store_pregame(*args,preliminary=True)
     self.assertEqual(a['status'],'preliminary_saved')
