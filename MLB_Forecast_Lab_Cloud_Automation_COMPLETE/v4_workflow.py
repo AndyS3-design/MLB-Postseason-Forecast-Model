@@ -13,7 +13,7 @@ from v4_park import park_training_factors
 from v4_defense import add_fielding_errors
 from v4_simulation import play_games,summarize,seed_for
 from v62_pitching import read_calibration,apply_to_base
-from v63_postseason import context_for_game,with_context_rates
+from cloud.v13_postseason_context import context_for_game,with_context_rates
 
 
 def build_assets(games,root):
@@ -88,12 +88,12 @@ def generate(games,root,day,match,assets=None,n=30000,
             raise ValueError('Starter correction override must lie between zero and one')
         pitch_weight=override
     revised_home,revised_away,pitcher_audit=apply_to_base(base,assets['fit'],pitch_weight)
-    # V6.3: League-wide postseason run context for totals. The snapshot gate
-    # must use the selected game's PRE-first-pitch DATE, never current time.
+    # V13: 2020–2025 verified postseason finals and a conservative 2026
+    # prior-DATE-only adaptive scoring adjustment. No game result from this
+    # date or later is ever an input. Original forecasts remain immutable.
     post_context=context_for_game(day,
         match.get('game_type','R') if postseason_context_enabled else 'R',
-        data/'postseason_context_2022_2026.csv',
-        include_2026_snapshot=include_2026_snapshot)
+        root,include_2026_snapshot=include_2026_snapshot)
     before_post=(revised_home,revised_away)
     revised_home,revised_away=with_context_rates(revised_home,revised_away,post_context)
     post_context={**post_context,
@@ -145,7 +145,7 @@ def generate(games,root,day,match,assets=None,n=30000,
         'explicit_fielding_feature_selected_in_2024':('opp_field_errors15' in assets['fit'].features)},
       warnings=['This is a research forecast, not a validated betting model.',
         'V6.2 starter adjustment is 2024-selected and must be validated on new, untouched games; do NOT assume elite pitchers always mean an under.',
-        'V6.3 postseason scoring is a league-level, shrinkage-based scenario, not a calibrated causal estimate; historical inputs are strictly time gated.',
+        'V13 playoff run correction uses historical 2020–2025 official finals and only earlier-date 2026 scoring; its game-specific incremental accuracy remains unproven.',
         'Starter + team model was trained and tested; player lineup, bullpen roster, weather and park scenario overlays are not calibrated.',
         '2025 and 2026 results already influenced development, so future prospective tests are required.',
         'The simulation approximates innings, defensive alignment, and extra innings; it is not pitch-by-pitch.'])
