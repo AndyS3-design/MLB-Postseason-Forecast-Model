@@ -31,7 +31,7 @@ This project can demonstrate **Python, data engineering, applied machine learnin
 - **Time-aware ML:** A historical dataset can be accurate for later analysis but invalid as a pregame feature if it was not available at prediction time.
 - **Cloud workflow reliability:** Two jobs editing the same branch can cause git push conflicts; serialize jobs and sync before writing.
 - **Integrity and observability:** Timestamped predictions, logs, explicit missing-data warnings and benchmark metrics help prevent misleading performance claims.
-- **Communication:** The UI distinguishes descriptive ratings, probabilistic run expectations and one illustrative discrete score.
+- **Communication:** The UI distinguishes descriptive ratings, probabilistic run expectations and the unconditioned highest-probability exact score.
 
 ## Screenshot / portfolio checklist
 
@@ -49,3 +49,12 @@ Capture only after the relevant result is verified:
 Once meaningful out-of-sample results are available, add the **exact sample size**, evaluation period and comparative errors. Keep algorithm-development results separate from prospective holdouts; avoid turning retrospective optimization into a claim of independently tested accuracy.
 
 **Framing for information-security-related roles:** Emphasize automated pipelines, provenance, change control, data-integrity checks, audit logs and reproducibility. Do not claim formal security certifications, penetration-testing functionality or guarantees that this forecasting project does not actually provide.
+
+## V17 resume-ready additions (accurate as implemented)
+
+- Expanded automated forecast-integrity testing with strict event cutoffs, deduplicated official schedule gates, same-request lineup-handedness provenance and additional independent model-ablation variants.
+- Developed a prospective scoring pipeline that grades every original forecast's **complete run-total distribution** against 3.5, 4.5, 5.5 and 6.5-run thresholds and compares win Brier scores to an Elo baseline on matching games.
+- Built a separate chronological 2020–2025 postseason total-score distribution study without claiming an aggregate benchmark validates full player-level matchup predictions.
+- Added transparent run-bias and model-version monitoring on the live static dashboard, with no retrospective rewrites of immutable original picks.
+
+For information-security job interviews, demonstrate input provenance, allowlisted identity matching, immutable evidence trails and fail-closed source behavior—not unsupported intrusion detection or gambling performance. Link actual passing GitHub Actions runs and the published `docs/RELIABILITY_AND_VALIDATION_V17.md` when available.
