@@ -57,3 +57,7 @@ Results are paired: the original and challenger are scored on **the same games**
 - A prospective sample will take time to accumulate. The prior 28-game playoff replay is **retrospective** and does not count in these metrics.
 
 See [operations](OPERATIONS.md), [model and data](MODEL_AND_DATA.md), and the [V8 measured evidence](V8_RESULTS.md).
+
+## Operational capture denominator
+
+From October 14, 2026 onward, the [V9 monitor](V9_PROSPECTIVE_MONITOR.md) independently reports which imported finished games did or did not have a valid original pregame forecast. This addresses **selection bias**: evaluating only games with predictions can hide games missed because of delayed GitHub runs. Capture rate is not forecast accuracy, but both should be disclosed when evaluating a deployed model.

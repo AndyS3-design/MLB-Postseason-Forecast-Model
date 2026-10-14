@@ -58,3 +58,11 @@ See [V8 measured evidence](V8_RESULTS.md).
 - [ ] Collect a meaningful new, independent sample and evaluate uncertainty before selecting a better production formula.
 
 Methodology: [Prospective experiments](PROSPECTIVE_EXPERIMENTS.md).
+
+## V9 prospective reliability (deployed after tests)
+
+- [x] Track imported completed games **without** original timely forecasts, beginning October 14, 2026.
+- [x] Separate pending official settlement from missing original predictions.
+- [x] Show capture rate and missed-game explanations on the public dashboard.
+- [x] Add independent GitHub Actions health job for approaching-game IDs without a saved, timely original prediction.
+- [ ] Accumulate enough future imported completed games to estimate model accuracy and operational capture reliability; do not advertise success with zero or tiny samples.

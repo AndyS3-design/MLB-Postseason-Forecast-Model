@@ -64,5 +64,6 @@ def main():
         with args.github_output.open('a',encoding='utf-8') as f:
             f.write('run_model='+('true' if result['run'] else 'false')+'\n')
             f.write('mode='+('full' if args.manual or args.maintenance else 'pregame')+'\n')
+            f.write('game_ids='+','.join(sorted({x['id'] for x in result['approaching_games'] if str(x['id']).isdigit()}))+'\n')
 
 if __name__=='__main__':main()
