@@ -1,0 +1,48 @@
+name: V8 Research — 2026 Playoff Replay
+on:
+  push:
+    branches: ['research/v8-audit']
+    paths:
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_audit.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v8_audit.py'
+      - '.github/workflows/mlb-v8-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: research-v8-postseason-audit
+  cancel-in-progress: false
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Install existing model libraries
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Run audit integrity tests
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v8_audit cloud.test_v7 cloud.test_starter_backfill -q
+      - name: Replay all completed 2026 postseason games
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m cloud.v8_audit --as-of-exclusive 2026-10-13 --simulations 12000
+      - name: Upload research outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: v8-2026-playoff-audit
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_audit
+      - name: Commit research report to research branch
+        run: |
+          git config user.name 'mlb-research-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_audit/
+          if ! git diff --cached --quiet; then
+            git commit -m 'research: record complete 2026 postseason replay (retrospective)'
+            git pull --rebase origin research/v8-audit
+            git push origin HEAD:research/v8-audit
+          fi
