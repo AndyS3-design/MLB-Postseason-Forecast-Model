@@ -1,0 +1,198 @@
+{
+  "type": "retrospective_v8_starter_correction_ablation",
+  "weights": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "model_weights_selected_from_2022_to_2024_only": 0.25,
+  "old_production_weight": 0.25,
+  "folds": [
+    {
+      "year": 2022,
+      "n_team_games": 4844,
+      "with_3plus_prior_starts": 0,
+      "fraction_with_3plus_prior_starts": 0.0,
+      "alpha": 0.1,
+      "half_life": 5.0,
+      "scores": {
+        "0.0": {
+          "team_games": 4844,
+          "mae": 2.3955109193969673,
+          "poisson_score": -1.7983014287924566
+        },
+        "0.25": {
+          "team_games": 4844,
+          "mae": 2.3955109193969673,
+          "poisson_score": -1.7983014287924566
+        },
+        "0.5": {
+          "team_games": 4844,
+          "mae": 2.3955109193969673,
+          "poisson_score": -1.7983014287924566
+        },
+        "0.75": {
+          "team_games": 4844,
+          "mae": 2.3955109193969673,
+          "poisson_score": -1.7983014287924566
+        },
+        "1.0": {
+          "team_games": 4844,
+          "mae": 2.3955109193969673,
+          "poisson_score": -1.7983014287924566
+        }
+      }
+    },
+    {
+      "year": 2023,
+      "n_team_games": 4856,
+      "with_3plus_prior_starts": 3863,
+      "fraction_with_3plus_prior_starts": 0.7955,
+      "alpha": 0.1,
+      "half_life": 5.0,
+      "scores": {
+        "0.0": {
+          "team_games": 4856,
+          "mae": 2.468358261271251,
+          "poisson_score": -2.294850239573956
+        },
+        "0.25": {
+          "team_games": 4856,
+          "mae": 2.468673203577322,
+          "poisson_score": -2.295407498628641
+        },
+        "0.5": {
+          "team_games": 4856,
+          "mae": 2.4725530621835112,
+          "poisson_score": -2.292480996323958
+        },
+        "0.75": {
+          "team_games": 4856,
+          "mae": 2.4796287032917728,
+          "poisson_score": -2.286007455081894
+        },
+        "1.0": {
+          "team_games": 4856,
+          "mae": 2.4898258999755067,
+          "poisson_score": -2.2758638325924814
+        }
+      }
+    },
+    {
+      "year": 2024,
+      "n_team_games": 4854,
+      "with_3plus_prior_starts": 3881,
+      "fraction_with_3plus_prior_starts": 0.7995,
+      "alpha": 1.0,
+      "half_life": 5.0,
+      "scores": {
+        "0.0": {
+          "team_games": 4854,
+          "mae": 2.409159842920417,
+          "poisson_score": -1.9441142874381956
+        },
+        "0.25": {
+          "team_games": 4854,
+          "mae": 2.405021405921184,
+          "poisson_score": -1.9448508295918776
+        },
+        "0.5": {
+          "team_games": 4854,
+          "mae": 2.4039494477756476,
+          "poisson_score": -1.9430462753129614
+        },
+        "0.75": {
+          "team_games": 4854,
+          "mae": 2.405958585117298,
+          "poisson_score": -1.9385881725811966
+        },
+        "1.0": {
+          "team_games": 4854,
+          "mae": 2.4109157557188676,
+          "poisson_score": -1.9313264896449645
+        }
+      }
+    },
+    {
+      "year": 2025,
+      "n_team_games": 4850,
+      "with_3plus_prior_starts": 3897,
+      "fraction_with_3plus_prior_starts": 0.8035,
+      "alpha": 1.0,
+      "half_life": 5.0,
+      "scores": {
+        "0.0": {
+          "team_games": 4850,
+          "mae": 2.488789199844316,
+          "poisson_score": -2.049026172673874
+        },
+        "0.25": {
+          "team_games": 4850,
+          "mae": 2.48696689847404,
+          "poisson_score": -2.0500305574182596
+        },
+        "0.5": {
+          "team_games": 4850,
+          "mae": 2.4884982697950617,
+          "poisson_score": -2.048523183862465
+        },
+        "0.75": {
+          "team_games": 4850,
+          "mae": 2.4931720456260793,
+          "poisson_score": -2.044463495898427
+        },
+        "1.0": {
+          "team_games": 4850,
+          "mae": 2.5002583216886545,
+          "poisson_score": -2.0377780450270144
+        }
+      }
+    }
+  ],
+  "pooled": {
+    "0.0": {
+      "n_team_games": 19404,
+      "poisson_score": -2.0217106046761018,
+      "mae": 2.440470630131557
+    },
+    "0.25": {
+      "n_team_games": 19404,
+      "poisson_score": -2.0222853568712056,
+      "mae": 2.439058716350799
+    },
+    "0.5": {
+      "n_team_games": 19404,
+      "poisson_score": -2.0207247939250603,
+      "mae": 2.4401442894006946
+    },
+    "0.75": {
+      "n_team_games": 19404,
+      "poisson_score": -2.016974812809979,
+      "mae": 2.443585820974521
+    },
+    "1.0": {
+      "n_team_games": 19404,
+      "poisson_score": -2.0109487317696058,
+      "mae": 2.4491490106312788
+    }
+  },
+  "2025_selected_weight_metrics": {
+    "team_games": 4850,
+    "mae": 2.48696689847404,
+    "poisson_score": -2.0500305574182596
+  },
+  "2025_old_weight_metrics": {
+    "team_games": 4850,
+    "mae": 2.48696689847404,
+    "poisson_score": -2.0500305574182596
+  },
+  "runtime_seconds": 4.79,
+  "limitations": [
+    "Historical pitching coverage is uneven, especially before 2023.",
+    "Regular-season mean-run evaluation does not prove playoff win/total probability accuracy.",
+    "2025/2026 results have influenced previous project development and are not untouched validation.",
+    "Any coefficient change requires an independently recorded later prospective comparison."
+  ]
+}
