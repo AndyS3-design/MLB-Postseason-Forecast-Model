@@ -116,6 +116,19 @@ def preliminary_update_requested(root,game,preview):
     except (OSError,ValueError,TypeError):return False
 
 
+def lineup_refresh_requested(root,game,preview):
+    """One pregame lineup-derived calculation when both orders become official."""
+    path=Path(root)/'cloud_records'/'lineup_refresh_requests'/f"{game.get('id')}.json"
+    try:
+        req=read_json(path,{}) or {}
+        return (bool(preview) and req.get('game_id')==str(game.get('id'))
+            and req.get('date')==str(game.get('date'))
+            and req.get('kind')=='one_time_confirmed_lineup_refresh'
+            and all(str(preview.get(k))==str(game.get(k))
+                    for k in ('date','home','away')))
+    except (OSError,ValueError,TypeError):return False
+
+
 def latest_data_day(now):return now.astimezone(ET).date()
 
 
@@ -192,15 +205,28 @@ def game_evidence(game,now):
         return None
 
 
-def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=False,shadows_enabled=False,preliminary=False,preliminary_update=False):
+def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=False,shadows_enabled=False,preliminary=False,preliminary_update=False,lineup_update=False):
     id_=str(game['id'])
     original_path=STATE/'predictions'/f'{id_}.json'
     prior_record=read_json(original_path) if original_path.exists() else None
+    if lineup_update and (revision or preliminary or preliminary_update):
+        raise ValueError('Lineup update must be its own preserved pregame stage')
     if preliminary_update and (revision or preliminary):
         raise ValueError('Preliminary update must be independent of other stages')
     early_path=STATE/'preliminary'/f'{id_}.json'
     early_record=read_json(early_path) if early_path.exists() else None
-    if preliminary_update:
+    if lineup_update:
+        if original_path.exists():
+            return {'status':'lineup_refresh_final_exists','game_id':id_}
+        if not lineup_refresh_requested(root,game,early_record):
+            return {'status':'lineup_refresh_unrequested','game_id':id_}
+        if not can_preliminary(game,now):
+            return {'status':'lineup_refresh_too_late','game_id':id_}
+        target_dir=STATE/'lineup_previews'
+        if any(target_dir.glob(f'{id_}_*.json')):
+            return {'status':'lineup_refresh_already_saved','game_id':id_}
+        target=target_dir/f"{id_}_{now.strftime('%Y%m%dT%H%M%SZ')}.json"
+    elif preliminary_update:
         if original_path.exists():
             return {'status':'preliminary_update_final_exists','game_id':id_}
         if not preliminary_update_requested(root,game,early_record):
@@ -236,6 +262,11 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
     computation_start=monotonic()
     day=game['date']
     snap=game_evidence(game,now)
+    if lineup_update and (not snap or
+        not all(snap.get('is_official_lineup',{}).get(side,False) and
+                len(snap.get('confirmed_lineups',{}).get(side,[]))==9
+                for side in ('home','away'))):
+        return {'status':'lineup_refresh_waiting_for_both_official_orders','game_id':id_}
     clean=clean_game_input(game,verified_pregame=True)
     # Important: future events are filtered from the game history and enriched assets.
     prior=pregame_history_only(games,day)
@@ -243,7 +274,7 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
     result=generate(prior,root,day,clean,assets=prior_assets,n=N_SIMULATIONS,
                     official_snapshot=snap,postseason_context_enabled=True,
                     include_2026_snapshot=True)
-    if preliminary_update and result['model_version']!=VERSION:
+    if (preliminary_update or lineup_update) and result['model_version']!=VERSION:
         raise RuntimeError('One-time update returned unexpected model version')
     f=result['forecast'];score=display_forecast(f,game['away'],game['home'],6.5)
     indices=team_indices(games,day,game['away'],game['home'],data_dir=root/'data')
@@ -278,6 +309,10 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
         elo_home_win=float(result['baseline']['elo_home_win']),
         expected_runs={'home':float(f['home_expected_runs']),'away':float(f['away_expected_runs']),
                        'total':float(f['total_expected_runs'])},
+        lineup_evidence=({'captured_utc':snap['captured_utc'],
+            'official_source':snap['source'],
+            'confirmed_lineups':snap['confirmed_lineups']}
+            if lineup_update else None),
         under_6_5_probability=float(f['under_6_5_probability']),
         total_distribution=f['total_pmf'],
         total_line_probabilities=half_run_line_probabilities(f['total_pmf']),
@@ -290,19 +325,22 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
                   'park_factor':result['adjustments']['park']['factor'],
                   'weather_factor':result['adjustments']['weather']['factor']},
         source='Official MLB pregame schedule; baseball-only model; no market inputs',
-        forecast_kind=('preliminary_updated_pregame' if preliminary_update else 'preliminary_pregame' if preliminary else 'revised_pregame' if revision else 'original_pregame'),
+        forecast_kind=('lineup_confirmed_pregame' if lineup_update else 'preliminary_updated_pregame' if preliminary_update else 'preliminary_pregame' if preliminary else 'revised_pregame' if revision else 'original_pregame'),
         original_forecast_created_utc=(early_record.get('forecast_created_utc') if preliminary_update else prior_record.get('forecast_created_utc') if revision else None),
-        revision_reason=('One-time V13 model recalibration of frozen preliminary; original retained' if preliminary_update else 'Updated verified pitcher history and newer training inputs; original remains immutable' if revision else None),
+        revision_reason=('One-time genuinely confirmed nine-player lineups; earlier previews retained'
+            if lineup_update else 'One-time V13 model recalibration of frozen preliminary; original retained'
+            if preliminary_update else 'Updated verified pitcher history and newer training inputs; original remains immutable'
+            if revision else None),
         data_quality='LIMITED' if status['data_gaps'] else 'FEATURES AVAILABLE')
     # A second deadline check covers formatting and payload preparation time.
     final_check=now+timedelta(seconds=max(0.,monotonic()-computation_start))
     if final_check>=start:
         raise RuntimeError('Forecast record would be persisted after first pitch; refusing')
-    if (preliminary or preliminary_update) and not can_preliminary(game,final_check):
+    if (preliminary or preliminary_update or lineup_update) and not can_preliminary(game,final_check):
         raise RuntimeError('Preliminary calculation crossed the early forecast cutoff; refusing')
     rec['forecast_created_utc']=final_check.isoformat()
     rec['minutes_before_game']=round((start-final_check).total_seconds()/60,1)
-    if preliminary or preliminary_update:
+    if preliminary or preliminary_update or lineup_update:
         # Exclusive create. A second runner cannot silently replace a preview.
         target.parent.mkdir(parents=True,exist_ok=True)
         try:
@@ -313,7 +351,7 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
     else:
         encode_json(target,rec)
     shadow_status={'status':'not_requested'}
-    if shadows_enabled and not revision and not preliminary and not preliminary_update:
+    if shadows_enabled and not revision and not preliminary and not preliminary_update and not lineup_update:
         # The primary prediction is ALREADY committed to its frozen JSON.
         # Failure of an experimental challenger can never erase or rewrite it.
         try:
@@ -321,7 +359,7 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
                 prior,clean,prior_assets,snapshot=snap,clock=monotonic,n=N_SIMULATIONS)
         except Exception as exc:
             shadow_status={'status':'error','message':str(exc)[:160]}
-    return {'status':('preliminary_updated_saved' if preliminary_update else 'preliminary_saved' if preliminary else 'revised_pregame_saved' if revision else 'saved'),'game_id':id_,
+    return {'status':('lineup_confirmed_saved' if lineup_update else 'preliminary_updated_saved' if preliminary_update else 'preliminary_saved' if preliminary else 'revised_pregame_saved' if revision else 'saved'),'game_id':id_,
             'away':rec['away'],'home':rec['home'],
             'minutes_before_game':rec['minutes_before_game'],
             'shadow_research':shadow_status}
@@ -440,6 +478,42 @@ def render_site(root,now,summary):
             preliminary_records.append(upd)
         except (OSError,KeyError,ValueError,TypeError):
             continue
+    for file in sorted((root/'cloud_records'/'lineup_previews').glob('*.json')):
+        try:
+            lineup_record=read_json(file)
+            ident=str(lineup_record.get('game_id'))
+            if (lineup_record.get('forecast_kind')!='lineup_confirmed_pregame'
+                    or not file.name.startswith(ident+'_')):
+                continue
+            from cloud.v8_evaluate import valid_original,timestamp
+            early=next((e for e in preliminary_records
+                        if str(e.get('game_id'))==ident
+                        and e.get('forecast_kind')=='preliminary_pregame'),None)
+            if not early or not valid_original(lineup_record):
+                continue
+            if any(str(lineup_record.get(k))!=str(early.get(k))
+                   for k in ('game_id','date','home','away','game_start_utc')):
+                continue
+            if timestamp(lineup_record['forecast_created_utc'])<=timestamp(early['forecast_created_utc']):
+                continue
+            evidence=lineup_record.get('lineup_evidence') or {}
+            if any(len(evidence.get('confirmed_lineups',{}).get(side,[]))!=9
+                   for side in ('home','away')):
+                continue
+            matched=by_id.get(ident)
+            if matched and matched.get('official_final'):
+                lineup_record['official_final']=matched['official_final']
+            previous=next((e for e in reversed(preliminary_records)
+                if str(e.get('game_id'))==ident),early)
+            lineup_record['preliminary_comparison']={
+                'score':previous.get('projected_score'),
+                'expected_runs':previous.get('expected_runs'),
+                'predicted_home_win':previous.get('predicted_home_win'),
+                'model_version':previous.get('model_version'),
+                'forecast_created_utc':previous.get('forecast_created_utc')}
+            preliminary_records.append(lineup_record)
+        except (OSError,TypeError,ValueError,KeyError):
+            continue
     revisions=[]
     for f in (STATE/'revisions').glob('*.json'):
         try:
@@ -459,7 +533,7 @@ def render_site(root,now,summary):
     entries=originals+revisions+preliminary_records
     # Within each matchup always show the final/explicit revision ahead of
     # the preliminary, while allowing both snapshots in the selector.
-    priority={'preliminary_pregame':0,'preliminary_updated_pregame':1,'original_pregame':2,'revised_pregame':3}
+    priority={'preliminary_pregame':0,'preliminary_updated_pregame':1,'lineup_confirmed_pregame':2,'original_pregame':3,'revised_pregame':4}
     entries.sort(key=lambda r:(r.get('game_start_utc',''),
                    priority.get(r.get('forecast_kind'),1),
                    r.get('forecast_created_utc','')),reverse=True)
@@ -544,6 +618,11 @@ def run(root=ROOT,now=None,network=True,fast=False):
         seen_ids.add(gid)
         original=STATE/'predictions'/f'{gid}.json'
         preview=STATE/'preliminary'/f'{gid}.json'
+        has_lineup_update=any((STATE/'lineup_previews').glob(f'{gid}_*.json'))
+        wants_lineup_update=(not original.exists() and preview.exists()
+            and not has_lineup_update
+            and lineup_refresh_requested(root,match,read_json(preview))
+            and can_preliminary(match,now))
         has_preliminary_update=any((STATE/'preliminary_revisions').glob(f'{gid}_*.json'))
         wants_preliminary_update=(not original.exists() and preview.exists()
             and not has_preliminary_update
@@ -560,6 +639,8 @@ def run(root=ROOT,now=None,network=True,fast=False):
             upcoming.append({**match,'_preliminary':True})
         elif wants_preliminary_update:
             upcoming.append({**match,'_preliminary_update':True})
+        elif wants_lineup_update:
+            upcoming.append({**match,'_lineup_update':True})
     # Run targeted official starter-history import *before* building model assets;
     # otherwise pitcher statistics added during this run would be invisible to
     # the current forecast. Strict previous-day cutoff applies to all imports.
@@ -585,9 +666,10 @@ def run(root=ROOT,now=None,network=True,fast=False):
                 match,utcnow() if network else now,games,root,assets,
                 starter_backfill=backfills.get(str(match['id'])),
                 revision=bool(match.get('_revision')),
-                shadows_enabled=not bool(match.get('_preliminary') or match.get('_preliminary_update')),
+                shadows_enabled=not bool(match.get('_preliminary') or match.get('_preliminary_update') or match.get('_lineup_update')),
                 preliminary=bool(match.get('_preliminary')),
-                preliminary_update=bool(match.get('_preliminary_update'))))
+                preliminary_update=bool(match.get('_preliminary_update')),
+                lineup_update=bool(match.get('_lineup_update'))))
         except Exception as exc:
             summary['events'].append({'status':'forecast_failed','game_id':match['id'],
                                       'error':str(exc)[:180]})
