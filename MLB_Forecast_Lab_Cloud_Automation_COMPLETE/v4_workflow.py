@@ -37,7 +37,8 @@ def generate(games,root,day,match,assets=None,n=30000,
     official_snapshot=None,park_enabled=False,park_override=None,
     temperature=None,wind_mph=None,wind_direction='neutral',roof_closed=False,
     postseason_context_enabled=True,include_2026_snapshot=True,
-    starter_correction_override=None,official_lineup_history=None):
+    starter_correction_override=None,official_lineup_history=None,
+    exploratory_overlay_enabled=True):
     root=Path(root);data=root/'data';assets=assets or build_assets(games,root)
     home,away=match['home'],match['away']
     home_sp=match.get('home_pitcher_id') or ''
@@ -124,9 +125,12 @@ def generate(games,root,day,match,assets=None,n=30000,
       home_bullpen=personnel['home']['bullpen'],away_bullpen=personnel['away']['bullpen'],
       home_manager_hook=float(base['away_features']['opp_manager_hook']),
       away_manager_hook=float(base['home_features']['opp_manager_hook']),
-      home_lineup=personnel['home']['lineup_adjustment']['factor']*bullpen_context['home'],
-      away_lineup=personnel['away']['lineup_adjustment']['factor']*bullpen_context['away'],
-      park_factor=park['factor'],weather_factor=w['factor'],
+      home_lineup=(personnel['home']['lineup_adjustment']['factor']*bullpen_context['home']
+                    if exploratory_overlay_enabled else 1.),
+      away_lineup=(personnel['away']['lineup_adjustment']['factor']*bullpen_context['away']
+                    if exploratory_overlay_enabled else 1.),
+      park_factor=park['factor'] if exploratory_overlay_enabled else 1.,
+      weather_factor=w['factor'] if exploratory_overlay_enabled else 1.,
       postseason=str(match.get('game_type','R'))!='R')
     draws=play_games(**params)
     forecast=summarize(draws)
@@ -146,6 +150,7 @@ def generate(games,root,day,match,assets=None,n=30000,
       baseline={'elo_home_win':base['elo_home'],
        'run_model_home_regulation':base['home_mu'],'run_model_away_regulation':base['away_mu']},
       adjustments={'park':park,'weather':w,'relief_rate_multiplier':bullpen_context,
+         'exploratory_overlay_enabled':bool(exploratory_overlay_enabled),
         'postseason_scoring':post_context,
         'starter_total_rate':{'calibration_status':('2024-selected experimental' if pitch_cal else 'not calibrated'),
           'weight':pitch_weight,'audit':pitcher_audit}},
