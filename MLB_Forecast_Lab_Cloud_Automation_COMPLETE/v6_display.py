@@ -9,7 +9,7 @@ import math
 def display_forecast(prediction: dict, away: str, home: str, total_line: float):
     """Return one internally consistent score, total, and probabilities.
 
-    'Scoreline total' is the chosen scoreline's sum (integer), NOT the mean
+    'Scoreline total' is the modal winner-consistent scoreline sum, NOT the mean
     of the simulation's total distribution. Show the mean only in methodology.
     """
     from v6_baseball_totals import probabilities_for_line
