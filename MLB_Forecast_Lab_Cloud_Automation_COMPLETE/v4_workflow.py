@@ -36,7 +36,8 @@ def build_assets(games,root):
 def generate(games,root,day,match,assets=None,n=30000,
     official_snapshot=None,park_enabled=False,park_override=None,
     temperature=None,wind_mph=None,wind_direction='neutral',roof_closed=False,
-    postseason_context_enabled=True,include_2026_snapshot=True):
+    postseason_context_enabled=True,include_2026_snapshot=True,
+    starter_correction_override=None):
     root=Path(root);data=root/'data';assets=assets or build_assets(games,root)
     home,away=match['home'],match['away']
     home_sp=match.get('home_pitcher_id') or ''
@@ -81,6 +82,11 @@ def generate(games,root,day,match,assets=None,n=30000,
     # counterfactual, avoiding blindly applying the same ERA twice.
     pitch_cal=read_calibration(root/'outputs'/'v62_pitcher_calibration.json')
     pitch_weight=float(pitch_cal['selected_weight']) if pitch_cal else 0.
+    if starter_correction_override is not None:
+        override=float(starter_correction_override)
+        if not 0<=override<=1:
+            raise ValueError('Starter correction override must lie between zero and one')
+        pitch_weight=override
     revised_home,revised_away,pitcher_audit=apply_to_base(base,assets['fit'],pitch_weight)
     # V6.3: League-wide postseason run context for totals. The snapshot gate
     # must use the selected game's PRE-first-pitch DATE, never current time.
@@ -116,6 +122,8 @@ def generate(games,root,day,match,assets=None,n=30000,
         if len(personnel[side]['lineup'])!=9:gaps.append(f'{side} batting order not confirmed before first pitch')
         if not (official_snapshot or {}).get('bullpen_ids',{}).get(side):gaps.append(f'{side} active bullpen roster not confirmed')
     if pitch_cal is None:gaps.append('Starter-run correction not yet calibrated: run py v62_calibrate.py')
+    elif pitch_weight==0 and starter_correction_override is not None:
+        gaps.append('Research shadow run: optional additional starter correction intentionally disabled')
     elif pitch_weight==0:gaps.append('Starter-run correction weight is 0: 2024 validation found no improvement')
     elif not any(x['starter_applied'] for x in pitcher_audit.values()):
         gaps.append('Starter-run correction inactive: no verified prior-starter sample included')
