@@ -146,6 +146,19 @@ class TwoStageTests(unittest.TestCase):
                 self.assertEqual(view['model_health']['coverage']['original_forecasts'],0)
                 self.assertEqual(view['two_stage_comparison']['preliminary_without_final_count'],1)
 
+    def test_early_lookup_failure_cannot_suppress_final_game_window(self):
+        with tempfile.TemporaryDirectory() as directory:
+            counter=[0]
+            def sometimes_fails(day):
+                counter[0]+=1
+                if counter[0]==3:
+                    raise OSError('independent early schedule unavailable')
+                return {'dates':[{'date':DAY,'games':[raw_game()]}]}
+            decision=should_run(FINAL,root=directory,fetcher=sometimes_fails)
+            self.assertTrue(decision['run'])
+            self.assertEqual(decision['reason'],'pregame window')
+            self.assertEqual(decision['approaching_games'][0]['id'],'20261014')
+
     def test_changed_game_status_or_timing_does_not_create_early(self):
         g=match()
         self.assertFalse(eligible_preliminary(g['id'],DAY,START.isoformat(),'L',
