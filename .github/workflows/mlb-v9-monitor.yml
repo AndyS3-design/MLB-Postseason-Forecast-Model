@@ -1,0 +1,64 @@
+name: V9 CI — Prospective Capture Monitor
+on:
+  push:
+    branches: ['feature/v9-prospective-monitor']
+    paths:
+      - '.github/workflows/mlb-v9-monitor.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v9_tracking.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v9_tracking.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Install model dependencies
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Test game coverage, timing and all forecasting safeguards
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v9_tracking cloud.test_v8_challengers cloud.test_forecast_finish_time cloud.test_v8_cache cloud.test_v8_evaluate cloud.test_v8_bullpen cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
+      - name: Verify actual repository coverage report
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from cloud.v9_tracking import summarize
+          root=Path.cwd()
+          report=summarize(root,'2026-10-14')
+          assert report['completed_imported_games']==0, report
+          assert report['capture_fraction'] is None
+          assert report['status']=='waiting_for_completed_games'
+          print('REAL DATA COVERAGE',report['status'],'n=',report['completed_imported_games'])
+          PY
+      - name: Render live-equivalent static dashboard
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python -m cloud.worker render
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path.cwd()
+          s=json.loads((root/'site/data.json').read_text())
+          assert 'prospective_capture' in s
+          assert s['prospective_capture']['tracking_start_date']=='2026-10-14'
+          assert s['predictions'], 'Expected existing original+revised game records'
+          print('RENDERED',len(s['predictions']),'forecast versions and capture audit')
+          PY
+      - name: Check browser script syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html').read_text()
+          Path('/tmp/mlb_v9.js').write_text(s.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/mlb_v9.js
