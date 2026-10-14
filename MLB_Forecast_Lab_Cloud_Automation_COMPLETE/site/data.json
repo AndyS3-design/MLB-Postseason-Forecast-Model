@@ -22,6 +22,26 @@
       "GitHub schedules are best effort; 20-minute target is not guaranteed."
     ]
   },
+  "official_schedule_audit": {
+    "as_of_exclusive_et_date": "2026-10-13",
+    "completed_games_imported": 0,
+    "identity_or_score_conflicts": [],
+    "import_coverage_fraction": null,
+    "invalid_originals": [],
+    "missing_imports": [],
+    "missing_originals": [],
+    "notes": "Rolling operational audit, not a historical replay or proof of forecast accuracy.",
+    "official_capture_fraction": null,
+    "official_completed_games": 0,
+    "official_finals_missing_scores": [],
+    "official_games_with_valid_original": 0,
+    "official_games_without_valid_original": 0,
+    "source": "Independent official MLB schedule (not imported CSVs)",
+    "status": "not_started",
+    "tracking_start_date": "2026-10-14",
+    "window_days": 7,
+    "window_start_date": "2026-10-14"
+  },
   "operations": {
     "events": [],
     "historical_game_logs": {
@@ -38,6 +58,7 @@
       "unavailable": {}
     },
     "new_settlements": 0,
+    "official_schedule_audit_status": "not_started",
     "pitching_import_status": {
       "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
       "calibration": "done",
@@ -52,7 +73,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2458,
-    "run_started_utc": "2026-10-14T00:55:36.650299+00:00",
+    "run_started_utc": "2026-10-14T01:38:32.786868+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -691,5 +712,5 @@
     "status": "Awaiting prospective results"
   },
   "shadow_comparisons": {},
-  "updated_utc": "2026-10-14T00:55:36.650299+00:00"
+  "updated_utc": "2026-10-14T01:38:32.786868+00:00"
 }

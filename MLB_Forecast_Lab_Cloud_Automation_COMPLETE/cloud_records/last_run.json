@@ -15,6 +15,7 @@
   },
   "known_pre_game_records": 2,
   "new_settlements": 0,
+  "official_schedule_audit_status": "not_started",
   "pitching_import_status": {
     "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
     "calibration": "done",
@@ -29,6 +30,6 @@
     "status": "ok"
   },
   "refreshed_finished_games": 2458,
-  "run_started_utc": "2026-10-14T00:55:36.650299+00:00",
+  "run_started_utc": "2026-10-14T01:38:32.786868+00:00",
   "status": "finished"
 }
