@@ -242,6 +242,8 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
     result=generate(prior,root,day,clean,assets=prior_assets,n=N_SIMULATIONS,
                     official_snapshot=snap,postseason_context_enabled=True,
                     include_2026_snapshot=True)
+    if preliminary_update and result['model_version']!=VERSION:
+        raise RuntimeError('One-time update returned unexpected model version')
     f=result['forecast'];score=display_forecast(f,game['away'],game['home'],6.5)
     indices=team_indices(games,day,game['away'],game['home'],data_dir=root/'data')
     start=datetime.fromisoformat(game['start_utc'].replace('Z','+00:00'))
