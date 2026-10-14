@@ -790,6 +790,30 @@
     }
   ],
   "selected_candidate": {
+    "prior_equivalent_games": 80,
+    "strength": 1.2,
+    "n": 171,
+    "pooled_mae": 3.2274143761596523,
+    "by_year": {
+      "2022": {
+        "n": 40,
+        "mae": 3.2827290049472237
+      },
+      "2023": {
+        "n": 41,
+        "mae": 3.162193754454758
+      },
+      "2024": {
+        "n": 43,
+        "mae": 3.188043090472376
+      },
+      "2025": {
+        "n": 47,
+        "mae": 3.273253219201156
+      }
+    }
+  },
+  "best_aggregate_candidate": {
     "prior_equivalent_games": 1000000000,
     "strength": 1.2,
     "n": 171,
@@ -813,14 +837,15 @@
       }
     }
   },
+  "adaptive_selection_rule": "Prefer largest finite prior-equivalent smoothing among candidates within 0.003 total-run MAE/game of the best 2022-25 alternative; never use 2026 to choose",
   "2026_diagnostics_not_selection": [
     {
-      "prior_equivalent_games": 1000000000,
+      "prior_equivalent_games": 80,
       "strength": 1.2,
       "n": 29,
-      "pooled_mae": 2.6191179373451066,
-      "mean_factor": 0.9008374170471065,
-      "next_factor": 0.900837413932525
+      "pooled_mae": 2.556535606658509,
+      "mean_factor": 0.8821049880727295,
+      "next_factor": 0.8548647292984038
     },
     {
       "prior_equivalent_games": 1000000000,

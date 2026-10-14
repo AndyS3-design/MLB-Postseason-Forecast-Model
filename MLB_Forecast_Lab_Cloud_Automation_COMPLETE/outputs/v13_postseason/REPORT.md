@@ -12,13 +12,13 @@ Research only; 2026 games are **not** an untouched holdout. See JSON for all gri
 | 2025 | 47 | 8.021 | 8.895 | 0.902 |
 | 2026 | 29 | 6.931 | 8.962 | 0.773 |
 
-Selected candidate on 2022–2025 game-level MAE with day-exclusive running data: {"prior_equivalent_games": 1000000000, "strength": 1.2, "n": 171, "pooled_mae": 3.2252335343046514}
+Selected candidate on 2022–2025 game-level MAE with day-exclusive running data: {"prior_equivalent_games": 80, "strength": 1.2, "n": 171, "pooled_mae": 3.2274143761596523}
 
 2026 retrospective diagnostics (never used for selection):
 
-| Candidate | Games | MAE per team-run | Mean factor | Next factor |
+| Candidate | Games | MAE combined runs | Mean factor | Next factor |
 |---|---:|---:|---:|---:|
-| strength=1.2, prior-equiv=1000000000 | 29 | 2.619 | 0.901 | 0.901 |
+| strength=1.2, prior-equiv=80 | 29 | 2.557 | 0.882 | 0.855 |
 | strength=0.8, prior-equiv=1000000000 | 29 | 2.752 | 0.934 | 0.934 |
 | strength=0.8, prior-equiv=20 | 29 | 2.641 | 0.903 | 0.866 |
 | strength=1.0, prior-equiv=30 | 29 | 2.577 | 0.886 | 0.847 |
