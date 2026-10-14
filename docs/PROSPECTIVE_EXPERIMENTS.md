@@ -61,3 +61,7 @@ See [operations](OPERATIONS.md), [model and data](MODEL_AND_DATA.md), and the [V
 ## Operational capture denominator
 
 From October 14, 2026 onward, the [V9 monitor](V9_PROSPECTIVE_MONITOR.md) independently reports which imported finished games did or did not have a valid original pregame forecast. This addresses **selection bias**: evaluating only games with predictions can hide games missed because of delayed GitHub runs. Capture rate is not forecast accuracy, but both should be disclosed when evaluating a deployed model.
+
+## V17 shadow: neutral contextual overlays
+
+New V17 final-original runs can also save `without_experimental_context` with identical official starter/lineup inputs and seed, but with additional **lineup, roster-bullpen, park and weather multipliers neutralized**. It is scored against the primary forecast only after the same game officially ends. Shadows run after the original and are skipped rather than saved late. A single game or 2026 retrospective tuning cannot justify changing the deployed multipliers. [Details](RELIABILITY_AND_VALIDATION_V17.md).
