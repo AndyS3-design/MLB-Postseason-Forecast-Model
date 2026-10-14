@@ -9,11 +9,14 @@ from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import json
-from cloud.v8_evaluate import valid_original, timestamp
 
 ET = ZoneInfo("America/New_York")
 EARLIEST_PREVIEW_HOUR_ET = 10
 MIN_PRELIMINARY_LEAD_MINUTES = 45
+
+
+def timestamp(value):
+    return datetime.fromisoformat(str(value).replace('Z', '+00:00'))
 PREVIEW_GAME_TYPES = {"R", "F", "D", "L", "W"}
 PREGAME_STATES = {"scheduled", "pre-game", "pregame", "preview", "warmup"}
 
@@ -62,6 +65,9 @@ def paired_stage_metrics(root):
     A preliminary without a final is still visible but is NEVER silently
     substituted into the original-prediction (official) accuracy denominator.
     """
+    # Keep the preflight schedule gate stdlib-only: evaluation dependencies
+    # such as numpy must not load until the heavy forecast worker starts.
+    from cloud.v8_evaluate import valid_original
     root = Path(root)
     previews = {}
     invalid = 0
