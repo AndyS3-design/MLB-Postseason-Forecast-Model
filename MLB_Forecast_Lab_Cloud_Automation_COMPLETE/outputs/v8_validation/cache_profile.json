@@ -1,0 +1,28 @@
+{
+  "training_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "same_predictions": true,
+  "first_build_seconds": 8.234,
+  "second_build_seconds": 6.233,
+  "first_fit_cache": {
+    "hit": false,
+    "sha256": "3c9b222adf3306df75675b8c30fd867c2ac9f4bc10b4814ec63c6dfdc9adb4d9",
+    "load_or_fit_seconds": 1.949
+  },
+  "second_fit_cache": {
+    "hit": true,
+    "sha256": "3c9b222adf3306df75675b8c30fd867c2ac9f4bc10b4814ec63c6dfdc9adb4d9",
+    "load_or_fit_seconds": 0.022
+  },
+  "note": "Full asset rebuild includes feature enrichment; cached fit does not cache 2026 dynamic features."
+}
