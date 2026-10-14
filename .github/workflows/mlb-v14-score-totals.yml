@@ -1,0 +1,45 @@
+name: V14 CI — Exact Scores and Run Totals
+on:
+  push:
+    branches: ['feature/v14-modal-score-total-lines']
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v14-score-totals.yml'
+      - '.github/workflows/mlb-cloud.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_simulation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v6_baseball_totals.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v6_display.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v13_score_presentation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v14_totals.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v14_site.cjs'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  distribution-and-dashboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Install runtime dependencies
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Run all model-integrity and new distribution regression tests
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v14_totals cloud.test_v13_score_presentation cloud.test_v13_preliminary_update cloud.test_v13_postseason_context cloud.test_v12_two_stage cloud.test_v11_daily cloud.test_v10_schedule_audit cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v8_challengers cloud.test_forecast_finish_time cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
+      - name: Test true-score mode and the four actual archived over-under lines in web JavaScript
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          node cloud/test_v14_site.cjs
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('site/index.html').read_text()
+          Path('/tmp/mlb_v14_browser.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/mlb_v14_browser.js
