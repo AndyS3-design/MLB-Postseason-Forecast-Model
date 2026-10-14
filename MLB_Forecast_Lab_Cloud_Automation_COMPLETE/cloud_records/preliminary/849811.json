@@ -1,0 +1,342 @@
+{
+  "away": "MIL",
+  "away_name": "Milwaukee Brewers",
+  "data_quality": "LIMITED",
+  "date": "2026-10-14",
+  "elo_home_win": 0.4768358405317413,
+  "expected_runs": {
+    "away": 4.1314166666666665,
+    "home": 3.6843333333333335,
+    "total": 7.81575
+  },
+  "features_cutoff_exclusive": "2026-10-14",
+  "forecast_created_utc": "2026-10-14T19:55:05.918681+00:00",
+  "forecast_kind": "preliminary_pregame",
+  "game_id": "849811",
+  "game_start_utc": "2026-10-15T00:00:00+00:00",
+  "game_type": "Postseason",
+  "health": {
+    "bullpen_workload": {
+      "away": {
+        "historical_relievers_observed": 12,
+        "note": "Exploratory fatigue proxies are not independently fitted scoring multipliers.",
+        "relievers_flagged_as_fatigued": 0,
+        "relievers_in_sample": 10,
+        "relievers_with_pitch_history": 10,
+        "roster_verified": true,
+        "source": "Official bullpen ID filtered; still a workload proxy",
+        "status": "official pregame roster subset",
+        "total_reported_pitches_last_3d": 125,
+        "use_in_forecast": false
+      },
+      "home": {
+        "historical_relievers_observed": 12,
+        "note": "Exploratory fatigue proxies are not independently fitted scoring multipliers.",
+        "relievers_flagged_as_fatigued": 0,
+        "relievers_in_sample": 9,
+        "relievers_with_pitch_history": 9,
+        "roster_verified": true,
+        "source": "Official bullpen ID filtered; still a workload proxy",
+        "status": "official pregame roster subset",
+        "total_reported_pitches_last_3d": 139,
+        "use_in_forecast": false
+      }
+    },
+    "data_gaps": [
+      "home batting order not confirmed before first pitch",
+      "away batting order not confirmed before first pitch"
+    ],
+    "frozen_model_cache": {
+      "hit": false,
+      "load_or_fit_seconds": 2.307,
+      "sha256": "3c9b222adf3306df75675b8c30fd867c2ac9f4bc10b4814ec63c6dfdc9adb4d9"
+    },
+    "lineups_confirmed": {
+      "away": false,
+      "home": false
+    },
+    "model_assets_build_seconds": 5.448,
+    "official_snapshot_collected": true,
+    "pitcher_calibrated": true,
+    "run_model_training_coverage": "10 seasons: 2016\u20132025",
+    "run_model_training_years": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "starter_backfill": {
+      "cutoff_exclusive": "2026-10-14",
+      "errors": [],
+      "new_boxscores": 12,
+      "sides": {
+        "away": {
+          "game_logs_found": 21,
+          "pitcher_id": "MLB-688107",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 3,
+          "source": "MLB official completed game boxscores",
+          "status": "verified starter history"
+        },
+        "home": {
+          "game_logs_found": 9,
+          "pitcher_id": "MLB-605483",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 2,
+          "source": "MLB official completed game boxscores",
+          "status": "verified starter history"
+        }
+      },
+      "source": "MLB official game logs + completed game boxscores",
+      "status": "complete"
+    },
+    "starter_pitcher_history": {
+      "away": 8,
+      "home": 8
+    }
+  },
+  "home": "LAN",
+  "home_name": "Los Angeles Dodgers",
+  "minutes_before_game": 244.9,
+  "model_commit": "e045e04255f7174126d88c66602d255dcfaf3f8d",
+  "model_training_cutoff": "2016,2017,2018,2019,2020,2021,2022,2023,2024,2025",
+  "model_version": "7.0.0-pregame-recency-weighted",
+  "original_forecast_created_utc": null,
+  "predicted_home_win": 0.46575,
+  "projected_score": {
+    "away": 5,
+    "exact_probability": 0.020666666666666667,
+    "home": 3,
+    "sum": 8
+  },
+  "revision_reason": null,
+  "scenario": {
+    "park_factor": 1.0,
+    "postseason_factor": 0.8897990819777741,
+    "starter_weight": 0.25,
+    "weather_factor": 1.0
+  },
+  "score_grid": {
+    "away_axis": "columns",
+    "cap": 10,
+    "cells": [
+      [
+        0.0,
+        0.009666666666666667,
+        0.01175,
+        0.009,
+        0.008,
+        0.006583333333333333,
+        0.003916666666666666,
+        0.0026666666666666666,
+        0.002416666666666667,
+        0.0009166666666666666,
+        0.0018333333333333333
+      ],
+      [
+        0.010833333333333334,
+        0.0,
+        0.0285,
+        0.023083333333333334,
+        0.01925,
+        0.015083333333333334,
+        0.011833333333333333,
+        0.007666666666666666,
+        0.003833333333333333,
+        0.00225,
+        0.004
+      ],
+      [
+        0.0105,
+        0.03275,
+        0.0,
+        0.04158333333333333,
+        0.025416666666666667,
+        0.019916666666666666,
+        0.014916666666666667,
+        0.009916666666666667,
+        0.005666666666666667,
+        0.004166666666666667,
+        0.00525
+      ],
+      [
+        0.008083333333333333,
+        0.02325,
+        0.04516666666666667,
+        0.0,
+        0.03716666666666667,
+        0.020666666666666667,
+        0.015,
+        0.00925,
+        0.005666666666666667,
+        0.003833333333333333,
+        0.00675
+      ],
+      [
+        0.006583333333333333,
+        0.0165,
+        0.023083333333333334,
+        0.043333333333333335,
+        0.0,
+        0.02575,
+        0.01275,
+        0.00925,
+        0.006583333333333333,
+        0.0033333333333333335,
+        0.006
+      ],
+      [
+        0.004666666666666667,
+        0.010666666666666666,
+        0.017,
+        0.0185,
+        0.029916666666666668,
+        0.0,
+        0.016416666666666666,
+        0.008,
+        0.003916666666666666,
+        0.0033333333333333335,
+        0.006583333333333333
+      ],
+      [
+        0.0028333333333333335,
+        0.005916666666666666,
+        0.008916666666666666,
+        0.010666666666666666,
+        0.0115,
+        0.016,
+        0.0,
+        0.008083333333333333,
+        0.004333333333333333,
+        0.002416666666666667,
+        0.0035
+      ],
+      [
+        0.0015,
+        0.0045,
+        0.006166666666666667,
+        0.006416666666666667,
+        0.007,
+        0.007083333333333333,
+        0.010416666666666666,
+        0.0,
+        0.003833333333333333,
+        0.00225,
+        0.00325
+      ],
+      [
+        0.00125,
+        0.002916666666666667,
+        0.0035833333333333333,
+        0.004416666666666667,
+        0.004083333333333333,
+        0.00425,
+        0.004333333333333333,
+        0.004083333333333333,
+        0.0,
+        0.0019166666666666666,
+        0.002
+      ],
+      [
+        0.0005833333333333334,
+        0.0014166666666666668,
+        0.0023333333333333335,
+        0.0025,
+        0.0025,
+        0.0015,
+        0.0015833333333333333,
+        0.0014166666666666668,
+        0.0023333333333333335,
+        0.0,
+        0.00225
+      ],
+      [
+        0.0004166666666666667,
+        0.0011666666666666668,
+        0.002916666666666667,
+        0.0025,
+        0.003416666666666667,
+        0.0020833333333333333,
+        0.002,
+        0.0014166666666666668,
+        0.0015,
+        0.0021666666666666666,
+        0.002416666666666667
+      ]
+    ],
+    "home_axis": "rows",
+    "samples": 12000
+  },
+  "source": "Official MLB pregame schedule; baseball-only model; no market inputs",
+  "starting_pitchers": {
+    "away": "Robert Gasser",
+    "home": "Blake Snell"
+  },
+  "team_indices": {
+    "LAN": {
+      "attack": 105,
+      "available": true,
+      "defense": 132,
+      "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+      "fielding_games": 0,
+      "games": 30,
+      "offense": 105,
+      "pitching": 130,
+      "pitching_games": 30,
+      "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+      "runs_allowed_per_game": 2.9,
+      "runs_scored_per_game": 4.73
+    },
+    "MIL": {
+      "attack": 119,
+      "available": true,
+      "defense": 114,
+      "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+      "fielding_games": 0,
+      "games": 30,
+      "offense": 119,
+      "pitching": 131,
+      "pitching_games": 30,
+      "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+      "runs_allowed_per_game": 3.67,
+      "runs_scored_per_game": 5.6
+    }
+  },
+  "total_distribution": {
+    "1": 0.0205,
+    "10": 0.05366666666666667,
+    "11": 0.06858333333333333,
+    "12": 0.03725,
+    "13": 0.038,
+    "14": 0.022416666666666668,
+    "15": 0.01925,
+    "16": 0.0115,
+    "17": 0.010666666666666666,
+    "18": 0.004416666666666667,
+    "19": 0.005833333333333334,
+    "2": 0.02225,
+    "20": 0.0025,
+    "21": 0.002,
+    "22": 0.0010833333333333333,
+    "23": 0.00125,
+    "24": 0.0005,
+    "25": 8.333333333333333e-05,
+    "26": 0.00016666666666666666,
+    "27": 0.00016666666666666666,
+    "3": 0.07833333333333334,
+    "30": 8.333333333333333e-05,
+    "4": 0.06091666666666667,
+    "5": 0.13375,
+    "6": 0.081,
+    "7": 0.13933333333333334,
+    "8": 0.07883333333333334,
+    "9": 0.10566666666666667
+  },
+  "under_6_5_probability": 0.39675
+}
