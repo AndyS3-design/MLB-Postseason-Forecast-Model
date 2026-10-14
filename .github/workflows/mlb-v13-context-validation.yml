@@ -13,6 +13,7 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v6_display.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v13_score_presentation.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_challengers.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v8_challengers.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/two_stage.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v12_two_stage.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
