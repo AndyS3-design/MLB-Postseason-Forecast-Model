@@ -137,7 +137,13 @@ def generate(games,root,day,match,assets=None,n=30000,
     gaps=[]
     for side in ('home','away'):
         if personnel[side]['starter']['known']<3:gaps.append(f'{side} starter fewer than three known previous starts')
-        if len(personnel[side]['lineup'])!=9:gaps.append(f'{side} batting order not confirmed before first pitch')
+        if len(personnel[side]['lineup'])!=9:
+            gaps.append(f'{side} batting order not confirmed before first pitch')
+        else:
+            missing_hands=sum(p.get('batting_hand') not in ('L','R','S')
+                              for p in personnel[side]['lineup'])
+            if missing_hands:
+                gaps.append(f'{side} batting handedness unavailable for {missing_hands} of 9 official starters')
         if not (official_snapshot or {}).get('bullpen_ids',{}).get(side):gaps.append(f'{side} active bullpen roster not confirmed')
     if pitch_cal is None:gaps.append('Starter-run correction not yet calibrated: run py v62_calibrate.py')
     elif pitch_weight==0 and starter_correction_override is not None:
