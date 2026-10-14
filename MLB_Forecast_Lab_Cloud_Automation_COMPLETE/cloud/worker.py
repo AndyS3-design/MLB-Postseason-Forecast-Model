@@ -19,6 +19,8 @@ from v6_strength import pregame_history_only,team_indices
 from v6_display import display_forecast
 from cloud.refresh import current_season_results,append_future_years,all_finals
 from cloud.starter_backfill import backfill_match_starters
+from cloud.v8_bullpen_health import matchup_workload
+from cloud.v8_evaluate import from_files as prospective_health_report
 
 ROOT=Path(__file__).resolve().parents[1]
 STATE=ROOT/'cloud_records'
@@ -197,7 +199,10 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
             'official_snapshot_collected':snap is not None,
             'starter_backfill':starter_backfill or {'status':'not performed'},
             'run_model_training_years':assets.get('training_years',[]),
-            'run_model_training_coverage':assets.get('coverage_note','not reported')}
+            'run_model_training_coverage':assets.get('coverage_note','not reported'),
+            'frozen_model_cache':assets.get('model_cache',{}),
+            'model_assets_build_seconds':assets.get('build_seconds'),
+            'bullpen_workload':matchup_workload(result['personnel'])}
     rec=dict(game_id=id_,date=day,game_type=g_type,home=game['home'],away=game['away'],
         home_name=game['home_name'],away_name=game['away_name'],
         starting_pitchers={'home':game.get('home_pitcher') or 'Not announced',
@@ -314,6 +319,7 @@ def render_site(root,now,summary):
         'local_timezone':'America/New_York',
         'predictions':entries[:350],
         'prospective_performance':prospective_metrics(originals),
+        'model_health':prospective_health_report(root),
         'operations':summary,
         'disclaimer':'Baseball-only research forecast. Past outcome never enters a pregame prediction. Unverified advanced inputs are marked missing.'}
     site=root/'site';site.mkdir(exist_ok=True,parents=True)
@@ -385,6 +391,8 @@ def run(root=ROOT,now=None,network=True,fast=False):
             if games is None:
                 games=new_games(root)
                 assets=build_assets(games,root)
+                summary['model_assets_build_seconds']=assets.get('build_seconds')
+                summary['frozen_model_cache']=assets.get('model_cache')
             summary['events'].append(store_pregame(
                 match,utcnow() if network else now,games,root,assets,
                 starter_backfill=backfills.get(str(match['id'])),
