@@ -59,3 +59,7 @@ This establishes a **data coverage and forecasting pipeline demonstration**, not
 ## Reporting rules
 
 Do not claim any profitable strategy, production-grade reliability guarantee, fixed winner accuracy, demonstrated model superiority or scientifically established causal effect until the relevant independent data and method support it. Label exploratory backtests as exploratory; document model changes that follow viewing results; compare like-for-like samples and avoid selecting only games that fit a preferred narrative.
+
+## Verified V8 findings (October 13, 2026)
+
+The [full V8 report](V8_RESULTS.md) contains a 28-game retrospective 2026 postseason replay and four years of chronological regular-season research results, with source CSV/JSON artifacts. **These are not independently untouched prospective test sets.** The model did not beat all baselines on playoff run errors or probability Brier scores. Do not select new scoring multipliers on those 28 games and then claim their in-sample improvement demonstrates model reliability.

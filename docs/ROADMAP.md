@@ -37,3 +37,15 @@ Example: the October 13, 2026 Cleveland–Tampa Bay revised pregame record repor
 ## Change-management rule
 
 Any algorithm change prompted by observing a game's outcome should be logged as development and evaluated on later, untouched games. Preserve the original saved forecast as the baseline for primary prospective scoring.
+
+## V8 completed research and infrastructure
+
+- [x] Replayed 28 completed 2026 postseason games with strict earlier-date feature cutoffs; report and game CSV saved.
+- [x] Compared model vs Elo and prior-season playoff baselines; scoring overprediction identified.
+- [x] Ran 2022–2025 regular-season chronological run-model evaluation and feature ablations.
+- [x] Added content-addressed cache for frozen historical Poisson fit, preserving matchup-specific feature refresh.
+- [x] Added prospective model-health/coverage reporting and pregame bullpen workload shadow metrics.
+- [ ] Build a new postseason-run adjustment only if calibrated on *separate earlier seasons* and tested prospectively.
+- [ ] Gather a substantial untouched cohort of live original forecasts; evaluate calibration and uncertainty.
+
+See [V8 measured evidence](V8_RESULTS.md).

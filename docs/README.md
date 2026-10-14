@@ -6,6 +6,7 @@ These are the **maintained** documents for the baseball-only GitHub Actions + Gi
 |---|---|
 | [Architecture](ARCHITECTURE.md) | Data flow, worker, simulation, immutable records and static dashboard |
 | [Model and data](MODEL_AND_DATA.md) | Historical inputs, training, pitching, probabilities and data provenance |
+| [V8 measured evidence](V8_RESULTS.md) | Complete 2026 playoff replay, multi-year run-model validation and cache benchmark |
 | [Validation](VALIDATION.md) | Leakage prevention, holdouts, uncertainty and honest performance claims |
 | [Operations](OPERATIONS.md) | How to run, deploy, debug and safely recover the hosted workflow |
 | [Roadmap](ROADMAP.md) | Verified current scope, remaining issues and technical priorities |

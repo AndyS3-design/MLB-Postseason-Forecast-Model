@@ -63,6 +63,12 @@ See [deployment and operations](docs/OPERATIONS.md) for the complete GitHub setu
 
 Start with the [documentation index](docs/README.md); recommended reading: [architecture](docs/ARCHITECTURE.md), [model and data](docs/MODEL_AND_DATA.md), [validation](docs/VALIDATION.md), [operations](docs/OPERATIONS.md), [project status and roadmap](docs/ROADMAP.md), and [resume/portfolio guide](docs/PORTFOLIO.md).
 
+## Evidence and accuracy status
+
+The [V8 measured-results report](docs/V8_RESULTS.md) documents the complete **28-game 2026 postseason retrospective replay** (64.3% winners correct, but a total-run MAE of 2.713 and worse run-error metrics than a simple historical playoff-average baseline) and a **2022–2025 chronological test** on 19,404 team-game observations. These are exploratory studies, **not** evidence of guaranteed or independently verified live accuracy.
+
+The current dashboard includes **prospective-only accuracy and data-quality tracking**. New pitcher and bullpen research diagnostics do not automatically alter forecast probabilities.
+
 ## Data credit and limitations
 
 Historical baseball information was obtained free of charge from, and is copyrighted by, **Retrosheet**. See [Retrosheet](https://www.retrosheet.org/) for information and attribution. Current schedules, game results and boxscores are obtained from official MLB data endpoints. Coverage and availability can change.
