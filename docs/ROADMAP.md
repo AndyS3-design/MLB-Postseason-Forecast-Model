@@ -75,3 +75,13 @@ Methodology: [Prospective experiments](PROSPECTIVE_EXPERIMENTS.md).
 - [ ] Confirm GitHub Actions tests on the V10 pull request and subsequent deployed full maintenance audit; continue collecting untouched prospective games.
 
 Details: [V10 independent MLB schedule audit](OFFICIAL_SCHEDULE_AUDIT.md).
+
+## V12 two-stage game-day publication
+
+- [x] Gate an early preliminary prediction from 10 AM Eastern on game day, only when at least 45 minutes remain before first pitch.
+- [x] Keep the late final forecast in the original locked JSON and preserve preliminary separately without overwrites or backdating.
+- [x] Show both stages and preliminary-vs-final score changes on the dashboard; restrict primary Brier, MAE and Elo metrics to final originals.
+- [x] Add prospective paired evaluation and scheduling/immutability regression tests.
+- [ ] Verify CI and the first live two-stage prediction pair; future two-stage capture depends on GitHub Actions schedule reliability.
+
+Method and limitations: [two-stage forecasts](TWO_STAGE_FORECASTS.md).
