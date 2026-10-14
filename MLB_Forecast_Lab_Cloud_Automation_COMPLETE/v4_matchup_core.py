@@ -18,7 +18,7 @@ from sklearn.linear_model import PoissonRegressor
 from matchup_model import Team, Starter, Manager, as_date, safe_float, loaded_details, enrich_games
 from forecast_engine import historical_snapshot, elo_probability
 
-VERSION='7.0.0-pregame-recency-weighted'
+VERSION='13.0.0-recent-postseason-scoring'
 FEATURES=['is_home','own_rpg15','own_rpg40','own_obp15','own_iso15','own_platoon_rpg','own_platoon_n',
     'opp_ra15','opp_bp_era','opp_bp_outs3','opp_bp_known3','opp_bp_used3',
     'opp_sp_era','opp_sp_kbb','opp_sp_innings','opp_sp_known','opp_sp_rest','own_rest',
