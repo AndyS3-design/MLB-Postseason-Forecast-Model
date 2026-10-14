@@ -21,7 +21,7 @@ This uses **all 261 official 2020–2025 postseason game finals**. It deliberate
 | 0.15 | 2.751574 | **0.234284** |
 | 0.20 (2021–22 selected) | 2.768941 | 0.235047 |
 | 0.30 | 2.818427 | 0.237953 |
-| 0.40 | 2.873409 | 0.240+ |
+| 0.40 | 2.873409 | 0.241641 |
 
 The early-year criterion selected **0.20**, but among later-year observations **0.10** had lower total-run log loss. The benchmark's postseason actual mean was **8.2061**, vs its forecast mean **8.2751**; average absolute total error was **3.20922** across all compared alpha settings, because adjusting dispersion does not change the expected total.
 
