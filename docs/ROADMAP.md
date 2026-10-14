@@ -66,3 +66,12 @@ Methodology: [Prospective experiments](PROSPECTIVE_EXPERIMENTS.md).
 - [x] Show capture rate and missed-game explanations on the public dashboard.
 - [x] Add independent GitHub Actions health job for approaching-game IDs without a saved, timely original prediction.
 - [ ] Accumulate enough future imported completed games to estimate model accuracy and operational capture reliability; do not advertise success with zero or tiny samples.
+
+## V10 official schedule reconciliation (implementation on GitHub branch)
+
+- [x] Implement a separate rolling seven-day official final-game denominator, distinct from imported-only V9 coverage.
+- [x] Detect games with missing result imports, absent/late original forecasts and score/date mismatches without fabricating late predictions.
+- [x] Wire daily maintenance audit and public dashboard status, with explicit stale/unavailable status and automated mock-schedule regression tests.
+- [ ] Confirm GitHub Actions tests on the V10 pull request and subsequent deployed full maintenance audit; continue collecting untouched prospective games.
+
+Details: [V10 independent MLB schedule audit](OFFICIAL_SCHEDULE_AUDIT.md).

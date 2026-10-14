@@ -63,3 +63,7 @@ Do not claim any profitable strategy, production-grade reliability guarantee, fi
 ## Verified V8 findings (October 13, 2026)
 
 The [full V8 report](V8_RESULTS.md) contains a 28-game retrospective 2026 postseason replay and four years of chronological regular-season research results, with source CSV/JSON artifacts. **These are not independently untouched prospective test sets.** The model did not beat all baselines on playoff run errors or probability Brier scores. Do not select new scoring multipliers on those 28 games and then claim their in-sample improvement demonstrates model reliability.
+
+## Independent official schedule integrity (V10)
+
+A separate rolling official MLB final-game schedule audit now cross-checks local imported results and original forecasts for the prior seven calendar days. It can detect the failure mode where a missing result import makes the imported-only V9 capture rate look too favorable. It is not a substitute for checking longer-term API completeness or pregame starter-source provenance. See [official schedule audit](OFFICIAL_SCHEDULE_AUDIT.md).

@@ -38,6 +38,34 @@ function renderCaptureMonitor(c){
    ${(c.identity_or_result_conflicts||[]).length?`<div class="alert">Data-integrity warning: ${esc(c.identity_or_result_conflicts.length)} imported game(s) have inconsistent identity or settled scores. Review GitHub records.</div>`:''}
    ${n===0?'<div class="prose">There are no new imported completed games in this monitoring window yet. This is not a 100% capture rate.</div>':''}`;
 }
+function renderOfficialScheduleAudit(a){
+  a=a||{status:'not_yet_run'};
+  const valid=['reconciled','needs_attention','no_official_finals_in_window'].includes(a.status);
+  const div=document.createElement('div');
+  div.className='prose';
+  div.style.marginTop='18px';
+  div.style.paddingTop='15px';
+  div.style.borderTop='1px solid var(--line)';
+  if(valid){
+    const captured=a.official_capture_fraction==null?'Not measurable':pct(a.official_capture_fraction);
+    const imported=a.import_coverage_fraction==null?'Not measurable':pct(a.import_coverage_fraction);
+    div.textContent='Independent MLB schedule check ('+(a.window_start_date||'?')+' through the day before '+(a.as_of_exclusive_et_date||'?')+'): '+(a.official_completed_games||0)+' official finals; '+(a.official_games_with_valid_original||0)+' originals captured ('+captured+'); '+(a.completed_games_imported||0)+' finals imported ('+imported+'). Seven-day operational coverage, not model accuracy.';
+    $('capture-monitor').appendChild(div);
+    if(a.status==='needs_attention'){
+      const alert=document.createElement('div');
+      alert.className='alert';
+      alert.textContent='Official schedule discrepancies: '+(a.missing_import_count||0)+' missing imports; '+(a.missing_original_count||0)+' missing original forecasts; '+(a.invalid_original_count||0)+' invalid originals; '+(a.score_conflict_count||0)+' score conflicts; '+(a.official_finals_missing_scores_count||0)+' incomplete official final scores. Review the machine-readable audit.';
+      $('capture-monitor').appendChild(alert);
+    }
+  }else{
+    if(a.status==='not_started')div.textContent='Independent schedule audit begins October 14, 2026.';
+    else if(a.status==='not_yet_run')div.textContent='Independent official schedule audit has not run yet.';
+    else if(a.status==='stale')div.textContent='Independent official schedule audit is stale (last checked for '+(a.as_of_exclusive_et_date||'unknown')+').';
+    else div.textContent='Independent official schedule audit unavailable ('+(a.status||'unknown')+'). The imported-only capture rate cannot detect a missing results import.';
+    if(!['not_started','not_yet_run'].includes(a.status))div.className='alert';
+    $('capture-monitor').appendChild(div);
+  }
+}
 function renderModelHealth(h,comparisons={}){
   const c=h?.coverage||{},p=h?.performance||{};
   const f=v=>v===null||v===undefined?'—':pct(v);
@@ -72,6 +100,6 @@ $('forecast').innerHTML=`<div class="card"><div class="score-head"><span>${esc(g
 <div class="card"><h3 style="margin:0">Total run chances</h3><div class="row" style="margin-top:15px"><span>0–6 combined runs</span><strong>${pct(g.under_6_5_probability)}</strong></div><div class="prob-bar"><div style="width:${Math.max(0,Math.min(100,g.under_6_5_probability*100))}%"></div></div><div class="row"><span>7 or more runs</span><strong>${pct(1-g.under_6_5_probability)}</strong></div></div></div>
 <div class="card"><div class="row"><h3 style="margin:0">Model audit</h3><span class="status">${esc(g.data_quality)}</span></div><div class="prose">Locked ${esc(new Date(g.forecast_created_utc).toLocaleString())} · ${esc(g.minutes_before_game)} minutes before scheduled start · version ${esc(g.model_version)}. Features exclude all games on and after ${esc(g.features_cutoff_exclusive)}.</div><details><summary>Show pitcher adjustments, data quality and limitations</summary><div class="prose">2024-selected additional pitcher weight: ${num(g.scenario.starter_weight)} · Postseason scoring adjustment: ${num(g.scenario.postseason_factor)}× · Official lineup evidence: ${g.health.official_snapshot_collected?'Available':'Unavailable'} · Starter historical starts: ${esc(JSON.stringify(g.health.starter_pitcher_history))}.${backfillDetail}<p>Run-model historical training: ${esc(g.health.run_model_training_coverage||'Not yet reported')}. Older seasons are weighted less heavily; missing historical files are never treated as present.</p>${bullpenDetail}${cacheDetail}${shadowDetail}<p>Ratings index 100 means league-average; the fielding-errors proxy is not a complete defensive metric. A more detailed model does not guarantee better predictions.</p></div></details></div>`;
 }
-async function start(){try{const r=await fetch('./data.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();renderCaptureMonitor(d.prospective_capture);renderModelHealth(d.model_health,d.shadow_comparisons);predictions=d.predictions||[];$('stamp').textContent='Last data refresh '+new Date(d.updated_utc).toLocaleString();if(Date.now()-new Date(d.updated_utc).getTime()>30*3600e3){staleWarning='<div class="alert">The published baseball data has not refreshed for over 30 hours. Saved forecasts remain available, but scheduled maintenance or publishing may be delayed.</div>'; }const s=$('game');s.innerHTML='';if(!predictions.length){s.innerHTML='<option>No frozen pregame forecasts yet</option>';return;}predictions.forEach((g,i)=>{const opt=document.createElement('option');opt.value=i;opt.textContent=g.date+' · '+g.away_name+' @ '+g.home_name+(g.forecast_kind==='revised_pregame'?' · UPDATED PREGAME':' · Original')+(g.official_final?' · Final':'');s.appendChild(opt)});s.addEventListener('change',()=>renderGame(predictions[Number(s.value)]));renderGame(predictions[0]);$('perf').textContent=d.prospective_performance?.settled_games?d.prospective_performance.settled_games+' finished games · '+pct(d.prospective_performance.accuracy)+' winner accuracy':'Awaiting prospective results';$('history').innerHTML=predictions.slice(0,25).map(g=>`<tr><td>${esc(g.date)}</td><td>${esc(g.away)} @ ${esc(g.home)}</td><td>${g.projected_score.away}–${g.projected_score.home}${g.forecast_kind==='revised_pregame'?' (updated)':''}</td><td>${pct(Math.max(g.predicted_home_win,1-g.predicted_home_win))}</td><td>${g.official_final?g.official_final.away+'–'+g.official_final.home:'Pending'}</td></tr>`).join('');}catch(e){$('forecast').innerHTML='<div class="card empty">Could not load published forecasts: '+esc(e.message)+'</div>';}}
+async function start(){try{const r=await fetch('./data.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();renderCaptureMonitor(d.prospective_capture);renderOfficialScheduleAudit(d.official_schedule_audit);renderModelHealth(d.model_health,d.shadow_comparisons);predictions=d.predictions||[];$('stamp').textContent='Last data refresh '+new Date(d.updated_utc).toLocaleString();if(Date.now()-new Date(d.updated_utc).getTime()>30*3600e3){staleWarning='<div class="alert">The published baseball data has not refreshed for over 30 hours. Saved forecasts remain available, but scheduled maintenance or publishing may be delayed.</div>'; }const s=$('game');s.innerHTML='';if(!predictions.length){s.innerHTML='<option>No frozen pregame forecasts yet</option>';return;}predictions.forEach((g,i)=>{const opt=document.createElement('option');opt.value=i;opt.textContent=g.date+' · '+g.away_name+' @ '+g.home_name+(g.forecast_kind==='revised_pregame'?' · UPDATED PREGAME':' · Original')+(g.official_final?' · Final':'');s.appendChild(opt)});s.addEventListener('change',()=>renderGame(predictions[Number(s.value)]));renderGame(predictions[0]);$('perf').textContent=d.prospective_performance?.settled_games?d.prospective_performance.settled_games+' finished games · '+pct(d.prospective_performance.accuracy)+' winner accuracy':'Awaiting prospective results';$('history').innerHTML=predictions.slice(0,25).map(g=>`<tr><td>${esc(g.date)}</td><td>${esc(g.away)} @ ${esc(g.home)}</td><td>${g.projected_score.away}–${g.projected_score.home}${g.forecast_kind==='revised_pregame'?' (updated)':''}</td><td>${pct(Math.max(g.predicted_home_win,1-g.predicted_home_win))}</td><td>${g.official_final?g.official_final.away+'–'+g.official_final.home:'Pending'}</td></tr>`).join('');}catch(e){$('forecast').innerHTML='<div class="card empty">Could not load published forecasts: '+esc(e.message)+'</div>';}}
 start();
 </script></body></html>
