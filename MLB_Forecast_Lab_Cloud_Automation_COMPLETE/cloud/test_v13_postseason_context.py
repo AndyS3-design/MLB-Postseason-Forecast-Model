@@ -63,6 +63,29 @@ class PostseasonContextTests(unittest.TestCase):
    self.assertEqual(y['current_prior_games_used'],2)
    self.assertGreater(y['factor'],x['factor'])
 
+ def test_changing_model_version_is_not_called_a_fresher_lineup_win(self):
+  from cloud.two_stage import paired_stage_metrics
+  import json
+  with tempfile.TemporaryDirectory() as d:
+   root=Path(d)
+   early={'game_id':'700','date':'2026-10-14','home':'LAN','away':'MIL',
+          'forecast_kind':'preliminary_pregame',
+          'game_start_utc':'2026-10-15T00:00:00+00:00',
+          'forecast_created_utc':'2026-10-14T19:00:00+00:00',
+          'model_version':'7.0.0-pregame-recency-weighted',
+          'expected_runs':{'total':7.82},'predicted_home_win':.47}
+   final={**early,'forecast_kind':'original_pregame',
+          'forecast_created_utc':'2026-10-14T23:40:00+00:00',
+          'model_version':'13.0.0-recent-postseason-scoring',
+          'official_final':{'home':3,'away':1}}
+   for folder,payload in [('preliminary',early),('predictions',final)]:
+    dest=root/'cloud_records'/folder/'700.json'
+    dest.parent.mkdir(parents=True,exist_ok=True)
+    dest.write_text(json.dumps(payload))
+   result=paired_stage_metrics(root)
+   self.assertEqual(result['paired_settled_games'],0)
+   self.assertEqual(result['excluded_model_version_mismatch'],1)
+
  def test_without_archive_is_neutral_instead_of_fabricating_data(self):
   with tempfile.TemporaryDirectory() as d:
    result=context_for_game('2026-10-14','L',d)
