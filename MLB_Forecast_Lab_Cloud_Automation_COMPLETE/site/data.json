@@ -8,12 +8,33 @@
       "both_starters_have_3plus_verified_starts_fraction": 0.0,
       "mean_lead_minutes": 111.1,
       "original_forecasts": 1,
-      "settled_originals": 0,
+      "settled_originals": 1,
       "within_8_to_30_minutes_fraction": 0.0
     },
     "performance": {
-      "n": 0,
-      "status": "Awaiting official final scores"
+      "correct_winner_fraction": 1.0,
+      "elo_brier": 0.17119,
+      "n": 1,
+      "reliability_bins": [
+        {
+          "actual_home_win_rate": 1.0,
+          "mean_forecast": 0.568,
+          "n": 1,
+          "range": [
+            0.4,
+            0.6
+          ]
+        }
+      ],
+      "run_mae_per_team": 2.025,
+      "status": "preliminary: small sample",
+      "total_run_mae": 4.049,
+      "under_6_5_brier": 0.38492,
+      "winner_accuracy_wilson_95": [
+        0.2065,
+        1
+      ],
+      "winner_brier": 0.18648
     },
     "status": "prospective_first_pitch_locked",
     "warnings": [
@@ -23,7 +44,7 @@
     ]
   },
   "official_schedule_audit": {
-    "as_of_exclusive_et_date": "2026-10-13",
+    "as_of_exclusive_et_date": "2026-10-14",
     "completed_games_imported": 0,
     "identity_or_score_conflicts": [],
     "import_coverage_fraction": null,
@@ -57,7 +78,7 @@
       "downloaded": [],
       "unavailable": {}
     },
-    "new_settlements": 0,
+    "new_settlements": 1,
     "official_schedule_audit_status": "not_started",
     "pitching_import_status": {
       "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
@@ -72,8 +93,8 @@
       "recent_cached_games": 130,
       "status": "ok"
     },
-    "refreshed_finished_games": 2458,
-    "run_started_utc": "2026-10-14T02:56:03.888318+00:00",
+    "refreshed_finished_games": 2459,
+    "run_started_utc": "2026-10-14T15:51:02.415769+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -151,6 +172,12 @@
       "model_commit": "59332347781c5d33069ddc7f06e90ddf9120f3f9",
       "model_training_cutoff": "2023-24",
       "model_version": "7.0.0-pregame-recency-weighted",
+      "official_final": {
+        "away": 1,
+        "home": 3,
+        "settled_at_utc": "2026-10-14T15:51:10.660331+00:00",
+        "source": "Official MLB schedule API"
+      },
       "original_comparison": {
         "expected_runs": {
           "away": 3.8318333333333334,
@@ -412,6 +439,14 @@
       "data_quality": "LIMITED",
       "date": "2026-10-13",
       "elo_home_win": 0.5862501629952569,
+      "evaluation": {
+        "abs_run_error_per_team": 2.024583333333333,
+        "abs_total_error": 4.049166666666666,
+        "correct_winner": true,
+        "elo_brier": 0.1711889276214515,
+        "under_6_5_brier": 0.3849168402777777,
+        "winner_brier": 0.18648002777777775
+      },
       "expected_runs": {
         "away": 3.8318333333333334,
         "home": 4.217333333333333,
@@ -445,6 +480,12 @@
       "model_commit": "d2b8ce50f70ae05da839de934e7b07608cbab986",
       "model_training_cutoff": "2023-24",
       "model_version": "4.0.0-research",
+      "official_final": {
+        "away": 1,
+        "home": 3,
+        "settled_at_utc": "2026-10-14T15:51:10.660331+00:00",
+        "source": "Official MLB schedule API"
+      },
       "predicted_home_win": 0.5681666666666667,
       "projected_score": {
         "away": 3,
@@ -679,7 +720,7 @@
     }
   ],
   "prospective_capture": {
-    "as_of_exclusive_et_date": "2026-10-13",
+    "as_of_exclusive_et_date": "2026-10-14",
     "capture_fraction": null,
     "capture_window_fraction": null,
     "captured_pending_settlement_ids": [],
@@ -708,9 +749,14 @@
     "unreadable_original_files": []
   },
   "prospective_performance": {
-    "settled_games": 0,
-    "status": "Awaiting prospective results"
+    "accuracy": 1.0,
+    "elo_brier": 0.17119,
+    "run_mae_per_team": 2.025,
+    "settled_games": 1,
+    "status": "Insufficient games for uncertainty interval",
+    "under_6_5_brier": 0.38492,
+    "winner_brier": 0.18648
   },
   "shadow_comparisons": {},
-  "updated_utc": "2026-10-14T02:56:03.888318+00:00"
+  "updated_utc": "2026-10-14T15:51:02.415769+00:00"
 }
