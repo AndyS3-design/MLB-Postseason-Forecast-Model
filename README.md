@@ -14,7 +14,8 @@ MLB Forecast Lab is a Python research project that ingests historical and curren
 - **Historical training:** Supports 2016–2025 regular-season records with recency-weighted Poisson regression (roughly a 3-year weighting half-life). Training coverage is recorded for each new forecast.
 - **Game-specific context:** Previous team performance, starting-pitcher history, bullpen data, postseason run environment, and available lineup information. Missing or experimental inputs are identified instead of silently invented.
 - **Simulation:** Runs 12,000 simulated games per cloud forecast, publishing expected runs, a representative projected score, winner probabilities and a distribution of possible totals.
-- **Pregame integrity:** Saves the original forecast with its actual creation time and model version. One-off revisions, when authorized before first pitch, are stored separately; the original is never overwritten.
+- **Two-stage game-day forecasts (V12):** Publishes an immutable preliminary preview after 10 AM Eastern when sufficient time remains, then independently calculates a final original approximately 20 minutes before first pitch. Both versions are timestamped and accessible; only the final counts toward primary accuracy. The final is not guaranteed if GitHub misses its cutoff.
+- **Pregame integrity:** Saves the original final forecast with its actual creation time and model version. One-off revisions, when authorized before first pitch, are stored separately; the original is never overwritten.
 - **Independent schedule cross-check (V10):** Reconciles a rolling seven-day sample of official MLB final games against imported results and frozen original forecasts, flagging missing imports that V9 alone cannot detect.
 - **Live forecast-capture monitoring (V9):** Counts imported completed games that had a genuine original pre-first-pitch forecast, separately flags missed/late predictions, and records settlement status. Starts October 14, 2026; zero completed games is shown as not measurable, not as success.
 - **Prospective research comparisons:** Future eligible games can also save separately timestamped alternative forecasts, to test additional pitcher and postseason-scoring corrections without changing the primary prediction.
@@ -64,7 +65,7 @@ See [deployment and operations](docs/OPERATIONS.md) for the complete GitHub setu
 
 ## Documentation
 
-Start with the [documentation index](docs/README.md); recommended reading: [architecture](docs/ARCHITECTURE.md), [model and data](docs/MODEL_AND_DATA.md), [validation](docs/VALIDATION.md), [operations](docs/OPERATIONS.md), [project status and roadmap](docs/ROADMAP.md), and [resume/portfolio guide](docs/PORTFOLIO.md).
+Read [two-stage forecasting](docs/TWO_STAGE_FORECASTS.md) for preliminary/final timing, preserved snapshots and accuracy evaluation. Start with the [documentation index](docs/README.md); recommended reading: [architecture](docs/ARCHITECTURE.md), [model and data](docs/MODEL_AND_DATA.md), [validation](docs/VALIDATION.md), [operations](docs/OPERATIONS.md), [project status and roadmap](docs/ROADMAP.md), and [resume/portfolio guide](docs/PORTFOLIO.md).
 
 ## Evidence and accuracy status
 
