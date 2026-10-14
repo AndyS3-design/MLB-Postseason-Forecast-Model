@@ -71,3 +71,7 @@ A separate rolling official MLB final-game schedule audit now cross-checks local
 ## Preliminary versus final pregame comparison (V12)
 
 The earlier preview is published as a distinct immutable file and is **not** counted as an original in primary prospective accuracy or V9 missing-final coverage. The first-pitch-locked original remains the final stage. Only paired preliminary/final records from the same game that both predate first pitch are included in the special early-versus-final research comparison, and only after official settlement. See [two-stage forecasts](TWO_STAGE_FORECASTS.md).
+
+## Postseason scoring changes after the October 2026 retrospective audit
+
+The V13 model incorporates documented official 2020–2025 postseason scoring and a fixed prior-day-only 2026 adaptive scoring context. Its 80-game equivalent strength was selected using only earlier-season 2022–2025 scoring validation, **not** by minimizing the already-known 2026 playoff errors. Nevertheless 2026 games have been reviewed extensively during broader development, so later 2026 diagnostics are not pristine untouched validation. The original preliminary and final predictions remain frozen; experimental postseason calibration should be evaluated only on new paired, timestamped, prospectively settled games. [Read the V13 evidence](POSTSEASON_SCORING_V13.md).
