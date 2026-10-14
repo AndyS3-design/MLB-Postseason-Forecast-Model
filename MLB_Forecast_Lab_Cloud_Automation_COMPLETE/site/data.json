@@ -330,7 +330,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2459,
-    "run_started_utc": "2026-10-14T22:36:51.935839+00:00",
+    "run_started_utc": "2026-10-14T22:47:03.447030+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -2213,5 +2213,5 @@
     "preliminary_without_final_count": 1,
     "status": "awaiting_paired_finals"
   },
-  "updated_utc": "2026-10-14T22:36:51.935839+00:00"
+  "updated_utc": "2026-10-14T22:47:03.447030+00:00"
 }
