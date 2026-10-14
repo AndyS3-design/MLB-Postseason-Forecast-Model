@@ -109,14 +109,15 @@ def summarize(draws):
     winner_home=p_home>=.5
     qualified=[i for i in range(len(unique)) if (unique[i,0]>unique[i,1])==winner_home]
     best=max(qualified,key=lambda i:counts[i]) if qualified else int(np.argmax(counts))
-    # Report the most frequently simulated exact score for the favored winner.
-    # The old display selected an outcome near the rounded *mean total*,
-    # which can overstate the typical/most likely discrete scoreline.
-    # This changes only PRESENTATION, never the run probabilities or simulations.
-    pick=best
+    # Exact-score *mode*, unconditioned on the game's favorite. A specific
+    # Dodgers-win score may be the most common single score even when the
+    # Brewers win more simulated games in aggregate. Keep the older
+    # winner-conditioned representative as separate metadata for research.
+    # This is PRESENTATION only: simulations, win odds and totals are unchanged.
+    pick=int(np.argmax(counts))
     score_for_display={'home':int(unique[pick,0]),'away':int(unique[pick,1]),
        'total':int(unique[pick,0]+unique[pick,1]),'probability':float(counts[pick]/n),
-       'method':'most common simulated exact score among outcomes for the model favorite; not a guaranteed result'}
+       'method':'highest probability exact final score across all simulations; may differ from model favorite'}
     return dict(score_grid=score_grid, total_pmf=total_pmf, v6_display_score=score_for_display, representative_score={'home':int(unique[best,0]),'away':int(unique[best,1]),'probability':float(counts[best]/n)},home_win_probability=p_home,away_win_probability=1-p_home,
        under_6_5_probability=float(np.mean(total<=6)),over_6_5_probability=float(np.mean(total>=7)),
        home_minus_1_5_probability=float(np.mean(h-a>=2)),away_plus_1_5_probability=float(np.mean(a-h>=-1)),
