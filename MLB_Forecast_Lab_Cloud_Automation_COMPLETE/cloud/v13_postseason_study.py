@@ -202,7 +202,12 @@ def main():
     regular[2026]={'year':2026,'games':len(current),'runs_per_game':
                    sum(int(g['home_final'])+int(g['away_final']) for g in current)/len(current)}
     ranked=validate(years,regular)
-    chosen=ranked[0]
+    # Choose a reasonably adaptive candidate only if its 2022-2025 MAE is
+    # essentially tied (<=0.003 total runs/game) with the best fixed ratio.
+    # Prefer the longest finite smoothing horizon to avoid chasing one series.
+    tied=[x for x in ranked if x['prior_equivalent_games']<10**9
+          and x['pooled_mae']-ranked[0]['pooled_mae']<=.003]
+    chosen=max(tied,key=lambda x:(x['prior_equivalent_games'],-x['pooled_mae'])) if tied else ranked[0]
     today=sorted(years.get(2026,[]),key=lambda x:(x['date'],x['game_id']))
     assess=evaluate_2026(years,regular,[chosen,
           {'prior_equivalent_games':10**9,'strength':0.8},
@@ -225,7 +230,8 @@ def main():
         'training_years_for_hyperparameter_selection':list(range(2022,2026)),
         'evaluation_2026_role':'retrospective diagnostic only; 2026 outcomes already influenced earlier project development',
         'season_totals':yearly,'selection_method':'Chronological previous-season-only preseason ratio plus day-exclusive partial-year adaptation; MAE against actual per-team runs, 2022-25',
-        'candidates':ranked,'selected_candidate':chosen,
+        'candidates':ranked,'selected_candidate':chosen,'best_aggregate_candidate':ranked[0],
+        'adaptive_selection_rule':'Prefer largest finite prior-equivalent smoothing among candidates within 0.003 total-run MAE/game of the best 2022-25 alternative; never use 2026 to choose',
         '2026_diagnostics_not_selection':assess,
         'no_hindsight_guard':'All in-season games strictly earlier DATE; 2026 excluded from parameter selection',
         'known_limitation':'Year-level run baseline is not equivalent to complete game-specific baseball model; production change requires separate game-specific and prospective validation.'}
@@ -238,7 +244,7 @@ def main():
     lines.extend(['','Selected candidate on 2022–2025 game-level MAE with day-exclusive running data: '
                   +json.dumps({k:v for k,v in chosen.items() if k!='by_year'}),
                   '', '2026 retrospective diagnostics (never used for selection):',
-                  '', '| Candidate | Games | MAE per team-run | Mean factor | Next factor |',
+                  '', '| Candidate | Games | MAE combined runs | Mean factor | Next factor |',
                   '|---|---:|---:|---:|---:|'])
     for item in assess:
         lines.append(f"| strength={item['strength']}, prior-equiv={item['prior_equivalent_games']} | {item['n']} | {item['pooled_mae']:.3f} | {item['mean_factor']:.3f} | {item['next_factor']:.3f} |")
