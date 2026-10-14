@@ -379,3 +379,7 @@ venv/
 *.key
 *.p12
 *.p8
+
+# Runtime-only, version-checked frozen Poisson model cache.
+# Stored by GitHub Actions cache rather than committed to public Git.
+MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache/

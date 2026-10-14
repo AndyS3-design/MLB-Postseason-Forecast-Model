@@ -58,6 +58,11 @@ jobs:
           cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
       - name: Install Python model dependencies
         run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Restore and save frozen historical scoring-model cache
+        uses: actions/cache@v4
+        with:
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache
+          key: mlb-v8-frozen-${{ runner.os }}-python312-${{ hashFiles('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_model_cache.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2023.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2024.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2025.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/gl20*.zip', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/advanced_pitching_details.csv') }}
       - name: Verify cloud forecasting safeguards
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
@@ -75,7 +80,13 @@ jobs:
           set -euo pipefail
           git config user.name 'mlb-forecast-bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Never commit Python serialized model artifacts. Cache is managed
+          # by GitHub Actions, and original forecast JSON remains committed.
           git add -A -- MLB_Forecast_Lab_Cloud_Automation_COMPLETE/
+          if git diff --cached --name-only | grep -E '^MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache/'; then
+            echo 'Refusing to commit serialized model cache artifacts.' >&2
+            exit 1
+          fi
           if git diff --cached --quiet; then
             echo 'No new data or pregame records.'
           else
