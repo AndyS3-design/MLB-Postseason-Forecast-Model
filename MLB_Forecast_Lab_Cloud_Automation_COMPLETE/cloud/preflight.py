@@ -11,6 +11,7 @@ from urllib.parse import urlencode
 from urllib.request import Request,urlopen
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from cloud.two_stage import eligible_preliminary, EARLIEST_PREVIEW_HOUR_ET
 
 APP_ROOT=Path(__file__).resolve().parents[1]
 EASTERN=ZoneInfo('America/New_York')
@@ -42,6 +43,34 @@ def find_approaching_games(now,fetcher=None):
                                     'lead_minutes':round(lead,1)})
     return matches
 
+def find_preliminary_games(now, root=APP_ROOT, fetcher=None):
+    """Only wake the model for missing, safely early day-of previews."""
+    if now.astimezone(EASTERN).hour < EARLIEST_PREVIEW_HOUR_ET:
+        return []
+    if fetcher is None:
+        fetcher = fetch_schedule
+    local_day = now.astimezone(EASTERN).date()
+    payload = fetcher(local_day)
+    output = []
+    seen = set()
+    for block in payload.get('dates', []):
+        for g in block.get('games', []):
+            game_id = str(g.get('gamePk') or '')
+            if game_id in seen:
+                continue
+            seen.add(game_id)
+            if (Path(root, 'cloud_records', 'preliminary', game_id + '.json').exists()
+                    or Path(root, 'cloud_records', 'predictions', game_id + '.json').exists()):
+                continue
+            game_day = g.get('officialDate') or block.get('date')
+            if eligible_preliminary(game_id, game_day, g.get('gameDate'),
+                                    g.get('gameType'), g.get('status', {}).get('detailedState'),
+                                    now):
+                output.append({'id': game_id, 'starts_utc': g['gameDate'],
+                               'preview': True})
+    return output
+
+
 def fetch_schedule(day):
     q=urlencode({'sportId':1,'date':day.isoformat(),'gameTypes':','.join(sorted(GAME_TYPES))})
     with urlopen(Request(API+'?'+q,headers={'User-Agent':'MLB Forecast Lab scheduling / 1.0'}),timeout=12) as f:
@@ -59,17 +88,19 @@ def daily_maintenance_due(root,now):
     except (OSError,KeyError,ValueError,TypeError,json.JSONDecodeError):
         return True
 
-def should_run(now,manual=False,maintenance=False,fetcher=None,catchup=False):
-    if manual:return {'run':True,'reason':'manually triggered','approaching_games':[]}
-    if maintenance:return {'run':True,'reason':'daily maintenance','approaching_games':[]}
-    if catchup:return {'run':True,'reason':'catch-up official results maintenance','approaching_games':[]}
+def should_run(now,manual=False,maintenance=False,fetcher=None,catchup=False,root=APP_ROOT):
+    if manual:return {'run':True,'reason':'manually triggered','approaching_games':[], 'preliminary_games':[]}
+    if maintenance:return {'run':True,'reason':'daily maintenance','approaching_games':[], 'preliminary_games':[]}
+    if catchup:return {'run':True,'reason':'catch-up official results maintenance','approaching_games':[], 'preliminary_games':[]}
     try:
         matches=find_approaching_games(now,fetcher)
+        preliminary=find_preliminary_games(now,root=root,fetcher=fetcher)
     except Exception as exc:
         # Fail closed. The next scheduled gate will retry, no fabricated matchups.
-        return {'run':False,'reason':'schedule fetch failed: '+str(exc)[:140], 'approaching_games':[]}
-    return {'run':bool(matches),'reason':'pregame window' if matches else 'no approaching games',
-            'approaching_games':matches}
+        return {'run':False,'reason':'schedule fetch failed: '+str(exc)[:140], 'approaching_games':[], 'preliminary_games':[]}
+    return {'run':bool(matches or preliminary),
+            'reason':'pregame window' if matches else 'early preliminary preview' if preliminary else 'no approaching games',
+            'approaching_games':matches, 'preliminary_games':preliminary}
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--github-output',type=Path)
@@ -83,5 +114,6 @@ def main():
             f.write('run_model='+('true' if result['run'] else 'false')+'\n')
             f.write('mode='+('full' if args.manual or args.maintenance or catchup else 'pregame')+'\n')
             f.write('game_ids='+','.join(sorted({x['id'] for x in result['approaching_games'] if str(x['id']).isdigit()}))+'\n')
+            f.write('preliminary_game_ids='+','.join(sorted({x['id'] for x in result.get('preliminary_games', [])}))+'\n')
 
 if __name__=='__main__':main()
