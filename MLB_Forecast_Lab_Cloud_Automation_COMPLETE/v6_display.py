@@ -9,7 +9,7 @@ import math
 def display_forecast(prediction: dict, away: str, home: str, total_line: float):
     """Return one internally consistent score, total, and probabilities.
 
-    'Scoreline total' is the modal winner-consistent scoreline sum, NOT the mean
+    'Scoreline total' is the modal exact scoreline sum, NOT the mean
     of the simulation's total distribution. Show the mean only in methodology.
     """
     from v6_baseball_totals import probabilities_for_line
@@ -23,8 +23,8 @@ def display_forecast(prediction: dict, away: str, home: str, total_line: float):
         raise ValueError('Scoreline total mismatch')
     p_home=float(prediction['home_win_probability'])
     winner='home' if p_home>=.5 else 'away'
-    if (hh>ah)!=(winner=='home'):
-        raise ValueError('Scoreline and simulated favored winner disagree')
+    # The modal exact score can favor a different team from the aggregation
+    # of ALL simulated outcomes, so never force them to agree.
     pmf=probabilities_for_line(prediction['total_pmf'],float(total_line))
     if not math.isclose(sum(pmf[x] for x in ('over','under','push')),1.,abs_tol=1e-8):
         raise ValueError('Total distribution probabilities do not sum to 1')
@@ -33,4 +33,6 @@ def display_forecast(prediction: dict, away: str, home: str, total_line: float):
       chosen_score_probability=float(score['probability']),
       winner=winner,winning_team=home if winner=='home' else away,
       winner_probability=p_home if winner=='home' else 1-p_home,
+      displayed_score_winner=home if hh>ah else away,
+      displayed_score_matches_model_favorite=((hh>ah)==(p_home>=.5)),
       **pmf)
