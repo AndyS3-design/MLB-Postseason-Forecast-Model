@@ -1,0 +1,89 @@
+{
+  "type": "retrospective_recency_half_life_review",
+  "rows": {
+    "2.0": {
+      "half_life": 2.0,
+      "validation_poisson_score": -1.9441754136709166,
+      "selected_alpha": 1.0,
+      "selected_fielding": true,
+      "2025_test": {
+        "team_games": 4850,
+        "mae": 2.4879991700828157,
+        "poisson_score": -2.048993195415194,
+        "mean_predicted_runs": 4.350060268611291,
+        "mean_actual_runs": 4.336701030927835
+      },
+      "train_seasons": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "tuned_only_on_2024": true
+    },
+    "3.0": {
+      "half_life": 3.0,
+      "validation_poisson_score": -1.944273381140712,
+      "selected_alpha": 1.0,
+      "selected_fielding": true,
+      "2025_test": {
+        "team_games": 4850,
+        "mae": 2.4884740281159963,
+        "poisson_score": -2.0490026291668957,
+        "mean_predicted_runs": 4.35404451325299,
+        "mean_actual_runs": 4.336701030927835
+      },
+      "train_seasons": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "tuned_only_on_2024": true
+    },
+    "5.0": {
+      "half_life": 5.0,
+      "validation_poisson_score": -1.9443535122630016,
+      "selected_alpha": 1.0,
+      "selected_fielding": true,
+      "2025_test": {
+        "team_games": 4850,
+        "mae": 2.4887891998443163,
+        "poisson_score": -2.0490261726738734,
+        "mean_predicted_runs": 4.357104700741713,
+        "mean_actual_runs": 4.336701030927835
+      },
+      "train_seasons": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "tuned_only_on_2024": true
+    }
+  },
+  "selected_using_2024_only": 5.0,
+  "2025_prechosen_weight_vs_fixed3": {
+    "chosen_poisson": -2.0490261726738734,
+    "fixed3_poisson": -2.0490026291668957,
+    "chosen_mae": 2.4887891998443163,
+    "fixed3_mae": 2.4884740281159963
+  },
+  "runtime_seconds": 13.64,
+  "disclaimer": "2025 is not independently untouched; never select after seeing 2025 and report the same outcomes as an independent test. Any future rollout must preserve archived original forecasts."
+}
