@@ -12,6 +12,9 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_revision.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_forecast_finish_time.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_challengers.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v8_challengers.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/revision_requests/**'
 
@@ -66,7 +69,7 @@ jobs:
           key: mlb-v8-frozen-${{ runner.os }}-python312-${{ hashFiles('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_model_cache.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2023.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2024.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2025.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/gl20*.zip', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/advanced_pitching_details.csv') }}
       - name: Verify cloud forecasting safeguards
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-        run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision cloud.test_forecast_finish_time -q
+        run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision cloud.test_forecast_finish_time cloud.test_v8_challengers -q
       - name: Refresh verified MLB data and forecast before first pitch
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
