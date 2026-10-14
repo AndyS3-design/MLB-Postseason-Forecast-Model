@@ -38,7 +38,7 @@ Park and weather remain neutral in the normal hosted workflow unless independent
 ## 6. Portfolio, security and reproducibility
 
 - Canonical GitHub repo: https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model.
-- Previous GitHub Pages URL is retained in docs until actual Pages deployment configuration is independently checked.
+- The new GitHub Pages URL was verified from the successful October 14 production deployment: https://andys3-design.github.io/MLB-Postseason-Forecast-Model/.
 - New offline tests guard handedness provenance, timing, full PMF integrity, duplicate exclusion, same-cohort metrics and season separation.
 - Existing historical research and model defaults are preserved for reproducibility. Deleting legacy scripts or imposing arbitrary pinned package versions without testing could disrupt the cloud worker and is not part of this release.
 - The remaining priorities are more **genuinely prospective completed originals**, paired confidence intervals, evidence for any proposed distribution/park/weather/bullpen parameter change, and a reliable final-window capture rate under GitHub schedule delays.
