@@ -109,21 +109,14 @@ def summarize(draws):
     winner_home=p_home>=.5
     qualified=[i for i in range(len(unique)) if (unique[i,0]>unique[i,1])==winner_home]
     best=max(qualified,key=lambda i:counts[i]) if qualified else int(np.argmax(counts))
-    # V6 presentation: choose a winner-consistent integer score near the rounded
-    # average game total. This is an EXAMPLE scenario, not the modal score.
-    # Choosing directly from completed simulated outcomes guarantees it is
-    # possible in the exact same model, and the displayed runs always add up.
-    rounded_total=max(1,int(math.floor(float(np.mean(total))+.5)))
-    aligned=[i for i in qualified if int(unique[i,0]+unique[i,1])==rounded_total]
-    if aligned:
-        pick=max(aligned,key=lambda i:counts[i])
-    elif qualified:
-        pick=min(qualified,key=lambda i:(abs(int(unique[i,0]+unique[i,1])-rounded_total),-int(counts[i])))
-    else:
-        pick=int(np.argmax(counts))
+    # Report the most frequently simulated exact score for the favored winner.
+    # The old display selected an outcome near the rounded *mean total*,
+    # which can overstate the typical/most likely discrete scoreline.
+    # This changes only PRESENTATION, never the run probabilities or simulations.
+    pick=best
     score_for_display={'home':int(unique[pick,0]),'away':int(unique[pick,1]),
        'total':int(unique[pick,0]+unique[pick,1]),'probability':float(counts[pick]/n),
-       'method':'winner-consistent simulated score near rounded mean total'}
+       'method':'most common simulated exact score among outcomes for the model favorite; not a guaranteed result'}
     return dict(score_grid=score_grid, total_pmf=total_pmf, v6_display_score=score_for_display, representative_score={'home':int(unique[best,0]),'away':int(unique[best,1]),'probability':float(counts[best]/n)},home_win_probability=p_home,away_win_probability=1-p_home,
        under_6_5_probability=float(np.mean(total<=6)),over_6_5_probability=float(np.mean(total>=7)),
        home_minus_1_5_probability=float(np.mean(h-a>=2)),away_plus_1_5_probability=float(np.mean(a-h>=-1)),
