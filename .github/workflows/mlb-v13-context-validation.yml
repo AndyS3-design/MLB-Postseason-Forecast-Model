@@ -13,6 +13,10 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v6_display.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v13_score_presentation.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_challengers.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/two_stage.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v12_two_stage.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
   pull_request:
     paths:
       - '.github/workflows/mlb-v13-context-validation.yml'
@@ -75,3 +79,15 @@ jobs:
                 'postseason factor',round(p['factor'],5),
                 'model version',result['model_version'])
           PY
+
+      - name: Validate revised scoreboard browser code
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html')
+          html=p.read_text()
+          assert 'MOST COMMON WINNER-ALIGNED SCORE' in html
+          assert 'excluded_model_version_mismatch' in html
+          Path('/tmp/mlb_v13.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/mlb_v13.js
