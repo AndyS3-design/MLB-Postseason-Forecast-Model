@@ -1,0 +1,50 @@
+name: V8 CI — Persistent Frozen Model Cache
+on:
+  push:
+    branches: ['hardening/v8-persistent-cache']
+    paths:
+      - '.github/workflows/mlb-v8-persistent-cache.yml'
+      - '.github/workflows/mlb-cloud.yml'
+      - '.gitignore'
+      - 'docs/CACHE_OPERATIONS.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Verify that generated serialized caches stay out of Git
+        run: |
+          mkdir -p MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache
+          touch MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache/test.joblib
+          git check-ignore -q MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache/test.joblib
+          git status --short
+          test -z "$(git status --porcelain)"
+      - name: Verify expected production workflow controls
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('.github/workflows/mlb-cloud.yml').read_text()
+          for token in ("uses: actions/cache@v4", "path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache", "hashFiles(", "Refusing to commit serialized model cache artifacts."):
+              assert token in s, token
+          PY
+      - run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Run full cloud integrity tests
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v8_cache cloud.test_v8_evaluate cloud.test_v8_bullpen cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
+      - name: Audit browser JS syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html').read_text()
+          Path('/tmp/mlb_site_v8.js').write_text(s.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/mlb_site_v8.js
