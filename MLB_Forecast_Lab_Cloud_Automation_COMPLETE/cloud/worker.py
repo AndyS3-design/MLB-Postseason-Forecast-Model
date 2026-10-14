@@ -22,6 +22,7 @@ from cloud.refresh import current_season_results,append_future_years,all_finals
 from cloud.starter_backfill import backfill_match_starters
 from cloud.v8_bullpen_health import matchup_workload
 from cloud.v8_evaluate import from_files as prospective_health_report
+from cloud.v8_challengers import save_shadow_forecasts,attach_shadows,evaluate_pair as challenger_metrics
 
 ROOT=Path(__file__).resolve().parents[1]
 STATE=ROOT/'cloud_records'
@@ -163,7 +164,7 @@ def game_evidence(game,now):
         return None
 
 
-def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=False):
+def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=False,shadows_enabled=False):
     id_=str(game['id'])
     original_path=STATE/'predictions'/f'{id_}.json'
     prior_record=read_json(original_path) if original_path.exists() else None
@@ -244,8 +245,19 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
     rec['forecast_created_utc']=final_check.isoformat()
     rec['minutes_before_game']=round((start-final_check).total_seconds()/60,1)
     encode_json(target,rec)
-    return {'status':('revised_pregame_saved' if revision else 'saved'),'game_id':id_,'away':rec['away'],'home':rec['home'],
-            'minutes_before_game':rec['minutes_before_game']}
+    shadow_status={'status':'not_requested'}
+    if shadows_enabled and not revision:
+        # The primary prediction is ALREADY committed to its frozen JSON.
+        # Failure of an experimental challenger can never erase or rewrite it.
+        try:
+            shadow_status=save_shadow_forecasts(root,game,rec,now,computation_start,
+                prior,clean,prior_assets,snapshot=snap,clock=monotonic,n=N_SIMULATIONS)
+        except Exception as exc:
+            shadow_status={'status':'error','message':str(exc)[:160]}
+    return {'status':('revised_pregame_saved' if revision else 'saved'),'game_id':id_,
+            'away':rec['away'],'home':rec['home'],
+            'minutes_before_game':rec['minutes_before_game'],
+            'shadow_research':shadow_status}
 
 
 def settle(root):
@@ -306,6 +318,7 @@ def render_site(root,now,summary):
     for f in (STATE/'predictions').glob('*.json'):
         try:originals.append(read_json(f))
         except (ValueError,TypeError):pass
+    attach_shadows(originals,root)
     by_id={str(x.get('game_id')):x for x in originals}
     revisions=[]
     for f in (STATE/'revisions').glob('*.json'):
@@ -332,6 +345,7 @@ def render_site(root,now,summary):
         'predictions':entries[:350],
         'prospective_performance':prospective_metrics(originals),
         'model_health':prospective_health_report(root),
+        'shadow_comparisons':challenger_metrics(originals),
         'operations':summary,
         'disclaimer':'Baseball-only research forecast. Past outcome never enters a pregame prediction. Unverified advanced inputs are marked missing.'}
     site=root/'site';site.mkdir(exist_ok=True,parents=True)
@@ -408,7 +422,8 @@ def run(root=ROOT,now=None,network=True,fast=False):
             summary['events'].append(store_pregame(
                 match,utcnow() if network else now,games,root,assets,
                 starter_backfill=backfills.get(str(match['id'])),
-                revision=bool(match.get('_revision'))))
+                revision=bool(match.get('_revision')),
+                shadows_enabled=True))
         except Exception as exc:
             summary['events'].append({'status':'forecast_failed','game_id':match['id'],
                                       'error':str(exc)[:180]})
