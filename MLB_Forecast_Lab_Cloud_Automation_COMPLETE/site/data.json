@@ -1,5 +1,240 @@
 {
   "disclaimer": "Baseball-only research forecast. Past outcome never enters a pregame prediction. Unverified advanced inputs are marked missing.",
+  "full_distribution_validation": {
+    "combined_runs": {
+      "mae": 4.04917,
+      "mean_actual": 4.0,
+      "mean_forecast": 8.04917,
+      "signed_bias": 4.04917
+    },
+    "comparability_note": "Version cohorts are disclosed; pooled metrics mix versions and are not an A/B test.",
+    "excluded": {},
+    "model_versions": {
+      "4.0.0-research": 1
+    },
+    "settled_distribution_complete_games": 1,
+    "status": "awaiting_30_plus_frozen_originals",
+    "total_lines": {
+      "3.5": {
+        "actual_under_frequency": 0.0,
+        "calibration": [
+          {
+            "actual_frequency": 0.0,
+            "high": 0.2,
+            "low": 0.0,
+            "n": 1,
+            "predicted_mean": 0.124
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.4,
+            "low": 0.2,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.6,
+            "low": 0.4,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.8,
+            "low": 0.6,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 1.0,
+            "low": 0.8,
+            "n": 0,
+            "predicted_mean": null
+          }
+        ],
+        "n": 1,
+        "under_brier": 0.015376,
+        "under_forecast_mean": 0.124
+      },
+      "4.5": {
+        "actual_under_frequency": 1.0,
+        "calibration": [
+          {
+            "actual_frequency": 1.0,
+            "high": 0.2,
+            "low": 0.0,
+            "n": 1,
+            "predicted_mean": 0.1799
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.4,
+            "low": 0.2,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.6,
+            "low": 0.4,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.8,
+            "low": 0.6,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 1.0,
+            "low": 0.8,
+            "n": 0,
+            "predicted_mean": null
+          }
+        ],
+        "n": 1,
+        "under_brier": 0.672537,
+        "under_forecast_mean": 0.17992
+      },
+      "5.5": {
+        "actual_under_frequency": 1.0,
+        "calibration": [
+          {
+            "actual_frequency": null,
+            "high": 0.2,
+            "low": 0.0,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": 1.0,
+            "high": 0.4,
+            "low": 0.2,
+            "n": 1,
+            "predicted_mean": 0.3033
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.6,
+            "low": 0.4,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.8,
+            "low": 0.6,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 1.0,
+            "low": 0.8,
+            "n": 0,
+            "predicted_mean": null
+          }
+        ],
+        "n": 1,
+        "under_brier": 0.485344,
+        "under_forecast_mean": 0.30333
+      },
+      "6.5": {
+        "actual_under_frequency": 1.0,
+        "calibration": [
+          {
+            "actual_frequency": null,
+            "high": 0.2,
+            "low": 0.0,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": 1.0,
+            "high": 0.4,
+            "low": 0.2,
+            "n": 1,
+            "predicted_mean": 0.3796
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.6,
+            "low": 0.4,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 0.8,
+            "low": 0.6,
+            "n": 0,
+            "predicted_mean": null
+          },
+          {
+            "actual_frequency": null,
+            "high": 1.0,
+            "low": 0.8,
+            "n": 0,
+            "predicted_mean": null
+          }
+        ],
+        "n": 1,
+        "under_brier": 0.384917,
+        "under_forecast_mean": 0.37958
+      }
+    },
+    "unique_originals": 1,
+    "warning": "Small samples and past model selection do not establish calibration or a betting advantage.",
+    "winner": {
+      "brier": 0.18648,
+      "brier_delta_vs_elo": 0.015291,
+      "calibration": [
+        {
+          "actual_frequency": null,
+          "high": 0.2,
+          "low": 0.0,
+          "n": 0,
+          "predicted_mean": null
+        },
+        {
+          "actual_frequency": null,
+          "high": 0.4,
+          "low": 0.2,
+          "n": 0,
+          "predicted_mean": null
+        },
+        {
+          "actual_frequency": 1.0,
+          "high": 0.6,
+          "low": 0.4,
+          "n": 1,
+          "predicted_mean": 0.5682
+        },
+        {
+          "actual_frequency": null,
+          "high": 0.8,
+          "low": 0.6,
+          "n": 0,
+          "predicted_mean": null
+        },
+        {
+          "actual_frequency": null,
+          "high": 1.0,
+          "low": 0.8,
+          "n": 0,
+          "predicted_mean": null
+        }
+      ],
+      "elo_brier_same_games": 0.171189,
+      "paired_date_bootstrap_95_delta_vs_elo": null,
+      "paired_date_bootstrap_note": "Positive delta favors Elo. Only shown after at least 30 games on 10 dates; retrospective development history limits causal claims."
+    }
+  },
   "local_timezone": "America/New_York",
   "model_health": {
     "coverage": {
@@ -95,7 +330,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2459,
-    "run_started_utc": "2026-10-14T21:52:05.540948+00:00",
+    "run_started_utc": "2026-10-14T22:36:51.935839+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -1978,5 +2213,5 @@
     "preliminary_without_final_count": 1,
     "status": "awaiting_paired_finals"
   },
-  "updated_utc": "2026-10-14T21:52:05.540948+00:00"
+  "updated_utc": "2026-10-14T22:36:51.935839+00:00"
 }
