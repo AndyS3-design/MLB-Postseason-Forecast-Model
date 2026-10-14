@@ -42,15 +42,23 @@ def capture_official_pregame(game_id,scheduled_start_utc,now=None,fetcher=None):
     for side in ('home','away'):
         team=box.get(side,{})
         players=team.get('players') or {}
+        official_people=meta.get('players') or {}
         batter_ids=team.get('battingOrder') or []
         lined=[]
         for pid in batter_ids:
             entry=players.get('ID'+str(pid)) or players.get(str(pid)) or {}
             obj=entry.get('person') or {}
-            if obj.get('id'):
-                hand=((obj.get('batSide') or {}).get('code') or '').upper()
-                lined.append(dict(id=int(obj['id']),name=obj.get('fullName') or str(pid),
-                                   batting_hand=hand if hand in ('L','R','S') else ''))
+            # MLB's lineup boxscore often excludes batSide; gameData.players
+            # comes from the SAME pregame response (not a postgame bio fetch).
+            official=(official_people.get('ID'+str(pid)) or
+                      official_people.get(str(pid)) or {})
+            player_id=obj.get('id') or official.get('id')
+            if player_id and str(player_id)==str(pid):
+                hand=((entry.get('batSide') or obj.get('batSide') or
+                       official.get('batSide') or {}).get('code') or '').upper()
+                lined.append(dict(id=int(player_id),
+                    name=obj.get('fullName') or official.get('fullName') or str(pid),
+                    batting_hand=hand if hand in ('L','R','S') else ''))
         lists[side]=lined
         rosters[side]=[int(pid) for pid in (team.get('bullpen') or []) if str(pid).isdigit()]
     weather=meta.get('weather') or {}
