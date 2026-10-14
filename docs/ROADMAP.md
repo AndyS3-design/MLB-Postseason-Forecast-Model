@@ -67,7 +67,7 @@ Methodology: [Prospective experiments](PROSPECTIVE_EXPERIMENTS.md).
 - [x] Add independent GitHub Actions health job for approaching-game IDs without a saved, timely original prediction.
 - [ ] Accumulate enough future imported completed games to estimate model accuracy and operational capture reliability; do not advertise success with zero or tiny samples.
 
-## V10 official schedule reconciliation (implementation on GitHub branch)
+## V10 official schedule reconciliation (merged, production verification pending)
 
 - [x] Implement a separate rolling seven-day official final-game denominator, distinct from imported-only V9 coverage.
 - [x] Detect games with missing result imports, absent/late original forecasts and score/date mismatches without fabricating late predictions.
