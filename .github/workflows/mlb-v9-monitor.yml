@@ -7,6 +7,9 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v9_tracking.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v9_tracking.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v9_run_health.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/preflight.py'
+      - '.github/workflows/mlb-cloud.yml'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
   workflow_dispatch:
 permissions:
@@ -26,7 +29,7 @@ jobs:
         run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
       - name: Test game coverage, timing and all forecasting safeguards
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-        run: python -m unittest cloud.test_v9_tracking cloud.test_v8_challengers cloud.test_forecast_finish_time cloud.test_v8_cache cloud.test_v8_evaluate cloud.test_v8_bullpen cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
+        run: python -m unittest cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v8_challengers cloud.test_forecast_finish_time cloud.test_v8_cache cloud.test_v8_evaluate cloud.test_v8_bullpen cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
       - name: Verify actual repository coverage report
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
@@ -53,6 +56,25 @@ jobs:
           assert s['prospective_capture']['tracking_start_date']=='2026-10-14'
           assert s['predictions'], 'Expected existing original+revised game records'
           print('RENDERED',len(s['predictions']),'forecast versions and capture audit')
+          PY
+      - name: Verify expected-game output and independent failure signal
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from cloud.v9_run_health import check
+          from cloud.preflight import should_run
+          from datetime import datetime,timezone,timedelta
+          now=datetime(2026,10,14,20,tzinfo=timezone.utc)
+          def fake(day):
+              return {'dates':[{'games':[{'gameType':'L',
+                  'status':{'detailedState':'Scheduled'},
+                  'gameDate':(now+timedelta(minutes=20)).isoformat(),
+                  'gamePk':4567}]}]} if day==now.date() else {'dates':[]}
+          result=should_run(now,fetcher=fake)
+          assert result['run'] and result['approaching_games'][0]['id']=='4567'
+          assert not check(Path.cwd(),['4567'])['passed']
+          print('Verified missing expected game generates independent red health result')
           PY
       - name: Check browser script syntax
         run: |
