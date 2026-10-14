@@ -383,3 +383,6 @@ venv/
 # Runtime-only, version-checked frozen Poisson model cache.
 # Stored by GitHub Actions cache rather than committed to public Git.
 MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache/
+
+# Explicitly version the V9 prospective coverage report (Visual Studio ignores coverage*.json).
+!MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/coverage_latest.json
