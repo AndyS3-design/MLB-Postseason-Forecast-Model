@@ -9,6 +9,10 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_cache_profile.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_model_cache.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_evaluate.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_bullpen_health.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
   workflow_dispatch:
 permissions:
   contents: write
@@ -30,7 +34,16 @@ jobs:
         run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
       - name: Test validation methodology
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-        run: python -m unittest cloud.test_v8_walkforward cloud.test_v8_cache cloud.test_cloud cloud.test_v7 -q
+        run: python -m unittest cloud.test_v8_walkforward cloud.test_v8_cache cloud.test_v8_evaluate cloud.test_v8_bullpen cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
+      - name: Check the browser's JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html').read_text()
+          assert '<script>' in s and '</script>' in s
+          Path('/tmp/mlb_site_check.js').write_text(s.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/mlb_site_check.js
       - name: Nested chronological test 2022–2025
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: python -m cloud.v8_walkforward
