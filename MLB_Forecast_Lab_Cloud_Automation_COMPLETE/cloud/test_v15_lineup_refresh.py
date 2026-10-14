@@ -35,7 +35,11 @@ class LineupRefreshTests(unittest.TestCase):
             snapshots=[None,lineup_snapshot(False),lineup_snapshot(),lineup_snapshot()]
             old=model_output(.58)
             confirmed=model_output(.54);confirmed['model_version']=worker.VERSION
+            for side in ('home','away'):
+                confirmed['personnel'][side]['lineup']=lineup_snapshot()['confirmed_lineups'][side]
             final=model_output(.57);final['model_version']=worker.VERSION
+            for side in ('home','away'):
+                final['personnel'][side]['lineup']=lineup_snapshot()['confirmed_lineups'][side]
             with patch.object(worker,'STATE',root/'cloud_records'),\
                  patch.object(worker,'game_evidence',side_effect=snapshots),\
                  patch.object(worker,'generate',side_effect=[old,confirmed,final]),\
