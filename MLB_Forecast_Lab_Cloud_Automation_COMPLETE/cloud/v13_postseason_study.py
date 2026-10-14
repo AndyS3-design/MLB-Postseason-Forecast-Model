@@ -41,7 +41,7 @@ def official_finals(year,cutoff,fetch=retrieve):
     while left<=end:
         right=min(left+timedelta(days=27),end)
         q=urlencode({'sportId':1,'startDate':left.isoformat(),'endDate':right.isoformat(),
-                     'gameTypes':GAME_TYPES})
+                     'gameTypes':GAME_TYPES,'hydrate':'linescore'})
         payload=fetch(API+'?'+q)
         if not isinstance(payload,dict) or not isinstance(payload.get('dates'),list):
             raise ValueError('Bad MLB response for '+str(year))
@@ -53,7 +53,18 @@ def official_finals(year,cutoff,fetch=retrieve):
                 if not begin<=dt<cutoff:continue
                 try:
                     ident=str(int(g['gamePk']))
-                    home=int(g['teams']['home']['score']);away=int(g['teams']['away']['score'])
+                    # Some early API archives mark games Final without including
+                    # summary team.score. Check hydrated linescore, then a
+                    # dedicated official per-game linescore endpoint.
+                    line=g.get('linescore') or {}
+                    pair=g.get('teams') or {}
+                    if 'score' in pair.get('home',{}) and 'score' in pair.get('away',{}):
+                        home=int(pair['home']['score']);away=int(pair['away']['score'])
+                    else:
+                        if 'runs' not in line.get('teams',{}).get('home',{}):
+                            line=fetch('https://statsapi.mlb.com/api/v1/game/'+ident+'/linescore')
+                        home=int(line['teams']['home']['runs'])
+                        away=int(line['teams']['away']['runs'])
                     if min(home,away)<0:raise ValueError('Negative runs')
                 except (TypeError,KeyError,ValueError) as exc:
                     raise ValueError('Official final has missing ID/runs: '+str(g.get('gamePk'))) from exc
