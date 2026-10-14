@@ -17,7 +17,7 @@ This project can demonstrate **Python, data engineering, applied machine learnin
 
 ## Good interview demonstration
 
-1. Open the [dashboard](https://andys3-design.github.io/MLB_Backtest_Expanded_2026_Postseason_Markets/) and show a stored prediction with its timestamp and expected runs.
+1. Open the [dashboard](https://andys3-design.github.io/MLB-Postseason-Forecast-Model/) and show a stored prediction with its timestamp and expected runs.
 2. Trace it backward from `site/data.json` to `cloud_records/predictions/` and `cloud/worker.py`.
 3. Explain how the preflight gate, before-first-pitch cutoff and earlier-game filters reduce data leakage.
 4. Show an original versus updated pregame record to explain reproducible provenance and change tracking.
