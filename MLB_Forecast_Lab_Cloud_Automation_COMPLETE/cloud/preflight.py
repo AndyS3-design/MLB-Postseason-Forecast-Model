@@ -21,8 +21,12 @@ APP_ROOT=Path(__file__).resolve().parents[1]
 EASTERN=ZoneInfo('America/New_York')
 
 API='https://statsapi.mlb.com/api/v1/schedule'
-MIN_LEAD_MINUTES=16
-MAX_LEAD_MINUTES=31
+# GitHub cron and runner startup are best-effort. Wake the job earlier, and
+# keep a late recovery opportunity. The WORKER still independently requires
+# the original prediction to finish inside its strict 8–30-minute window.
+# This is a scheduling envelope, not permission to backdate a forecast.
+MIN_LEAD_MINUTES=10
+MAX_LEAD_MINUTES=39
 GAME_TYPES={'R','F','D','L','W'}
 ALLOWED_STATES={'preview','pre-game','pregame','scheduled','warmup'}
 
