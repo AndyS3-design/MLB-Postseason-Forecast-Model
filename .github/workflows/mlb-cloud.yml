@@ -10,6 +10,8 @@ on:
     paths:
       - '.github/workflows/mlb-cloud.yml'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/preflight.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v11_daily.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_revision.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_forecast_finish_time.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py'
