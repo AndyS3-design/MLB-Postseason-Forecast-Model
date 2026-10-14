@@ -1,0 +1,25 @@
+name: Pages 404 regression and public availability
+on:
+  push:
+    branches: ['fix/pages-postdeploy-http-smoke']
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-cloud.yml'
+      - '.github/workflows/mlb-pages-public-check-ci.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/public_site_health.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_public_site_health.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pages-smoke-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Test 404 rejection, CDN retry and public data validation
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python3 -m unittest cloud.test_public_site_health -v
+      - name: Check current published HTML and actual forecast JSON
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python3 -m cloud.public_site_health --url https://andys3-design.github.io/MLB-Postseason-Forecast-Model/ --attempts 3 --delay-seconds 5
