@@ -459,6 +459,19 @@ def run(root=ROOT,now=None,network=True,fast=False):
                                       'error':str(exc)[:180]})
     summary['new_settlements']=settle(root)
     summary['status']='finished'
+    if network and not fast and 'refreshed_finished_games' in summary:
+        # This file is independent of last_run.json because short pregame jobs
+        # overwrite last_run while intentionally skipping official result imports.
+        stamp=utcnow() if network else now
+        encode_json(STATE/'daily_maintenance.json',{
+            'successful_refresh_utc':stamp.isoformat(),
+            'as_of_exclusive_et_date':today.isoformat(),
+            'official_games_imported':summary['refreshed_finished_games'],
+            'new_settlements':summary['new_settlements'],
+            'status':'complete'})
+        summary['daily_maintenance']='complete'
+    elif not fast:
+        summary['daily_maintenance']='incomplete (official results import unavailable)'
     summary['known_pre_game_records']=render_site(root,now,summary)
     encode_json(STATE/'last_run.json',summary)
     return summary
