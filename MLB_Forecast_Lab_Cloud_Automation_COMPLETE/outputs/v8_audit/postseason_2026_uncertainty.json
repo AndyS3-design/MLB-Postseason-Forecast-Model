@@ -1,0 +1,43 @@
+{
+  "method": "Deterministic 5000-draw bootstrap resampling official GAME DATES with replacement; paired game-level differences; 95% percentile intervals.",
+  "sample_games": 28,
+  "sample_dates": 12,
+  "model_winner_correct": 18,
+  "model_winner_accuracy": 0.6428571428571429,
+  "model_winner_wilson_95": [
+    0.4582997758222723,
+    0.7929438802754113
+  ],
+  "paired_deltas": {
+    "winner_brier_model_minus_elo": {
+      "observed": 0.00338,
+      "ci95": [
+        -0.00812,
+        0.01528
+      ]
+    },
+    "total_mae_model_minus_prior_playoff_mean": {
+      "observed": 0.16825,
+      "ci95": [
+        0.08705,
+        0.26581
+      ]
+    },
+    "total_mae_context_on_minus_off": {
+      "observed": -0.28896,
+      "ci95": [
+        -0.55244,
+        -0.0062
+      ]
+    },
+    "under_brier_model_minus_prior_rate": {
+      "observed": 0.00007,
+      "ci95": [
+        -0.01946,
+        0.02095
+      ]
+    }
+  },
+  "interpretation": "Negative delta favors the MLB Forecast Lab model. Intervals crossing zero do not show a reliable difference. This remains a RETROSPECTIVE sample with prior model-development exposure.",
+  "limitations": "Small 2026 playoffs sample with clustered game dates; original model not independently untouched and archived pregame starter IDs unavailable."
+}
