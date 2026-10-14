@@ -79,3 +79,13 @@ That comparison is retrospective, not a newly untouched holdout.
 - Track missing predictions and time-window failures.
 - Review retrospective and prospective metrics separately.
 - Attribute Retrosheet and record any changes in source behavior.
+
+## V9 missed-prediction monitoring
+
+A new independent `forecast_health` GitHub Actions job runs after an eligible main forecast job. It checks every game ID flagged by the preflight gate against an **original, valid timestamped forecast** saved in `cloud_records/predictions/`. If an expected game is missing, invalid or the worker reported `forecast_failed`, this health job **fails** and its GitHub Actions summary lists the game IDs. The separate website deployment job may still succeed with other valid predictions; the health signal must be reviewed independently.
+
+The dashboard also displays a cumulative **pregame capture rate** starting October 14, 2026, computed only from official completed games already imported and dated before the current ET date. A blank or zero denominator is shown as **not measurable**. The machine-readable cumulative report is saved to `cloud_records/coverage_latest.json` and `site/data.json.prospective_capture`.
+
+For failures, inspect `check` → `forecasts` → `forecast_health`, and `cloud_records/last_run.json`. GitHub schedules are best effort: do not backdate missed games. Also remember that an absent API final is **not** evidence that no prediction was captured; the monitor distinguishes these cases.
+
+See [V9 monitoring definitions](V9_PROSPECTIVE_MONITOR.md).
