@@ -23,6 +23,8 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/official_hitter_history.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v16_official_hitter_history.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v17_prospective.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/public_site_health.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_public_site_health.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v17_quality.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v17_scoring_research.py'
@@ -103,7 +105,7 @@ jobs:
           key: mlb-v8-frozen-${{ runner.os }}-python312-${{ hashFiles('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_model_cache.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2023.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2024.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2025.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/gl20*.zip', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/advanced_pitching_details.csv') }}
       - name: Verify cloud forecasting safeguards
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-        run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision cloud.test_forecast_finish_time cloud.test_v8_challengers cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v10_schedule_audit cloud.test_v11_daily cloud.test_v12_two_stage cloud.test_v13_postseason_context cloud.test_v13_score_presentation cloud.test_v13_preliminary_update cloud.test_v14_totals cloud.test_v15_lineup_refresh cloud.test_v16_official_hitter_history cloud.test_v17_quality cloud.test_v17_scoring_research -q
+        run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision cloud.test_forecast_finish_time cloud.test_v8_challengers cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v10_schedule_audit cloud.test_v11_daily cloud.test_v12_two_stage cloud.test_v13_postseason_context cloud.test_v13_score_presentation cloud.test_v13_preliminary_update cloud.test_v14_totals cloud.test_v15_lineup_refresh cloud.test_v16_official_hitter_history cloud.test_v17_quality cloud.test_v17_scoring_research cloud.test_public_site_health -q
       - name: Refresh verified MLB data and forecast before first pitch
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
@@ -148,6 +150,8 @@ jobs:
 
   deploy:
     needs: forecasts
+    outputs:
+      page_url: ${{ steps.deploy.outputs.page_url }}
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -159,6 +163,24 @@ jobs:
       - name: Deploy forecast website
         id: deploy
         uses: actions/deploy-pages@v4
+
+
+  public_site_health:
+    name: Verify public deployed page and forecasts are reachable
+    needs: deploy
+    if: needs.deploy.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - name: Confirm real public HTTP availability after Pages propagation
+        env:
+          DEPLOYED_PAGES_URL: ${{ needs.deploy.outputs.page_url }}
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python3 -m cloud.public_site_health --url "$DEPLOYED_PAGES_URL" --attempts 15 --delay-seconds 20
 
   forecast_health:
     needs: [check, forecasts]
