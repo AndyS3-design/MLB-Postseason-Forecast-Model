@@ -25,6 +25,7 @@ from cloud.v8_evaluate import from_files as prospective_health_report
 from cloud.v8_challengers import save_shadow_forecasts,attach_shadows,evaluate_pair as challenger_metrics
 from cloud.v9_tracking import summarize as prospective_capture_report
 from cloud.v10_schedule_audit import reconcile as official_schedule_reconciliation
+from cloud.two_stage import eligible_preliminary, paired_stage_metrics
 
 ROOT=Path(__file__).resolve().parents[1]
 STATE=ROOT/'cloud_records'
@@ -65,6 +66,13 @@ def can_forecast(game,now):
     if sanitize_status(game.get('status')) not in ('scheduled','pre-game','pregame','preview','warmup'):
         return False
     return str(game.get('id','')).isdigit() and game.get('away')!=game.get('home')
+
+
+def can_preliminary(game,now):
+    """An early, explicitly provisional GAME-DAY forecast, not the final."""
+    return (game.get('home') != game.get('away') and
+            eligible_preliminary(game.get('id'),game.get('date'),
+                game.get('start_utc'),game.get('game_type','R'),game.get('status'),now))
 
 
 def can_revise(game,now,original):
@@ -166,11 +174,21 @@ def game_evidence(game,now):
         return None
 
 
-def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=False,shadows_enabled=False):
+def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=False,shadows_enabled=False,preliminary=False):
     id_=str(game['id'])
     original_path=STATE/'predictions'/f'{id_}.json'
     prior_record=read_json(original_path) if original_path.exists() else None
-    if revision:
+    if preliminary and revision:
+        raise ValueError('Preliminary preview and manual revision cannot be combined')
+    if preliminary:
+        target=STATE/'preliminary'/f'{id_}.json'
+        if target.exists():
+            return {'status':'preliminary_already_frozen','game_id':id_}
+        if original_path.exists():
+            return {'status':'preliminary_skipped_final_exists','game_id':id_}
+        if not can_preliminary(game,now):
+            return {'status':'outside_preliminary_window','game_id':id_}
+    elif revision:
         if not can_revise(game,now,prior_record):
             return {'status':'revision_not_pregame','game_id':id_}
         revision_dir=STATE/'revisions'
@@ -236,7 +254,7 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
                   'park_factor':result['adjustments']['park']['factor'],
                   'weather_factor':result['adjustments']['weather']['factor']},
         source='Official MLB pregame schedule; baseball-only model; no market inputs',
-        forecast_kind=('revised_pregame' if revision else 'original_pregame'),
+        forecast_kind=('preliminary_pregame' if preliminary else 'revised_pregame' if revision else 'original_pregame'),
         original_forecast_created_utc=(prior_record.get('forecast_created_utc') if revision else None),
         revision_reason=('Updated verified pitcher history and newer training inputs; original remains immutable' if revision else None),
         data_quality='LIMITED' if status['data_gaps'] else 'FEATURES AVAILABLE')
@@ -244,11 +262,22 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
     final_check=now+timedelta(seconds=max(0.,monotonic()-computation_start))
     if final_check>=start:
         raise RuntimeError('Forecast record would be persisted after first pitch; refusing')
+    if preliminary and not can_preliminary(game,final_check):
+        raise RuntimeError('Preliminary calculation crossed the early forecast cutoff; refusing')
     rec['forecast_created_utc']=final_check.isoformat()
     rec['minutes_before_game']=round((start-final_check).total_seconds()/60,1)
-    encode_json(target,rec)
+    if preliminary:
+        # Exclusive create. A second runner cannot silently replace a preview.
+        target.parent.mkdir(parents=True,exist_ok=True)
+        try:
+            with target.open('x',encoding='utf-8') as file:
+                json.dump(rec,file,indent=2,sort_keys=True,allow_nan=False)
+        except FileExistsError:
+            return {'status':'preliminary_already_frozen','game_id':id_}
+    else:
+        encode_json(target,rec)
     shadow_status={'status':'not_requested'}
-    if shadows_enabled and not revision:
+    if shadows_enabled and not revision and not preliminary:
         # The primary prediction is ALREADY committed to its frozen JSON.
         # Failure of an experimental challenger can never erase or rewrite it.
         try:
@@ -256,7 +285,7 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
                 prior,clean,prior_assets,snapshot=snap,clock=monotonic,n=N_SIMULATIONS)
         except Exception as exc:
             shadow_status={'status':'error','message':str(exc)[:160]}
-    return {'status':('revised_pregame_saved' if revision else 'saved'),'game_id':id_,
+    return {'status':('preliminary_saved' if preliminary else 'revised_pregame_saved' if revision else 'saved'),'game_id':id_,
             'away':rec['away'],'home':rec['home'],
             'minutes_before_game':rec['minutes_before_game'],
             'shadow_research':shadow_status}
@@ -322,6 +351,31 @@ def render_site(root,now,summary):
         except (ValueError,TypeError):pass
     attach_shadows(originals,root)
     by_id={str(x.get('game_id')):x for x in originals}
+    preliminary_records=[]
+    for f in sorted((root/'cloud_records'/'preliminary').glob('*.json')):
+        try:
+            early=read_json(f)
+            gid=str(early.get('game_id'))
+            if (early.get('forecast_kind')!='preliminary_pregame'
+                    or gid!=f.stem or not early.get('game_start_utc')):
+                continue
+            from cloud.v8_evaluate import valid_original,timestamp
+            if not valid_original(early):
+                continue
+            matched=by_id.get(gid)
+            if matched and all(str(matched.get(k))==str(early.get(k))
+                               for k in ('game_id','date','home','away','game_start_utc')):
+                if timestamp(early['forecast_created_utc']) < timestamp(matched['forecast_created_utc']):
+                    matched['preliminary_comparison']={
+                        'score':early.get('projected_score'),
+                        'expected_runs':early.get('expected_runs'),
+                        'predicted_home_win':early.get('predicted_home_win'),
+                        'forecast_created_utc':early.get('forecast_created_utc')}
+                if matched.get('official_final'):
+                    early['official_final']=matched['official_final']
+            preliminary_records.append(early)
+        except (OSError,ValueError,KeyError,TypeError):
+            continue
     revisions=[]
     for f in (STATE/'revisions').glob('*.json'):
         try:
@@ -338,9 +392,12 @@ def render_site(root,now,summary):
                 r['official_final']=initial['official_final']
             revisions.append(r)
         except (ValueError,TypeError):pass
-    entries=originals+revisions
+    entries=originals+revisions+preliminary_records
+    # Within each matchup always show the final/explicit revision ahead of
+    # the preliminary, while allowing both snapshots in the selector.
+    priority={'preliminary_pregame':0,'original_pregame':1,'revised_pregame':2}
     entries.sort(key=lambda r:(r.get('game_start_utc',''),
-                   1 if r.get('forecast_kind')=='revised_pregame' else 0,
+                   priority.get(r.get('forecast_kind'),1),
                    r.get('forecast_created_utc','')),reverse=True)
     # Start an independent capture-rate denominator on the day this monitor launches.
     # Historic 2026 playoff replays are NOT retroactively called missed forecasts.
@@ -365,6 +422,7 @@ def render_site(root,now,summary):
         'prospective_performance':prospective_metrics(originals),
         'model_health':prospective_health_report(root),
         'shadow_comparisons':challenger_metrics(originals),
+        'two_stage_comparison':paired_stage_metrics(root),
         'operations':summary,
         'disclaimer':'Baseball-only research forecast. Past outcome never enters a pregame prediction. Unverified advanced inputs are marked missing.'}
     site=root/'site';site.mkdir(exist_ok=True,parents=True)
@@ -421,6 +479,7 @@ def run(root=ROOT,now=None,network=True,fast=False):
         if gid in seen_ids:continue
         seen_ids.add(gid)
         original=STATE/'predictions'/f'{gid}.json'
+        preview=STATE/'preliminary'/f'{gid}.json'
         wants_revision=(original.exists() and revision_requested(root,match) and
             not any((STATE/'revisions').glob(f'{gid}_*.json')) and
             can_revise(match,now,read_json(original)))
@@ -428,6 +487,8 @@ def run(root=ROOT,now=None,network=True,fast=False):
             upcoming.append({**match,'_revision':True})
         elif not original.exists() and can_forecast(match,now):
             upcoming.append(match)
+        elif not original.exists() and not preview.exists() and can_preliminary(match,now):
+            upcoming.append({**match,'_preliminary':True})
     # Run targeted official starter-history import *before* building model assets;
     # otherwise pitcher statistics added during this run would be invisible to
     # the current forecast. Strict previous-day cutoff applies to all imports.
@@ -453,7 +514,8 @@ def run(root=ROOT,now=None,network=True,fast=False):
                 match,utcnow() if network else now,games,root,assets,
                 starter_backfill=backfills.get(str(match['id'])),
                 revision=bool(match.get('_revision')),
-                shadows_enabled=True))
+                shadows_enabled=not bool(match.get('_preliminary')),
+                preliminary=bool(match.get('_preliminary'))))
         except Exception as exc:
             summary['events'].append({'status':'forecast_failed','game_id':match['id'],
                                       'error':str(exc)[:180]})

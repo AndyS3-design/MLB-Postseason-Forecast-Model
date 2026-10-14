@@ -67,3 +67,7 @@ The [full V8 report](V8_RESULTS.md) contains a 28-game retrospective 2026 postse
 ## Independent official schedule integrity (V10)
 
 A separate rolling official MLB final-game schedule audit now cross-checks local imported results and original forecasts for the prior seven calendar days. It can detect the failure mode where a missing result import makes the imported-only V9 capture rate look too favorable. It is not a substitute for checking longer-term API completeness or pregame starter-source provenance. See [official schedule audit](OFFICIAL_SCHEDULE_AUDIT.md).
+
+## Preliminary versus final pregame comparison (V12)
+
+The earlier preview is published as a distinct immutable file and is **not** counted as an original in primary prospective accuracy or V9 missing-final coverage. The first-pitch-locked original remains the final stage. Only paired preliminary/final records from the same game that both predate first pitch are included in the special early-versus-final research comparison, and only after official settlement. See [two-stage forecasts](TWO_STAGE_FORECASTS.md).
