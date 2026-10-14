@@ -84,7 +84,7 @@ def context_for_game(day,game_type,root,include_2026_snapshot=True):
     all_historical=_load(path)
     # A source gap must not silently make a confident new multiplier.
     available={int(r['year']) for r in all_historical}
-    previous=[yr for yr in range(max(START_YEAR,season-4),min(season,HISTORIC_END+1))
+    previous=[yr for yr in range(max(START_YEAR,season-6),min(season,HISTORIC_END+1))
               if yr in available and yr in REG_RUNS_COMBINED]
     if len(previous)<2:return {**inactive,'reason':'Fewer than two official complete prior postseason seasons'}
     records=[r for r in all_historical if r['year'] in previous]
