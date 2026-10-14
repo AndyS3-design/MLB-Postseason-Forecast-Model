@@ -1,13 +1,5 @@
 {
-  "events": [
-    {
-      "away": "CLE",
-      "game_id": "849813",
-      "home": "TBA",
-      "minutes_before_game": 54.4,
-      "status": "revised_pregame_saved"
-    }
-  ],
+  "events": [],
   "historical_game_logs": {
     "available": [
       2016,
@@ -37,33 +29,6 @@
     "status": "ok"
   },
   "refreshed_finished_games": 2458,
-  "run_started_utc": "2026-10-13T23:05:17.112718+00:00",
-  "starter_history_backfill": {
-    "849813": {
-      "cutoff_exclusive": "2026-10-13",
-      "errors": [],
-      "new_boxscores": 10,
-      "sides": {
-        "away": {
-          "game_logs_found": 32,
-          "pitcher_id": "MLB-800048",
-          "prior_verified_starts_after": 8,
-          "prior_verified_starts_before": 4,
-          "source": "MLB official completed game boxscores",
-          "status": "verified starter history"
-        },
-        "home": {
-          "game_logs_found": 32,
-          "pitcher_id": "MLB-642547",
-          "prior_verified_starts_after": 8,
-          "prior_verified_starts_before": 2,
-          "source": "MLB official completed game boxscores",
-          "status": "verified starter history"
-        }
-      },
-      "source": "MLB official game logs + completed game boxscores",
-      "status": "complete"
-    }
-  },
+  "run_started_utc": "2026-10-14T00:07:54.143437+00:00",
   "status": "finished"
 }

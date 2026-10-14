@@ -1,16 +1,29 @@
 {
   "disclaimer": "Baseball-only research forecast. Past outcome never enters a pregame prediction. Unverified advanced inputs are marked missing.",
   "local_timezone": "America/New_York",
+  "model_health": {
+    "coverage": {
+      "any_data_gaps_fraction": 1.0,
+      "both_lineups_confirmed_fraction": 1.0,
+      "both_starters_have_3plus_verified_starts_fraction": 0.0,
+      "mean_lead_minutes": 111.1,
+      "original_forecasts": 1,
+      "settled_originals": 0,
+      "within_8_to_30_minutes_fraction": 0.0
+    },
+    "performance": {
+      "n": 0,
+      "status": "Awaiting official final scores"
+    },
+    "status": "prospective_first_pitch_locked",
+    "warnings": [
+      "Fewer than 30 settled games is a small sample; no strong accuracy claims.",
+      "Revised pregame versions are separate and cannot count as independent games.",
+      "GitHub schedules are best effort; 20-minute target is not guaranteed."
+    ]
+  },
   "operations": {
-    "events": [
-      {
-        "away": "CLE",
-        "game_id": "849813",
-        "home": "TBA",
-        "minutes_before_game": 54.4,
-        "status": "revised_pregame_saved"
-      }
-    ],
+    "events": [],
     "historical_game_logs": {
       "available": [
         2016,
@@ -39,34 +52,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2458,
-    "run_started_utc": "2026-10-13T23:05:17.112718+00:00",
-    "starter_history_backfill": {
-      "849813": {
-        "cutoff_exclusive": "2026-10-13",
-        "errors": [],
-        "new_boxscores": 10,
-        "sides": {
-          "away": {
-            "game_logs_found": 32,
-            "pitcher_id": "MLB-800048",
-            "prior_verified_starts_after": 8,
-            "prior_verified_starts_before": 4,
-            "source": "MLB official completed game boxscores",
-            "status": "verified starter history"
-          },
-          "home": {
-            "game_logs_found": 32,
-            "pitcher_id": "MLB-642547",
-            "prior_verified_starts_after": 8,
-            "prior_verified_starts_before": 2,
-            "source": "MLB official completed game boxscores",
-            "status": "verified starter history"
-          }
-        },
-        "source": "MLB official game logs + completed game boxscores",
-        "status": "complete"
-      }
-    },
+    "run_started_utc": "2026-10-14T00:07:54.143437+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -675,5 +661,5 @@
     "settled_games": 0,
     "status": "Awaiting prospective results"
   },
-  "updated_utc": "2026-10-13T23:05:17.112718+00:00"
+  "updated_utc": "2026-10-14T00:07:54.143437+00:00"
 }
