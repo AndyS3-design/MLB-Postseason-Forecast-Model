@@ -104,7 +104,7 @@ def regular_mean(root,year):
 
 
 def prior_ratio(prior,regular, current_year):
-    completed=[y for y in range(max(2020,current_year-4),current_year) if y in prior and y in regular]
+    completed=[y for y in range(max(2020,current_year-6),current_year) if y in prior and y in regular]
     if not completed:return None
     # Weight by the actual number of completed postseason games rather than
     # equally weighting a pandemic-era season and a full postseason.
