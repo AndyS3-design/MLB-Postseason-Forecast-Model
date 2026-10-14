@@ -1,0 +1,29 @@
+name: V8 Research — Real Model Shadow Smoke
+on:
+  push:
+    branches: ['research/v8-shadow-smoke']
+    paths:
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_shadow_smoke.py'
+      - '.github/workflows/mlb-v8-shadow-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Run actual frozen run model and shadow variants
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m cloud.v8_shadow_smoke
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v8-real-model-shadow-api-smoke
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_validation/shadow_variant_real_model_smoke.json
