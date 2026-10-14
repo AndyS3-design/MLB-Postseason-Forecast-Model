@@ -1,0 +1,7 @@
+{
+  "kind": "one_time_preliminary_update",
+  "game_id": "849811",
+  "date": "2026-10-14",
+  "required_model_version": "13.0.0-recent-postseason-scoring",
+  "reason": "User-requested V13 recalculation using verified 2020–2026 postseason scoring; preserve original frozen preliminary."
+}
