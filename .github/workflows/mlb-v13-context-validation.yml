@@ -9,6 +9,10 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/official_postseason_2020_2025.csv'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_simulation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v6_display.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v13_score_presentation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_challengers.py'
   pull_request:
     paths:
       - '.github/workflows/mlb-v13-context-validation.yml'
@@ -35,7 +39,7 @@ jobs:
       - name: Run full original/early/final timing and calibration safety tests
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
-          python -m unittest cloud.test_v13_postseason_context cloud.test_v12_two_stage cloud.test_v11_daily cloud.test_v10_schedule_audit cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v8_challengers cloud.test_forecast_finish_time cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
+          python -m unittest cloud.test_v13_postseason_context cloud.test_v13_score_presentation cloud.test_v12_two_stage cloud.test_v11_daily cloud.test_v10_schedule_audit cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v8_challengers cloud.test_forecast_finish_time cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
       - name: Verify calibrated genuine simulator produces a valid outcome
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
@@ -63,6 +67,9 @@ jobs:
           assert f['total_expected_runs']>0
           assert 0<=f['home_win_probability']<=1
           assert p['factor']<.89
+          assert f['v6_display_score']['home']==f['representative_score']['home']
+          assert f['v6_display_score']['away']==f['representative_score']['away']
+          print('EXAMPLE MODAL SCORE',f['v6_display_score'],flush=True)
           print('REAL MODEL DIAGNOSTIC (NOT A SAVED PREGAME PREDICTION)',
                 'expected runs',round(f['total_expected_runs'],3),
                 'postseason factor',round(p['factor'],5),
