@@ -11,7 +11,11 @@ from urllib.parse import urlencode
 from urllib.request import Request,urlopen
 from pathlib import Path
 from zoneinfo import ZoneInfo
-from cloud.two_stage import eligible_preliminary, EARLIEST_PREVIEW_HOUR_ET
+# Both `python cloud/preflight.py` (GitHub gate) and module imports must work.
+if __package__:
+    from cloud.two_stage import eligible_preliminary, EARLIEST_PREVIEW_HOUR_ET
+else:
+    from two_stage import eligible_preliminary, EARLIEST_PREVIEW_HOUR_ET
 
 APP_ROOT=Path(__file__).resolve().parents[1]
 EASTERN=ZoneInfo('America/New_York')
