@@ -183,7 +183,7 @@ if(updatedPreliminary&&early){
  const overUnderTable=totalLines.length===4
    ?'<table><thead><tr><th>Total</th><th>Under</th><th>Over</th></tr></thead><tbody>'+
        totalLines.map(x=>'<tr><td>'+x.line.toFixed(1)+'</td><td><strong>'+pct(x.under)+'</strong></td><td><strong>'+pct(x.over)+'</strong></td></tr>').join('')+
-       '</tbody></table><div class="prose">Calculated from the full saved score distribution; no sportsbook prices or vig. Half-run lines have no push.</div>'
+       '</tbody></table><div class="prose">Calculated from the full saved score distribution; no external prices or bookmaker margin. Half-run lines have no push.</div>'
    :'<div class="prose">A complete valid distribution is unavailable. No odds are fabricated.</div>';
  let bullpen=g.health?.bullpen_workload||{};
 let bullpenDetail=Object.keys(bullpen).length?`<p><strong>Pregame bullpen workload (research-only):</strong> Away: ${esc(bullpen.away?.relievers_in_sample??0)} historical relievers, ${esc(bullpen.away?.total_reported_pitches_last_3d??0)} past-three-day pitches, roster ${bullpen.away?.roster_verified?'verified':'unverified'}; home: ${esc(bullpen.home?.relievers_in_sample??0)} relievers, ${esc(bullpen.home?.total_reported_pitches_last_3d??0)} pitches, roster ${bullpen.home?.roster_verified?'verified':'unverified'}. Fatigue thresholds are experimental and do not change the projected runs.</p>`:'';
