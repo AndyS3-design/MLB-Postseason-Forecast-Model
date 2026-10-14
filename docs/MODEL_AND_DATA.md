@@ -20,7 +20,7 @@
 4. Use the game's baseball inputs to simulate **12,000** possible outcomes (`cloud/worker.py`).
 5. Save winner probability, mean team and combined runs, total-run probabilities, an illustrative score, the snapshot time, model version and coverage metadata.
 
-The simulated **mean run total** may be fractional and need not equal the integer sum of the **illustrative score**. The score is the most common exact simulated score on the model favorite's winning side; it is not the mean total or a guarantee. The underlying full-game expected runs are shown separately.
+The simulated **mean run total** may be fractional and need not equal the integer sum of the **illustrative score**. Starting with the V14 display, the score is the **unconditional most common exact simulated final**. Unlike the winning-team probability, it is not restricted to the favorite's outcomes and can even favor the other team. It is neither the mean run total nor a guarantee. The four half-run over/under probabilities (3.5, 4.5, 5.5, 6.5) are derived directly from the complete, saved total-runs probability distribution, without bookmaker odds or market prices.
 
 ## Historical training policy
 

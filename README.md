@@ -78,3 +78,6 @@ The [V13 official postseason scoring study](docs/POSTSEASON_SCORING_V13.md) cove
 Historical baseball information was obtained free of charge from, and is copyrighted by, **Retrosheet**. See [Retrosheet](https://www.retrosheet.org/) for information and attribution. Current schedules, game results and boxscores are obtained from official MLB data endpoints. Coverage and availability can change.
 
 This repository is an independent educational project, not affiliated with or endorsed by MLB or Retrosheet. It does not establish betting profitability or guaranteed prediction accuracy. The project does not include a license granting others broad reuse rights; contact the repository owner before reusing substantial source code.
+
+
+The [V14 run-distribution view](docs/SCORE_AND_TOTAL_ODDS_V14.md) distinguishes the most common **exact final score** from the favorite and expected run total, and shows no-vig model-implied over/under probabilities for 3.5, 4.5, 5.5 and 6.5 runs. Saved old forecasts remain immutable.

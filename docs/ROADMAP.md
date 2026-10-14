@@ -96,3 +96,12 @@ Method and limitations: [two-stage forecasts](TWO_STAGE_FORECASTS.md).
 - [ ] Collect future truly prospective original forecasts and score them against the frozen historical-only variant to determine whether adaptive postseason correction actually improves accuracy.
 
 Full evidence and caveats: [V13 official scoring study](POSTSEASON_SCORING_V13.md).
+
+## V14 transparent exact scores and four run-total lines
+
+- [x] Display the most probable single exact score across every simulated outcome, even if it favors the other team from the overall model winner.
+- [x] Derive under and over percentages at 3.5, 4.5, 5.5 and 6.5 from the full archived score distribution, with half-run lines having no push.
+- [x] Make existing immutable predictions reflect their actual most probable score from a saved heatmap if its uncapped score is provably highest; otherwise label the saved score illustrative.
+- [x] Keep expected total, favorite probability and exact-score chance distinct; add 2026 real-record regression coverage.
+
+[Distribution presentation evidence](SCORE_AND_TOTAL_ODDS_V14.md).

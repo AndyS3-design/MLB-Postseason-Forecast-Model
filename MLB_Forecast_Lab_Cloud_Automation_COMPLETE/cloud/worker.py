@@ -18,6 +18,7 @@ from v4_sources import capture_official_pregame
 from v6_replay import clean_game_input,historical_cutoff_assets
 from v6_strength import pregame_history_only,team_indices
 from v6_display import display_forecast
+from v6_baseball_totals import half_run_line_probabilities
 from cloud.refresh import current_season_results,append_future_years,all_finals
 from cloud.starter_backfill import backfill_match_starters
 from cloud.v8_bullpen_health import matchup_workload
@@ -279,7 +280,10 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
                        'total':float(f['total_expected_runs'])},
         under_6_5_probability=float(f['under_6_5_probability']),
         total_distribution=f['total_pmf'],
+        total_line_probabilities=half_run_line_probabilities(f['total_pmf']),
         score_grid=f['score_grid'],
+        modal_exact_scores=f.get('modal_exact_scores',[]),
+        projected_score_method='unconditional_simulated_exact_mode',
         team_indices=indices.get('teams',{}),health=status,
         scenario={'postseason_factor':result['adjustments']['postseason_scoring'].get('factor',1.),
                   'starter_weight':result['adjustments']['starter_total_rate']['weight'],
