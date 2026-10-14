@@ -27,9 +27,25 @@ class ScoreDisplayTests(unittest.TestCase):
   a[ties]+=1
   x=summarize({'home_final':h,'away_final':a})
   score=x['v6_display_score']
-  self.assertEqual(score['home']>score['away'],x['home_win_probability']>=.5)
-  self.assertEqual(x['representative_score']['home'],score['home'])
-  self.assertEqual(x['representative_score']['away'],score['away'])
+  self.assertEqual((score['home'],score['away']),
+                   (x['modal_exact_scores'][0]['home'],x['modal_exact_scores'][0]['away']))
+  self.assertAlmostEqual(score['probability'],x['modal_exact_scores'][0]['probability'])
   self.assertAlmostEqual(sum(x['total_pmf'].values()),1.)
+
+ def test_single_most_likely_score_can_favor_underdog(self):
+  # Home wins the modal exact 3-2 result five times, but the visitors
+  # win ten of fifteen simulations by several *different* scores.
+  h=np.array([3]*5+[2]*4+[1]*3+[2]*3,dtype=int)
+  a=np.array([2]*5+[3]*4+[2]*3+[4]*3,dtype=int)
+  out=summarize({'home_final':h,'away_final':a})
+  self.assertAlmostEqual(out['home_win_probability'],5/15)
+  self.assertEqual((out['v6_display_score']['home'],out['v6_display_score']['away']),(3,2))
+  self.assertAlmostEqual(out['v6_display_score']['probability'],5/15)
+  self.assertEqual((out['representative_score']['home'],out['representative_score']['away']),(2,3))
+  displayed=display_forecast(out,'Brewers','Dodgers',6.5)
+  self.assertEqual(displayed['winning_team'],'Brewers')
+  self.assertEqual(displayed['displayed_score_winner'],'Dodgers')
+  self.assertFalse(displayed['displayed_score_matches_model_favorite'])
+  self.assertAlmostEqual(sum(out['total_pmf'].values()),1.)
 
 if __name__=='__main__':unittest.main()
