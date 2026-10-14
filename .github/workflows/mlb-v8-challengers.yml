@@ -1,0 +1,37 @@
+name: V8 CI — Prospective Model Comparison
+on:
+  push:
+    branches: ['research/v8-prospective-challengers']
+    paths:
+      - '.github/workflows/mlb-v8-challengers.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_challengers.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v8_challengers.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Verify new prospective model comparison and all past cloud safeguards
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v8_challengers cloud.test_forecast_finish_time cloud.test_v8_cache cloud.test_v8_evaluate cloud.test_v8_bullpen cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
+      - name: Check HTML JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html').read_text()
+          Path('/tmp/mlb_challengers.js').write_text(s.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/mlb_challengers.js
