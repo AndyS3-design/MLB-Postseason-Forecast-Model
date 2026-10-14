@@ -11,6 +11,7 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v17_quality.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v17_scoring_research.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_sources.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_challengers.py'
@@ -42,9 +43,9 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
-          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
       - name: Install existing forecast dependencies
-        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
       - name: Record exact tested runner dependencies and verify installation consistency
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
