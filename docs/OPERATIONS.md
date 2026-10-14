@@ -1,6 +1,6 @@
 # GitHub cloud operations runbook
 
-**Live site:** https://andys3-design.github.io/MLB_Backtest_Expanded_2026_Postseason_Markets/
+**Live site:** https://andys3-design.github.io/MLB-Postseason-Forecast-Model/
 
 **Repository:** https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model
 
@@ -94,4 +94,4 @@ See [V9 monitoring definitions](V9_PROSPECTIVE_MONITOR.md).
 
 The scheduler now opens its cheap wake window at 39 minutes and retains a recovery opportunity until 10 minutes before scheduled first pitch. The actual forecast is still rejected unless completed in the worker's original 8–30-minute window. GitHub scheduling is best effort; this improves opportunities, not guaranteed uptime. After a new pregame run, inspect the version, actual UTC completion timestamp and starters/lineups source coverage. Do not backdate a late missed final.
 
-The renamed GitHub repository is https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model. The GitHub Pages URL shown above remains the previously configured address; verify Pages configuration and deployment URL separately before changing the public link.
+The renamed GitHub repository is https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model. Verified current GitHub Pages deployment URL: https://andys3-design.github.io/MLB-Postseason-Forecast-Model/ (from the October 14, 2026 successful deploy job).
