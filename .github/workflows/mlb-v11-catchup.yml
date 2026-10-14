@@ -7,6 +7,7 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/preflight.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v11_daily.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,3 +26,13 @@ jobs:
       - name: Verify daily catch-up logic and all cloud safety checks
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: python -m unittest cloud.test_v11_daily cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision cloud.test_v8_cache cloud.test_v8_evaluate cloud.test_v8_challengers cloud.test_forecast_finish_time -q
+      - name: Check browser JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          raw=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html').read_text()
+          assert 'renderUpcomingGames' in raw
+          assert 'statsapi.mlb.com/api/v1/schedule?' in raw
+          Path('/tmp/forecast_v11.js').write_text(raw.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/forecast_v11.js

@@ -12,3 +12,7 @@
 **October 14, 2026:** Milwaukee at Los Angeles NLCS Game 3 is scheduled for 8 PM Eastern, so the target forecast time is approximately 7:40 PM Eastern. Before then, no original pregame forecast for that matchup is expected.
 
 Run the cloud tests via `python -m unittest cloud.test_v11_daily cloud.test_cloud cloud.test_v7 -q`.
+
+## Public dashboard: today's scheduled matchups
+
+The browser now requests **today's official MLB schedule** and distinguishes a scheduled matchup from a **saved pregame forecast**. Until roughly 20 minutes before first pitch, it shows "forecast pending" rather than inventing a projected score. If GitHub runs late or the MLB schedule endpoint cannot be reached from the browser, the site explains the limitation. This feature does **not** download hidden game outcomes into the model or change saved predictions.
