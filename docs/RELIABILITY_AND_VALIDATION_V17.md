@@ -10,7 +10,7 @@ GitHub's cron runner is best-effort, not a guaranteed scheduler. The inexpensive
 
 `python -m cloud.v17_scoring_research` reads all **261 verified 2020–25 MLB postseason finals** and checks a simple previous-season-only mean total baseline under several Poisson/Gamma-Poisson negative-binomial dispersion assumptions. Dispersion alpha is chosen on **2021–22 only**; **2023–25** are reported separately. These retrospective scores **are not game-specific archived pregame estimates, nor pristine untouched evidence** because later seasons have already informed broader project work.
 
-The JSON report `outputs/v17_research/distribution_study.json` contains the comparison of out-of-year log loss and under 3.5/4.5/5.5/6.5 Brier scores for every candidate. The historical work does **not automatically rewrite the live dispersion factors**, since aggregate total distributions cannot separately identify shared game-level versus team-level noise or validate matchup-specific coefficients.
+The [measured V17 result summary](V17_SCORING_RESULTS.md) includes 131 later-season finals; the JSON report `outputs/v17_research/distribution_study.json` contains the comparison of out-of-year log loss and under 3.5/4.5/5.5/6.5 Brier scores for every candidate. The historical work does **not automatically rewrite the live dispersion factors**, since aggregate total distributions cannot separately identify shared game-level versus team-level noise or validate matchup-specific coefficients.
 
 ## 3. Truly prospective report for every saved total-run line
 
