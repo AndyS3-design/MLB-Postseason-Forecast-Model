@@ -27,6 +27,7 @@ from cloud.v8_challengers import save_shadow_forecasts,attach_shadows,evaluate_p
 from cloud.v9_tracking import summarize as prospective_capture_report
 from cloud.v10_schedule_audit import reconcile as official_schedule_reconciliation
 from cloud.two_stage import eligible_preliminary, paired_stage_metrics
+from cloud.v17_prospective import score_originals as evaluate_full_distribution
 from cloud.official_hitter_history import collect_verified_lineup_history
 from v4_matchup_core import VERSION
 
@@ -571,6 +572,7 @@ def render_site(root,now,summary):
         'official_schedule_audit':official_audit,
         'predictions':entries[:350],
         'prospective_performance':prospective_metrics(originals),
+        'full_distribution_validation':evaluate_full_distribution(originals),
         'model_health':prospective_health_report(root),
         'shadow_comparisons':challenger_metrics(originals),
         'two_stage_comparison':paired_stage_metrics(root),
