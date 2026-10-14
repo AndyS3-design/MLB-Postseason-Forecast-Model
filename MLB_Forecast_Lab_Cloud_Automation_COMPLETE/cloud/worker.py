@@ -24,6 +24,7 @@ from cloud.v8_bullpen_health import matchup_workload
 from cloud.v8_evaluate import from_files as prospective_health_report
 from cloud.v8_challengers import save_shadow_forecasts,attach_shadows,evaluate_pair as challenger_metrics
 from cloud.v9_tracking import summarize as prospective_capture_report
+from cloud.v10_schedule_audit import reconcile as official_schedule_reconciliation
 
 ROOT=Path(__file__).resolve().parents[1]
 STATE=ROOT/'cloud_records'
@@ -344,9 +345,22 @@ def render_site(root,now,summary):
     # Start an independent capture-rate denominator on the day this monitor launches.
     # Historic 2026 playoff replays are NOT retroactively called missed forecasts.
     capture=prospective_capture_report(root,now.astimezone(ET).date())
+    audit_path=root/'cloud_records'/'official_schedule_audit_latest.json'
+    if audit_path.exists():
+        try:
+            official_audit=read_json(audit_path)
+        except (OSError,ValueError,TypeError):
+            official_audit={'status':'unreadable'}
+    else:
+        official_audit={'status':'not_yet_run'}
+    if (official_audit.get('as_of_exclusive_et_date') not in
+            (None,now.astimezone(ET).date().isoformat())):
+        official_audit={**official_audit,'last_status':official_audit.get('status'),
+                        'status':'stale'}
     output={'updated_utc':now.isoformat(),
         'local_timezone':'America/New_York',
         'prospective_capture':capture,
+        'official_schedule_audit':official_audit,
         'predictions':entries[:350],
         'prospective_performance':prospective_metrics(originals),
         'model_health':prospective_health_report(root),
@@ -376,6 +390,16 @@ def run(root=ROOT,now=None,network=True,fast=False):
             count=current_season_results(root,today)
             summary['refreshed_finished_games']=count
         except Exception as exc:summary['events'].append(f'Official results refresh unavailable: {str(exc)[:170]}')
+        # Independently fetch recent official finals; an import outage must not
+        # make the imported-only capture denominator appear complete.
+        try:
+            audit=official_schedule_reconciliation(root,today)
+        except Exception as exc:
+            audit={'status':'unavailable','as_of_exclusive_et_date':today.isoformat(),
+                   'error':str(exc)[:170]}
+            summary['events'].append(f'Independent schedule audit unavailable: {str(exc)[:170]}')
+        encode_json(root/'cloud_records'/'official_schedule_audit_latest.json',audit)
+        summary['official_schedule_audit_status']=audit['status']
         try:
             summary['pitching_import_status']=initialize_details(root,now)
         except Exception as exc:summary['events'].append(f'Historical pitcher import unavailable: {str(exc)[:160]}')
