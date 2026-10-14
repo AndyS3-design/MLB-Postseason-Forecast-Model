@@ -22,12 +22,12 @@ def predict(calls):
         if kwargs.get('starter_correction_override')==0:
             return {'forecast':{'home_win_probability':.6,
                      'total_expected_runs':8.0,'under_6_5_probability':.3}}
-        if kwargs.get('include_2026_snapshot') is False:
-            return {'forecast':{'home_win_probability':.61,
-                     'total_expected_runs':8.5,'under_6_5_probability':.26}}
         if kwargs.get('postseason_context_enabled') is False:
             return {'forecast':{'home_win_probability':.62,
                      'total_expected_runs':9.5,'under_6_5_probability':.15}}
+        if kwargs.get('include_2026_snapshot') is False:
+            return {'forecast':{'home_win_probability':.61,
+                     'total_expected_runs':8.5,'under_6_5_probability':.26}}
         raise AssertionError('Unexpected challenger settings')
     return run
 class ChallengerTests(unittest.TestCase):
