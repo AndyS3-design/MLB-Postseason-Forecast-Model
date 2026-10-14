@@ -37,14 +37,14 @@ flowchart TD
 | `v4_matchup_core.py` | Fits the regular-season Poisson regression with historical recency weights. |
 | `v4_workflow.py` | Builds game-level run expectations from available baseball context. |
 | `v4_simulation.py` | Samples game scores from run expectations and derives probabilities. |
-| `v62_pitching.py`, `v63_postseason.py` | Optional pitcher-specific and postseason-context adjustments. |
+| `v62_pitching.py`, `cloud/v13_postseason_context.py` | Optional pitcher-specific and postseason-context adjustments. |
 | `site/index.html`, `site/data.json` | Browser-facing presentation and generated forecast JSON. |
 
 ## Scheduling and time integrity
 
 - Repository workflow: `.github/workflows/mlb-cloud.yml`, using the `master` branch.
 - Lightweight GitHub Actions gate: `*/5 * * * *` (every five minutes, **best effort**), plus a daily maintenance invocation at 11:17 UTC.
-- The gate looks for games approximately 16–31 minutes before first pitch. The worker performs an independent eligibility check in an 8–30-minute window.
+- The gate looks for games approximately 10–39 minutes before first pitch. The worker performs an independent eligibility check in an 8–30-minute window.
 - Network or GitHub delays can cause missed forecasts; an after-start game is **not** treated as a legitimate pregame observation.
 - MLB game type, start time and scheduled status are checked, and a forecast is stamped in UTC with its actual run time.
 
@@ -63,3 +63,27 @@ The word *immutable* refers to the application's normal write policy; a Git repo
 ## Why static hosting
 
 This design requires no permanently running personal computer or website server, and produces an accessible read-only dashboard. The trade-offs are delayed scheduled jobs, possible missed game windows, and repository-based storage rather than an independently managed database.
+
+## V17 distribution validation and research-only context shadow
+
+```mermaid
+flowchart LR
+  A[Official MLB pregame feed] --> B[Snapshot with gameData player handedness]
+  C[Earlier-date hitter logs] --> D[Verified 18 hitter profiles]
+  B --> E[Timed model builder]
+  D --> E
+  F[Prior MLB/Retrosheet games] --> E
+  E --> G[12,000 simulation outcomes]
+  G --> H[Immutable original before first pitch]
+  E --> S[Research-only neutral contextual overlay]
+  H --> P[Static probabilities and modal score]
+  S --> Q[Immutable timed shadow record]
+  H --> V[Prospective validity and full-PMF Brier audit]
+  Q --> V
+  R[Later official final scores] --> V
+  V --> P
+```
+
+The final forecast acceptance window stays 8–30 minutes before first pitch even though the cheap preflight wake range is wider. Main model rate parameters are unchanged by the archival distribution study; only data provenance and new research-only A/B variants are added.
+
+[Read the V17 evidence and limitations](RELIABILITY_AND_VALIDATION_V17.md).
