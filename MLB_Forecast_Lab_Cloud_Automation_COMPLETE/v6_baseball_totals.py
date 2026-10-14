@@ -20,3 +20,27 @@ def probabilities_for_line(pmf, line):
     under=sum(v for runs,v in dist.items() if runs<threshold)
     exact=sum(v for runs,v in dist.items() if runs==threshold)
     return {'over':over,'under':under,'push':exact,'line':threshold}
+
+
+HALF_RUN_LINES = (3.5, 4.5, 5.5, 6.5)
+
+
+def half_run_line_probabilities(pmf, lines=HALF_RUN_LINES):
+    """No vig, no bookmaker prices: exact probabilities from one saved PMF.
+
+    For a baseball final total (integer), half-run lines cannot push.
+    This function never rescales the simulation or assumes a Poisson PMF.
+    """
+    out = {}
+    for line in lines:
+        threshold = float(line)
+        if not (threshold * 2).is_integer() or threshold.is_integer():
+            raise ValueError('Run total line must end in .5')
+        v = probabilities_for_line(pmf, threshold)
+        if not math.isclose(v['push'], 0.0, abs_tol=1e-10):
+            raise ValueError('Half-run totals cannot push')
+        out[f'{threshold:.1f}'] = {
+            'under': v['under'],
+            'over': v['over']
+        }
+    return out
