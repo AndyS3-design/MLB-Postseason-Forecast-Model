@@ -1,0 +1,64 @@
+name: V16 Research — live pregame lineup sensitivity (no saved prediction)
+on:
+  push:
+    branches: ['audit/v16-two-lineup-sensitivity']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Install dependencies
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements.txt
+      - name: Compare same-seed neutral vs verified official hitter histories
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python - <<'PY'
+          from datetime import datetime,timezone
+          from pathlib import Path
+          from cloud.worker import fetch_schedule,new_games
+          from cloud.official_hitter_history import collect_verified_lineup_history
+          from v4_sources import capture_official_pregame
+          from v4_workflow import build_assets,generate
+          from v6_replay import clean_game_input,historical_cutoff_assets
+          from v6_strength import pregame_history_only
+          from v6_baseball_totals import half_run_line_probabilities
+          root=Path.cwd()
+          today=datetime.now(timezone.utc)
+          matches=fetch_schedule(today.date())
+          g=next(x for x in matches if str(x.get('id'))=='849811')
+          start=datetime.fromisoformat(g['start_utc'].replace('Z','+00:00'))
+          assert today<start
+          snap=capture_official_pregame('849811',g['start_utc'],now=today)
+          assert all(snap['is_official_lineup'].values())
+          day=g['date']
+          batting=collect_verified_lineup_history(snap,day)
+          assert batting['status']=='verified_earlier_date_hitter_logs',batting['status']
+          games=new_games(root)
+          assets=build_assets(games,root)
+          prior=pregame_history_only(games,day)
+          cutoff_assets=historical_cutoff_assets(assets,day)
+          clean=clean_game_input(g,verified_pregame=True)
+          for label,history in [('cached_neutral',None),('verified_prior_hitter_logs',batting['by_side'])]:
+            result=generate(prior,root,day,clean,assets=cutoff_assets,
+                   n=12000,official_snapshot=snap,official_lineup_history=history)
+            f=result['forecast']
+            adj={side:result['personnel'][side]['lineup_adjustment'] for side in ('home','away')}
+            print('SIMULATION',label,'version',result['model_version'],'matchup',g['away'],g['home'],
+                  'expected_runs',round(f['total_expected_runs'],4),
+                  'home_win',round(f['home_win_probability'],5),
+                  'modal_score',f['v6_display_score'],
+                  'under_over',half_run_line_probabilities(f['total_pmf']))
+            print('HITTER AUDIT',label,'factors',{x:round(v['factor'],5) for x,v in adj.items()},
+                  'samples',{x:v['n'] for x,v in adj.items()},
+                  'sources',{x:result['personnel'][x]['lineup_history_source'] for x in ('home','away')})
+          print('NO PRE-GAME FORECAST SAVED. This is an explicitly labelled read-only diagnostic.')
+          PY
