@@ -17,6 +17,9 @@ def variants(game_type):
              {'starter_correction_override':0.0},
              'Original scoring model with no additional calibrated starter correction')]
     if str(game_type)!='R':
+        result.append(('historic_postseason_only',
+                       {'include_2026_snapshot':False},
+                       '2020–25 historic playoff run correction without current-2026 adaptation'))
         result.append(('without_postseason_context',
                        {'postseason_context_enabled':False,'include_2026_snapshot':False},
                        'Regular-season run rate with no postseason overlay'))
