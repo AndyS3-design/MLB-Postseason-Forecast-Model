@@ -47,7 +47,22 @@ Predictions matched exactly in that test. This is a **single controlled timing c
 
 **Performance evidence:** [Cache profile](../MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_validation/cache_profile.json).
 
-## 4. New prospective scoreboard and data-quality audit
+## 4. Uncertainty and an independently retested pitcher coefficient
+
+The 28-game playoff winner rate of **18/28 = 64.3%** has a **95% Wilson interval of approximately 45.8%–79.3%**. It is not a reliable claim of a future 64% winner rate. A date-clustered, paired 5,000-bootstrap resampling analysis estimates:
+
+| Difference (MLB model minus comparator) | Observed | Approx. 95% interval |
+|---|---:|---:|
+| Winner Brier minus Elo Brier | +0.00338 | −0.00812 to +0.01528 |
+| Total MAE minus prior 2025 playoff average MAE | +0.16825 | +0.08705 to +0.26581 |
+| Total MAE with playoff context minus without | −0.28896 | −0.55244 to −0.00620 |
+| Under-6.5 Brier minus prior playoff rate | +0.00007 | −0.01946 to +0.02095 |
+
+Negative differences favor the MLB model. These intervals **do not eliminate retrospective model-development bias**. [Read the uncertainty JSON](../MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_audit/postseason_2026_uncertainty.json).
+
+The optional additional **starting-pitcher correction weight** was retested across time-ordered 2022–2025 regular-season model fits. Selecting among 0, 0.25, 0.5, 0.75 and 1.0 on folds through 2024 again chose **0.25** (existing production setting). On the separate 2025 diagnostic, no additional correction had MAE **2.48879** / Poisson score **−2.04903**, while weight 0.25 had **2.48697** / **−2.05003**. The benefit is modest and does not establish postseason effectiveness. [Pitcher correction review JSON](../MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_validation/pitcher_weight_review.json).
+
+## 5. New prospective scoreboard and data-quality audit
 
 The cloud dashboard now evaluates original time-stamped forecasts separately from any revised forecasts and displays available sample size, Brier scores, run errors, lineup/pitcher coverage and forecast lead time. Historical replays are **excluded** from those prospective statistics.
 
