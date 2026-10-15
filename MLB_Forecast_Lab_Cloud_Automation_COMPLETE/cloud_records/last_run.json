@@ -1,6 +1,32 @@
 {
   "daily_maintenance": "complete",
-  "events": [],
+  "events": [
+    {
+      "away": "TBA",
+      "game_id": "849818",
+      "home": "CLE",
+      "minutes_before_game": 84.3,
+      "shadow_research": {
+        "status": "not_requested"
+      },
+      "status": "preliminary_saved"
+    },
+    {
+      "away": "MIL",
+      "game_id": "849810",
+      "home": "LAN",
+      "minutes_before_game": 504.2,
+      "shadow_research": {
+        "status": "not_requested"
+      },
+      "status": "preliminary_saved"
+    }
+  ],
+  "frozen_model_cache": {
+    "hit": false,
+    "load_or_fit_seconds": 2.044,
+    "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+  },
   "historical_game_logs": {
     "available": [
       2016,
@@ -14,7 +40,8 @@
     "downloaded": [],
     "unavailable": {}
   },
-  "known_pre_game_records": 5,
+  "known_pre_game_records": 7,
+  "model_assets_build_seconds": 9.201,
   "new_settlements": 0,
   "official_schedule_audit_status": "needs_attention",
   "pitching_import_status": {
@@ -31,6 +58,58 @@
     "status": "ok"
   },
   "refreshed_finished_games": 2460,
-  "run_started_utc": "2026-10-15T06:27:45.501139+00:00",
+  "run_started_utc": "2026-10-15T15:35:17.093624+00:00",
+  "starter_history_backfill": {
+    "849810": {
+      "cutoff_exclusive": "2026-10-15",
+      "errors": [],
+      "new_boxscores": 5,
+      "sides": {
+        "away": {
+          "game_logs_found": 0,
+          "pitcher_id": "",
+          "prior_verified_starts_after": 0,
+          "prior_verified_starts_before": 0,
+          "source": "not available",
+          "status": "starter ID not announced or not MLB ID"
+        },
+        "home": {
+          "game_logs_found": 13,
+          "pitcher_id": "MLB-607192",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 3,
+          "source": "MLB official completed game boxscores",
+          "status": "verified starter history"
+        }
+      },
+      "source": "MLB official game logs + completed game boxscores",
+      "status": "partial"
+    },
+    "849818": {
+      "cutoff_exclusive": "2026-10-15",
+      "errors": [],
+      "new_boxscores": 10,
+      "sides": {
+        "away": {
+          "game_logs_found": 34,
+          "pitcher_id": "MLB-643377",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 2,
+          "source": "MLB official completed game boxscores",
+          "status": "verified starter history"
+        },
+        "home": {
+          "game_logs_found": 32,
+          "pitcher_id": "MLB-668909",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 4,
+          "source": "MLB official completed game boxscores",
+          "status": "verified starter history"
+        }
+      },
+      "source": "MLB official game logs + completed game boxscores",
+      "status": "complete"
+    }
+  },
   "status": "finished"
 }

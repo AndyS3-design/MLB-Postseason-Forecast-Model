@@ -341,7 +341,33 @@
   },
   "operations": {
     "daily_maintenance": "complete",
-    "events": [],
+    "events": [
+      {
+        "away": "TBA",
+        "game_id": "849818",
+        "home": "CLE",
+        "minutes_before_game": 84.3,
+        "shadow_research": {
+          "status": "not_requested"
+        },
+        "status": "preliminary_saved"
+      },
+      {
+        "away": "MIL",
+        "game_id": "849810",
+        "home": "LAN",
+        "minutes_before_game": 504.2,
+        "shadow_research": {
+          "status": "not_requested"
+        },
+        "status": "preliminary_saved"
+      }
+    ],
+    "frozen_model_cache": {
+      "hit": false,
+      "load_or_fit_seconds": 2.044,
+      "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+    },
     "historical_game_logs": {
       "available": [
         2016,
@@ -355,6 +381,7 @@
       "downloaded": [],
       "unavailable": {}
     },
+    "model_assets_build_seconds": 9.201,
     "new_settlements": 0,
     "official_schedule_audit_status": "needs_attention",
     "pitching_import_status": {
@@ -371,10 +398,1055 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2460,
-    "run_started_utc": "2026-10-15T06:27:45.501139+00:00",
+    "run_started_utc": "2026-10-15T15:35:17.093624+00:00",
+    "starter_history_backfill": {
+      "849810": {
+        "cutoff_exclusive": "2026-10-15",
+        "errors": [],
+        "new_boxscores": 5,
+        "sides": {
+          "away": {
+            "game_logs_found": 0,
+            "pitcher_id": "",
+            "prior_verified_starts_after": 0,
+            "prior_verified_starts_before": 0,
+            "source": "not available",
+            "status": "starter ID not announced or not MLB ID"
+          },
+          "home": {
+            "game_logs_found": 13,
+            "pitcher_id": "MLB-607192",
+            "prior_verified_starts_after": 8,
+            "prior_verified_starts_before": 3,
+            "source": "MLB official completed game boxscores",
+            "status": "verified starter history"
+          }
+        },
+        "source": "MLB official game logs + completed game boxscores",
+        "status": "partial"
+      },
+      "849818": {
+        "cutoff_exclusive": "2026-10-15",
+        "errors": [],
+        "new_boxscores": 10,
+        "sides": {
+          "away": {
+            "game_logs_found": 34,
+            "pitcher_id": "MLB-643377",
+            "prior_verified_starts_after": 8,
+            "prior_verified_starts_before": 2,
+            "source": "MLB official completed game boxscores",
+            "status": "verified starter history"
+          },
+          "home": {
+            "game_logs_found": 32,
+            "pitcher_id": "MLB-668909",
+            "prior_verified_starts_after": 8,
+            "prior_verified_starts_before": 4,
+            "source": "MLB official completed game boxscores",
+            "status": "verified starter history"
+          }
+        },
+        "source": "MLB official game logs + completed game boxscores",
+        "status": "complete"
+      }
+    },
     "status": "finished"
   },
   "predictions": [
+    {
+      "away": "MIL",
+      "away_name": "Milwaukee Brewers",
+      "data_quality": "LIMITED",
+      "date": "2026-10-15",
+      "elo_home_win": 0.46589274669420777,
+      "expected_runs": {
+        "away": 4.05825,
+        "home": 3.73225,
+        "total": 7.7905
+      },
+      "favorite_aligned_score": {
+        "away": 3,
+        "conditional_probability": 0.07612012204914083,
+        "home": 2,
+        "method": "most likely exact score among outcomes where the overall model favorite wins",
+        "probability": 0.0395,
+        "winner_side": "away"
+      },
+      "features_cutoff_exclusive": "2026-10-15",
+      "forecast_created_utc": "2026-10-15T15:35:48.040937+00:00",
+      "forecast_kind": "preliminary_pregame",
+      "game_id": "849810",
+      "game_start_utc": "2026-10-16T00:00:00+00:00",
+      "game_type": "Postseason",
+      "health": {
+        "bullpen_workload": {
+          "away": {
+            "historical_relievers_observed": 12,
+            "note": "Exploratory fatigue proxies are not independently fitted scoring multipliers.",
+            "relievers_flagged_as_fatigued": 1,
+            "relievers_in_sample": 10,
+            "relievers_with_pitch_history": 10,
+            "roster_verified": true,
+            "source": "Official bullpen ID filtered; still a workload proxy",
+            "status": "official pregame roster subset",
+            "total_reported_pitches_last_3d": 127,
+            "use_in_forecast": false
+          },
+          "home": {
+            "historical_relievers_observed": 12,
+            "note": "Exploratory fatigue proxies are not independently fitted scoring multipliers.",
+            "relievers_flagged_as_fatigued": 1,
+            "relievers_in_sample": 9,
+            "relievers_with_pitch_history": 9,
+            "roster_verified": true,
+            "source": "Official bullpen ID filtered; still a workload proxy",
+            "status": "official pregame roster subset",
+            "total_reported_pitches_last_3d": 153,
+            "use_in_forecast": false
+          }
+        },
+        "data_gaps": [
+          "home rolling batting totals unavailable for 1 of 15 recent prior games; OBP/ISO use verified totals and league priors",
+          "home batting order not confirmed before first pitch",
+          "away rolling batting totals unavailable for 1 of 15 recent prior games; OBP/ISO use verified totals and league priors",
+          "away starter fewer than three known previous starts",
+          "away batting order not confirmed before first pitch"
+        ],
+        "frozen_model_cache": {
+          "hit": false,
+          "load_or_fit_seconds": 2.044,
+          "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+        },
+        "lineups_confirmed": {
+          "away": false,
+          "home": false
+        },
+        "model_assets_build_seconds": 9.201,
+        "official_hitter_history": {
+          "prior_pa": {},
+          "status": "not_requested"
+        },
+        "official_snapshot_collected": true,
+        "pitcher_calibrated": true,
+        "run_model_training_coverage": "10 seasons: 2016\u20132025",
+        "run_model_training_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "starter_backfill": {
+          "cutoff_exclusive": "2026-10-15",
+          "errors": [],
+          "new_boxscores": 5,
+          "sides": {
+            "away": {
+              "game_logs_found": 0,
+              "pitcher_id": "",
+              "prior_verified_starts_after": 0,
+              "prior_verified_starts_before": 0,
+              "source": "not available",
+              "status": "starter ID not announced or not MLB ID"
+            },
+            "home": {
+              "game_logs_found": 13,
+              "pitcher_id": "MLB-607192",
+              "prior_verified_starts_after": 8,
+              "prior_verified_starts_before": 3,
+              "source": "MLB official completed game boxscores",
+              "status": "verified starter history"
+            }
+          },
+          "source": "MLB official game logs + completed game boxscores",
+          "status": "partial"
+        },
+        "starter_pitcher_history": {
+          "away": 0,
+          "home": 8
+        }
+      },
+      "home": "LAN",
+      "home_name": "Los Angeles Dodgers",
+      "lineup_adjustment": {
+        "away": {
+          "factor": 1.0,
+          "history_source": "cached_prior_boxscores_or_neutral",
+          "prior_plate_appearances": 0,
+          "status": "Unavailable: verified nine-player lineup required"
+        },
+        "home": {
+          "factor": 1.0,
+          "history_source": "cached_prior_boxscores_or_neutral",
+          "prior_plate_appearances": 0,
+          "status": "Unavailable: verified nine-player lineup required"
+        }
+      },
+      "lineup_evidence": null,
+      "minutes_before_game": 504.2,
+      "modal_exact_scores": [
+        {
+          "away": 2,
+          "home": 3,
+          "probability": 0.04533333333333334
+        },
+        {
+          "away": 3,
+          "home": 4,
+          "probability": 0.040916666666666664
+        },
+        {
+          "away": 3,
+          "home": 2,
+          "probability": 0.0395
+        },
+        {
+          "away": 4,
+          "home": 3,
+          "probability": 0.03691666666666667
+        },
+        {
+          "away": 1,
+          "home": 2,
+          "probability": 0.035583333333333335
+        },
+        {
+          "away": 4,
+          "home": 5,
+          "probability": 0.031
+        },
+        {
+          "away": 2,
+          "home": 1,
+          "probability": 0.028416666666666666
+        }
+      ],
+      "model_commit": "eee11fb0d13ad5c09f0057e362c1fca4eaefe5eb",
+      "model_training_cutoff": "2016,2017,2018,2019,2020,2021,2022,2023,2024,2025",
+      "model_version": "18.0.0-forecast-integrity",
+      "original_forecast_created_utc": null,
+      "predicted_home_win": 0.4810833333333333,
+      "projected_score": {
+        "away": 2,
+        "exact_probability": 0.04533333333333334,
+        "home": 3,
+        "sum": 5
+      },
+      "projected_score_method": "unconditional_simulated_exact_mode",
+      "revision_reason": null,
+      "scenario": {
+        "park_factor": 1.0,
+        "postseason_factor": 0.8550130009056114,
+        "starter_weight": 0.25,
+        "weather_factor": 1.0
+      },
+      "score_grid": {
+        "away_axis": "columns",
+        "cap": 10,
+        "cells": [
+          [
+            0.0,
+            0.0095,
+            0.01025,
+            0.0095,
+            0.008666666666666666,
+            0.006083333333333333,
+            0.00375,
+            0.002916666666666667,
+            0.0021666666666666666,
+            0.0009166666666666666,
+            0.0014166666666666668
+          ],
+          [
+            0.011833333333333333,
+            0.0,
+            0.028416666666666666,
+            0.023583333333333335,
+            0.018083333333333333,
+            0.01325,
+            0.009166666666666667,
+            0.006583333333333333,
+            0.004,
+            0.00325,
+            0.0036666666666666666
+          ],
+          [
+            0.010166666666666666,
+            0.035583333333333335,
+            0.0,
+            0.0395,
+            0.026083333333333333,
+            0.018833333333333334,
+            0.013666666666666667,
+            0.00825,
+            0.005916666666666666,
+            0.0033333333333333335,
+            0.004333333333333333
+          ],
+          [
+            0.011,
+            0.024916666666666667,
+            0.04533333333333334,
+            0.0,
+            0.03691666666666667,
+            0.023166666666666665,
+            0.013166666666666667,
+            0.009916666666666667,
+            0.00575,
+            0.004666666666666667,
+            0.006583333333333333
+          ],
+          [
+            0.00675,
+            0.017166666666666667,
+            0.02425,
+            0.040916666666666664,
+            0.0,
+            0.0255,
+            0.015416666666666667,
+            0.008,
+            0.005333333333333333,
+            0.0035833333333333333,
+            0.004666666666666667
+          ],
+          [
+            0.004,
+            0.0095,
+            0.016916666666666667,
+            0.020166666666666666,
+            0.031,
+            0.0,
+            0.01625,
+            0.009583333333333333,
+            0.00525,
+            0.0030833333333333333,
+            0.005166666666666667
+          ],
+          [
+            0.003,
+            0.0065,
+            0.009583333333333333,
+            0.013083333333333334,
+            0.011333333333333334,
+            0.016,
+            0.0,
+            0.00875,
+            0.003916666666666666,
+            0.0020833333333333333,
+            0.00275
+          ],
+          [
+            0.00175,
+            0.00425,
+            0.006583333333333333,
+            0.007333333333333333,
+            0.006583333333333333,
+            0.007916666666666667,
+            0.009,
+            0.0,
+            0.0031666666666666666,
+            0.002,
+            0.0026666666666666666
+          ],
+          [
+            0.0006666666666666666,
+            0.0015833333333333333,
+            0.004333333333333333,
+            0.004083333333333333,
+            0.00375,
+            0.003833333333333333,
+            0.003416666666666667,
+            0.00475,
+            0.0,
+            0.00175,
+            0.00175
+          ],
+          [
+            0.0005833333333333334,
+            0.0016666666666666668,
+            0.0021666666666666666,
+            0.00175,
+            0.003416666666666667,
+            0.00275,
+            0.00175,
+            0.0014166666666666668,
+            0.0025833333333333333,
+            0.0,
+            0.00175
+          ],
+          [
+            0.0009166666666666666,
+            0.0020833333333333333,
+            0.0019166666666666666,
+            0.003416666666666667,
+            0.0028333333333333335,
+            0.0031666666666666666,
+            0.002416666666666667,
+            0.00225,
+            0.0014166666666666668,
+            0.00175,
+            0.00325
+          ]
+        ],
+        "home_axis": "rows",
+        "samples": 12000
+      },
+      "source": "Official MLB pregame schedule; baseball-only model; no market inputs",
+      "starting_pitchers": {
+        "away": "Not announced",
+        "home": "Tyler Glasnow"
+      },
+      "team_indices": {
+        "LAN": {
+          "attack": 103,
+          "available": true,
+          "defense": 134,
+          "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+          "fielding_games": 0,
+          "games": 30,
+          "offense": 103,
+          "pitching": 133,
+          "pitching_games": 30,
+          "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+          "runs_allowed_per_game": 2.83,
+          "runs_scored_per_game": 4.6
+        },
+        "MIL": {
+          "attack": 118,
+          "available": true,
+          "defense": 115,
+          "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+          "fielding_games": 0,
+          "games": 30,
+          "offense": 118,
+          "pitching": 132,
+          "pitching_games": 30,
+          "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+          "runs_allowed_per_game": 3.6,
+          "runs_scored_per_game": 5.5
+        }
+      },
+      "total_distribution": {
+        "1": 0.021333333333333333,
+        "10": 0.060333333333333336,
+        "11": 0.065,
+        "12": 0.03725,
+        "13": 0.03941666666666667,
+        "14": 0.0205,
+        "15": 0.018916666666666665,
+        "16": 0.010666666666666666,
+        "17": 0.010166666666666666,
+        "18": 0.005333333333333333,
+        "19": 0.00475,
+        "2": 0.020416666666666666,
+        "20": 0.002,
+        "21": 0.003,
+        "22": 0.001,
+        "23": 0.00125,
+        "24": 0.0005,
+        "25": 0.0003333333333333333,
+        "26": 0.0004166666666666667,
+        "28": 8.333333333333333e-05,
+        "29": 8.333333333333333e-05,
+        "3": 0.0845,
+        "4": 0.06391666666666666,
+        "5": 0.13016666666666668,
+        "6": 0.07983333333333334,
+        "7": 0.13391666666666666,
+        "8": 0.08025,
+        "9": 0.10466666666666667
+      },
+      "total_line_probabilities": {
+        "3.5": {
+          "over": 0.87375,
+          "under": 0.12625
+        },
+        "4.5": {
+          "over": 0.8098333333333334,
+          "under": 0.19016666666666668
+        },
+        "5.5": {
+          "over": 0.6796666666666666,
+          "under": 0.32033333333333336
+        },
+        "6.5": {
+          "over": 0.5998333333333333,
+          "under": 0.40016666666666667
+        }
+      },
+      "under_6_5_probability": 0.40016666666666667,
+      "win_and_over_probabilities": {
+        "4.5": {
+          "away_win_and_over": 0.429,
+          "favorite_side": "away",
+          "favorite_win_and_over": 0.429,
+          "home_win_and_over": 0.38083333333333336,
+          "method": "exact joint event frequency from same simulated final scores",
+          "over": 0.8098333333333333
+        },
+        "5.5": {
+          "away_win_and_over": 0.36533333333333334,
+          "favorite_side": "away",
+          "favorite_win_and_over": 0.36533333333333334,
+          "home_win_and_over": 0.31433333333333335,
+          "method": "exact joint event frequency from same simulated final scores",
+          "over": 0.6796666666666666
+        }
+      }
+    },
+    {
+      "away": "TBA",
+      "away_name": "Tampa Bay Rays",
+      "data_quality": "LIMITED",
+      "date": "2026-10-15",
+      "elo_home_win": 0.46096765037317317,
+      "expected_runs": {
+        "away": 3.775916666666667,
+        "home": 3.6668333333333334,
+        "total": 7.44275
+      },
+      "favorite_aligned_score": {
+        "away": 2,
+        "conditional_probability": 0.09831004224894377,
+        "home": 3,
+        "method": "most likely exact score among outcomes where the overall model favorite wins",
+        "probability": 0.050416666666666665,
+        "winner_side": "home"
+      },
+      "features_cutoff_exclusive": "2026-10-15",
+      "forecast_created_utc": "2026-10-15T15:35:40.925725+00:00",
+      "forecast_kind": "preliminary_pregame",
+      "game_id": "849818",
+      "game_start_utc": "2026-10-15T17:00:00+00:00",
+      "game_type": "Postseason",
+      "health": {
+        "bullpen_workload": {
+          "away": {
+            "historical_relievers_observed": 12,
+            "note": "Exploratory fatigue proxies are not independently fitted scoring multipliers.",
+            "relievers_flagged_as_fatigued": 0,
+            "relievers_in_sample": 8,
+            "relievers_with_pitch_history": 8,
+            "roster_verified": true,
+            "source": "Official bullpen ID filtered; still a workload proxy",
+            "status": "official pregame roster subset",
+            "total_reported_pitches_last_3d": 95,
+            "use_in_forecast": false
+          },
+          "home": {
+            "historical_relievers_observed": 12,
+            "note": "Exploratory fatigue proxies are not independently fitted scoring multipliers.",
+            "relievers_flagged_as_fatigued": 0,
+            "relievers_in_sample": 11,
+            "relievers_with_pitch_history": 11,
+            "roster_verified": true,
+            "source": "Official bullpen ID filtered; still a workload proxy",
+            "status": "official pregame roster subset",
+            "total_reported_pitches_last_3d": 106,
+            "use_in_forecast": false
+          }
+        },
+        "data_gaps": [
+          "home rolling batting totals unavailable for 1 of 15 recent prior games; OBP/ISO use verified totals and league priors",
+          "away rolling batting totals unavailable for 3 of 15 recent prior games; OBP/ISO use verified totals and league priors"
+        ],
+        "frozen_model_cache": {
+          "hit": false,
+          "load_or_fit_seconds": 2.044,
+          "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+        },
+        "lineups_confirmed": {
+          "away": true,
+          "home": true
+        },
+        "model_assets_build_seconds": 9.201,
+        "official_hitter_history": {
+          "features_cutoff_exclusive": "2026-10-15",
+          "limitations": "Lineup strength overlay is experimental and not independently calibrated",
+          "prior_pa": {
+            "away": 2078,
+            "home": 2113
+          },
+          "source": "Official MLB 2026 hitting game logs, up to last 60 prior games per batter",
+          "status": "verified_earlier_date_hitter_logs"
+        },
+        "official_snapshot_collected": true,
+        "pitcher_calibrated": true,
+        "run_model_training_coverage": "10 seasons: 2016\u20132025",
+        "run_model_training_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "starter_backfill": {
+          "cutoff_exclusive": "2026-10-15",
+          "errors": [],
+          "new_boxscores": 10,
+          "sides": {
+            "away": {
+              "game_logs_found": 34,
+              "pitcher_id": "MLB-643377",
+              "prior_verified_starts_after": 8,
+              "prior_verified_starts_before": 2,
+              "source": "MLB official completed game boxscores",
+              "status": "verified starter history"
+            },
+            "home": {
+              "game_logs_found": 32,
+              "pitcher_id": "MLB-668909",
+              "prior_verified_starts_after": 8,
+              "prior_verified_starts_before": 4,
+              "source": "MLB official completed game boxscores",
+              "status": "verified starter history"
+            }
+          },
+          "source": "MLB official game logs + completed game boxscores",
+          "status": "complete"
+        },
+        "starter_pitcher_history": {
+          "away": 8,
+          "home": 8
+        }
+      },
+      "home": "CLE",
+      "home_name": "Cleveland Guardians",
+      "lineup_adjustment": {
+        "away": {
+          "factor": 1.0011726063636976,
+          "history_source": "official_complete_2026_game_logs",
+          "prior_plate_appearances": 2078,
+          "status": "EXPERIMENTAL: lineup wOBA + generic handedness proxy; not fitted/calibrated"
+        },
+        "home": {
+          "factor": 0.9984472086588074,
+          "history_source": "official_complete_2026_game_logs",
+          "prior_plate_appearances": 2113,
+          "status": "EXPERIMENTAL: lineup wOBA + generic handedness proxy; not fitted/calibrated"
+        }
+      },
+      "lineup_evidence": {
+        "captured_utc": "2026-10-15T15:35:33.402648+00:00",
+        "confirmed_lineups": {
+          "away": [
+            {
+              "batting_hand": "R",
+              "id": 650490,
+              "name": "Yandy D\u00edaz"
+            },
+            {
+              "batting_hand": "L",
+              "id": 666018,
+              "name": "Jonathan Aranda"
+            },
+            {
+              "batting_hand": "R",
+              "id": 691406,
+              "name": "Junior Caminero"
+            },
+            {
+              "batting_hand": "L",
+              "id": 683748,
+              "name": "Victor Mesa Jr."
+            },
+            {
+              "batting_hand": "L",
+              "id": 802415,
+              "name": "Chandler Simpson"
+            },
+            {
+              "batting_hand": "L",
+              "id": 689414,
+              "name": "Liam Hicks"
+            },
+            {
+              "batting_hand": "R",
+              "id": 676356,
+              "name": "Jonny DeLuca"
+            },
+            {
+              "batting_hand": "L",
+              "id": 680700,
+              "name": "Richie Palacios"
+            },
+            {
+              "batting_hand": "S",
+              "id": 670764,
+              "name": "Taylor Walls"
+            }
+          ],
+          "home": [
+            {
+              "batting_hand": "L",
+              "id": 680757,
+              "name": "Steven Kwan"
+            },
+            {
+              "batting_hand": "S",
+              "id": 608070,
+              "name": "Jos\u00e9 Ram\u00edrez"
+            },
+            {
+              "batting_hand": "L",
+              "id": 800050,
+              "name": "Chase DeLauter"
+            },
+            {
+              "batting_hand": "R",
+              "id": 666176,
+              "name": "Jo Adell"
+            },
+            {
+              "batting_hand": "L",
+              "id": 663993,
+              "name": "Nathaniel Lowe"
+            },
+            {
+              "batting_hand": "L",
+              "id": 683953,
+              "name": "Travis Bazzana"
+            },
+            {
+              "batting_hand": "S",
+              "id": 672275,
+              "name": "Patrick Bailey"
+            },
+            {
+              "batting_hand": "L",
+              "id": 690984,
+              "name": "Petey Halpin"
+            },
+            {
+              "batting_hand": "S",
+              "id": 677587,
+              "name": "Brayan Rocchio"
+            }
+          ]
+        },
+        "official_source": "MLB Stats API pregame live feed"
+      },
+      "minutes_before_game": 84.3,
+      "modal_exact_scores": [
+        {
+          "away": 2,
+          "home": 3,
+          "probability": 0.050416666666666665
+        },
+        {
+          "away": 3,
+          "home": 4,
+          "probability": 0.044083333333333335
+        },
+        {
+          "away": 3,
+          "home": 2,
+          "probability": 0.04325
+        },
+        {
+          "away": 1,
+          "home": 2,
+          "probability": 0.042
+        },
+        {
+          "away": 4,
+          "home": 3,
+          "probability": 0.033916666666666664
+        },
+        {
+          "away": 4,
+          "home": 5,
+          "probability": 0.030416666666666668
+        },
+        {
+          "away": 2,
+          "home": 1,
+          "probability": 0.030333333333333334
+        }
+      ],
+      "model_commit": "eee11fb0d13ad5c09f0057e362c1fca4eaefe5eb",
+      "model_training_cutoff": "2016,2017,2018,2019,2020,2021,2022,2023,2024,2025",
+      "model_version": "18.0.0-forecast-integrity",
+      "original_forecast_created_utc": null,
+      "predicted_home_win": 0.5128333333333334,
+      "projected_score": {
+        "away": 2,
+        "exact_probability": 0.050416666666666665,
+        "home": 3,
+        "sum": 5
+      },
+      "projected_score_method": "unconditional_simulated_exact_mode",
+      "revision_reason": null,
+      "scenario": {
+        "park_factor": 1.0,
+        "postseason_factor": 0.8550130009056114,
+        "starter_weight": 0.25,
+        "weather_factor": 1.0
+      },
+      "score_grid": {
+        "away_axis": "columns",
+        "cap": 10,
+        "cells": [
+          [
+            0.0,
+            0.010333333333333333,
+            0.01275,
+            0.009,
+            0.007333333333333333,
+            0.006416666666666667,
+            0.0030833333333333333,
+            0.0026666666666666666,
+            0.00125,
+            0.0011666666666666668,
+            0.0011666666666666668
+          ],
+          [
+            0.014583333333333334,
+            0.0,
+            0.030333333333333334,
+            0.027,
+            0.019083333333333334,
+            0.0125,
+            0.009333333333333334,
+            0.005333333333333333,
+            0.0036666666666666666,
+            0.0021666666666666666,
+            0.002
+          ],
+          [
+            0.013833333333333333,
+            0.042,
+            0.0,
+            0.04325,
+            0.025333333333333333,
+            0.01825,
+            0.011083333333333334,
+            0.0075,
+            0.006083333333333333,
+            0.0026666666666666666,
+            0.00475
+          ],
+          [
+            0.00925,
+            0.026,
+            0.050416666666666665,
+            0.0,
+            0.033916666666666664,
+            0.01975,
+            0.011,
+            0.009,
+            0.004166666666666667,
+            0.0031666666666666666,
+            0.0035833333333333333
+          ],
+          [
+            0.008333333333333333,
+            0.018166666666666668,
+            0.028916666666666667,
+            0.044083333333333335,
+            0.0,
+            0.02266666666666667,
+            0.013,
+            0.006166666666666667,
+            0.00525,
+            0.004166666666666667,
+            0.005
+          ],
+          [
+            0.004416666666666667,
+            0.011583333333333333,
+            0.018083333333333333,
+            0.020833333333333332,
+            0.030416666666666668,
+            0.0,
+            0.014333333333333333,
+            0.008,
+            0.004416666666666667,
+            0.00325,
+            0.002916666666666667
+          ],
+          [
+            0.003416666666666667,
+            0.0075,
+            0.011916666666666667,
+            0.011583333333333333,
+            0.01425,
+            0.019083333333333334,
+            0.0,
+            0.006833333333333334,
+            0.0036666666666666666,
+            0.0021666666666666666,
+            0.002916666666666667
+          ],
+          [
+            0.00175,
+            0.004916666666666666,
+            0.007083333333333333,
+            0.006083333333333333,
+            0.00625,
+            0.00725,
+            0.007416666666666667,
+            0.0,
+            0.0028333333333333335,
+            0.00225,
+            0.00225
+          ],
+          [
+            0.0010833333333333333,
+            0.0033333333333333335,
+            0.00375,
+            0.004083333333333333,
+            0.0031666666666666666,
+            0.004416666666666667,
+            0.0030833333333333333,
+            0.0045,
+            0.0,
+            0.0019166666666666666,
+            0.00125
+          ],
+          [
+            0.0005,
+            0.0011666666666666668,
+            0.002916666666666667,
+            0.0025,
+            0.00225,
+            0.0016666666666666668,
+            0.00125,
+            0.002,
+            0.0018333333333333333,
+            0.0,
+            0.0009166666666666666
+          ],
+          [
+            0.0005833333333333334,
+            0.0016666666666666668,
+            0.00225,
+            0.0028333333333333335,
+            0.00275,
+            0.0023333333333333335,
+            0.0021666666666666666,
+            0.0009166666666666666,
+            0.0015833333333333333,
+            0.002,
+            0.00175
+          ]
+        ],
+        "home_axis": "rows",
+        "samples": 12000
+      },
+      "source": "Official MLB pregame schedule; baseball-only model; no market inputs",
+      "starting_pitchers": {
+        "away": "Griffin Jax",
+        "home": "Gavin Williams"
+      },
+      "team_indices": {
+        "CLE": {
+          "attack": 107,
+          "available": true,
+          "defense": 109,
+          "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+          "fielding_games": 0,
+          "games": 30,
+          "offense": 107,
+          "pitching": 120,
+          "pitching_games": 30,
+          "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+          "runs_allowed_per_game": 3.9,
+          "runs_scored_per_game": 4.87
+        },
+        "TBA": {
+          "attack": 101,
+          "available": true,
+          "defense": 123,
+          "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+          "fielding_games": 0,
+          "games": 30,
+          "offense": 101,
+          "pitching": 107,
+          "pitching_games": 30,
+          "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+          "runs_allowed_per_game": 3.27,
+          "runs_scored_per_game": 4.47
+        }
+      },
+      "total_distribution": {
+        "1": 0.024916666666666667,
+        "10": 0.056416666666666664,
+        "11": 0.06208333333333333,
+        "12": 0.03333333333333333,
+        "13": 0.033916666666666664,
+        "14": 0.01925,
+        "15": 0.015583333333333333,
+        "16": 0.01075,
+        "17": 0.007416666666666667,
+        "18": 0.004083333333333333,
+        "19": 0.0035833333333333333,
+        "2": 0.026583333333333334,
+        "20": 0.0021666666666666666,
+        "21": 0.0010833333333333333,
+        "22": 0.0008333333333333334,
+        "23": 0.0005,
+        "24": 0.0004166666666666667,
+        "25": 0.0003333333333333333,
+        "26": 8.333333333333333e-05,
+        "27": 0.00016666666666666666,
+        "3": 0.09058333333333334,
+        "4": 0.06866666666666667,
+        "5": 0.14175,
+        "6": 0.08483333333333333,
+        "7": 0.13558333333333333,
+        "8": 0.07616666666666666,
+        "9": 0.09891666666666667
+      },
+      "total_line_probabilities": {
+        "3.5": {
+          "over": 0.8579166666666667,
+          "under": 0.14208333333333334
+        },
+        "4.5": {
+          "over": 0.78925,
+          "under": 0.21075
+        },
+        "5.5": {
+          "over": 0.6475,
+          "under": 0.3525
+        },
+        "6.5": {
+          "over": 0.5626666666666666,
+          "under": 0.4373333333333333
+        }
+      },
+      "under_6_5_probability": 0.43733333333333335,
+      "win_and_over_probabilities": {
+        "4.5": {
+          "away_win_and_over": 0.3904166666666667,
+          "favorite_side": "home",
+          "favorite_win_and_over": 0.3988333333333333,
+          "home_win_and_over": 0.3988333333333333,
+          "method": "exact joint event frequency from same simulated final scores",
+          "over": 0.78925
+        },
+        "5.5": {
+          "away_win_and_over": 0.32166666666666666,
+          "favorite_side": "home",
+          "favorite_win_and_over": 0.3258333333333333,
+          "home_win_and_over": 0.3258333333333333,
+          "method": "exact joint event frequency from same simulated final scores",
+          "over": 0.6475
+        }
+      }
+    },
     {
       "away": "MIL",
       "away_name": "Milwaukee Brewers",
@@ -2266,9 +3338,9 @@
     "invalid_preliminary_files": 0,
     "notes": "Paired same-version comparisons only; transitions between model versions are excluded to avoid confusing new coefficients with fresher pregame data.",
     "paired_settled_games": 0,
-    "preliminary_count": 1,
-    "preliminary_without_final_count": 1,
+    "preliminary_count": 3,
+    "preliminary_without_final_count": 3,
     "status": "awaiting_paired_finals"
   },
-  "updated_utc": "2026-10-15T06:27:45.501139+00:00"
+  "updated_utc": "2026-10-15T15:35:17.093624+00:00"
 }
