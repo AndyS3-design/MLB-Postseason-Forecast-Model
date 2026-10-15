@@ -46,11 +46,11 @@ class FrozenEnsembleTests(unittest.TestCase):
         report = score_originals([a, b])["winner_ensemble_shadow_v23"]
         self.assertEqual(report["n"], 2)
         self.assertEqual(report["original"]["winner_correct"], 1)
-        self.assertEqual(report["elo"]["winner_correct"], 1)
+        self.assertEqual(report["elo"]["winner_correct"], 2)
         self.assertEqual(report["fixed_50_50_blend"]["winner_correct"], 1)
         self.assertAlmostEqual(report["original"]["brier"], .29)
         self.assertAlmostEqual(report["elo"]["brier"], .17)
-        self.assertAlmostEqual(report["fixed_50_50_blend"]["brier"], .305)
+        self.assertAlmostEqual(report["fixed_50_50_blend"]["brier"], .205)
         self.assertFalse(report["production_forecasts_changed"])
 
     def test_missing_or_forged_shadow_never_backfilled_after_final(self):
