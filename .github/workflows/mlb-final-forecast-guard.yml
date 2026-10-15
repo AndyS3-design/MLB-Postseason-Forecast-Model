@@ -56,7 +56,7 @@ jobs:
           now=datetime.datetime.now(datetime.timezone.utc)
           data=json.load(open(sys.argv[1]))
           print(int(any(
-              x.get('event') in ('schedule','workflow_dispatch') and
+              x.get('event') == 'workflow_dispatch' and
               x.get('status') in ('queued','in_progress','waiting','pending','requested') and
               (now-datetime.datetime.fromisoformat(x['createdAt'].replace('Z','+00:00'))).total_seconds()<21600
               for x in data)))
