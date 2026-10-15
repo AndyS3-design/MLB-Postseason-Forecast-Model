@@ -31,7 +31,7 @@ def sample(game_id="100", *, home_win=.7, elo=.5, frozen=True, final=(4, 2),
 
 class FrozenEnsembleTests(unittest.TestCase):
     def test_fixed_weight_no_inputs_from_final(self):
-        self.assertEqual(freeze(.8, .4)["home_win_probability"], .6)
+        self.assertAlmostEqual(freeze(.8, .4)["home_win_probability"], .6)
         self.assertEqual(freeze(.8, .4)["method"], NAME)
         for bad in (float("nan"), float("inf"), -0.01, 1.01, None, True):
             with self.subTest(value=str(bad)):
