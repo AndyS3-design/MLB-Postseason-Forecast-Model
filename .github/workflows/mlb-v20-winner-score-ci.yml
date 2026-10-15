@@ -1,0 +1,53 @@
+name: V20 CI — Clear winner pick and favorite-aligned exact score
+on:
+  push:
+    branches: ['feature/v20-consistent-winner-score-pick']
+    paths:
+      - '.github/workflows/mlb-v20-winner-score-ci.yml'
+      - '.github/workflows/mlb-cloud.yml'
+      - '.github/workflows/mlb-v13-context-validation.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_simulation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v20_winner_score.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v20_winner_site.cjs'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v20-winner-score-ci.yml'
+      - '.github/workflows/mlb-cloud.yml'
+      - '.github/workflows/mlb-v13-context-validation.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_simulation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v20_winner_score.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v20_winner_site.cjs'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  winner-score-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Install pinned baseball model dependencies
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Verify winner pick, actual score modes, full PMFs, historic score integrity and other simulation invariants
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v20_winner_score cloud.test_v13_score_presentation cloud.test_v14_totals cloud.test_v18_simulation cloud.test_v15_lineup_refresh cloud.test_forecast_finish_time -q
+      - name: Prove archived Oct 14 winner pick and over-5.5 cannot be confused with the overall exact mode
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          node cloud/test_v14_site.cjs
+          node cloud/test_v20_winner_site.cjs
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('site/index.html').read_text()
+          Path('/tmp/mlb_v20_site.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/mlb_v20_site.js

@@ -88,7 +88,7 @@ jobs:
           from pathlib import Path
           p=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html')
           html=p.read_text()
-          assert 'HIGHEST-PROBABILITY EXACT SCORE' in html
+          assert 'MOST LIKELY EXACT SCORE IF PICK WINS' in html
           assert 'excluded_model_version_mismatch' in html
           Path('/tmp/mlb_v13.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
           PY
