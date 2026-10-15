@@ -125,6 +125,39 @@ def score_originals(originals):
             'actual_under_frequency':round(sum(true)/n,5),
             'calibration':_calibration(prob,true)}
     result['total_lines']=lines
+    # True pre-first-pitch combo grading uses the exact *saved* simulated
+    # joint probabilities, not product-of-marginals or hindsight odds.
+    # Older originals missing this V22 field remain ungraded (n=0).
+    joints={}
+    for line in (4.5,5.5):
+        key=f'{line:.1f}'
+        matched=[]
+        for rec,home,away,total,pmf,wp,expected,elo_prob in settled:
+            payload=(rec.get('win_and_over_probabilities') or {}).get(key)
+            if not isinstance(payload,dict):continue
+            side='home' if wp>=.5 else 'away'
+            field=f'{side}_win_and_over'
+            try:
+                p=float(payload[field])
+                other=float(payload['away_win_and_over' if side=='home' else 'home_win_and_over'])
+                over=sum(v for runs,v in pmf.items() if runs>line)
+                if (not all(math.isfinite(v) and 0<=v<=1 for v in (p,other))
+                        or abs(p+other-over)>0.001
+                        or payload.get('favorite_side')!=side
+                        or abs(float(payload.get('favorite_win_and_over'))-p)>0.001):
+                    continue
+            except (TypeError,ValueError,KeyError,OverflowError):continue
+            y=int((home>away if side=='home' else away>home) and total>line)
+            matched.append((p,y))
+        n_joint=len(matched)
+        joints[key]={'n':n_joint,
+            'brier':_brier([p for p,y in matched],[y for p,y in matched]) if n_joint else None,
+            'mean_forecast_probability':round(sum(p for p,y in matched)/n_joint,5) if n_joint else None,
+            'realized_hit_rate':round(sum(y for p,y in matched)/n_joint,5) if n_joint else None,
+            'correct_at_50_percent':sum((p>=.5)==bool(y) for p,y in matched) if n_joint else None,
+            'status':'descriptive_only_insufficient_new_originals' if n_joint<30 else 'prospective_joint_diagnostic',
+            'warning':'No guaranteed combo win rate or market edge. Only new actual frozen pregame joint probabilities qualify.'}
+    result['winner_and_over_joint']=joints
     versions=defaultdict(int)
     for row in settled:versions[str(row[0].get('model_version','unknown'))]+=1
     result['model_versions']=dict(sorted(versions.items()))
