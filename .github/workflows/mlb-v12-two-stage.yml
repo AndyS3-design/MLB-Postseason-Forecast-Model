@@ -40,7 +40,7 @@ jobs:
           html=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html').read_text()
           preflight=Path('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/preflight.py').read_text()
           assert "'two_stage_comparison':paired_stage_metrics(root)" in worker
-          assert "renderModelHealth(d.model_health,d.shadow_comparisons,d.two_stage_comparison)" in html
+          assert "renderModelHealth(d.model_health,d.shadow_comparisons,d.two_stage_comparison,d.full_distribution_validation)" in html
           assert "preliminary_game_ids=" in preflight
           Path('/tmp/mlb_v12_script.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
           PY
