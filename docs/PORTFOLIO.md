@@ -50,6 +50,12 @@ Once meaningful out-of-sample results are available, add the **exact sample size
 
 **Framing for information-security-related roles:** Emphasize automated pipelines, provenance, change control, data-integrity checks, audit logs and reproducibility. Do not claim formal security certifications, penetration-testing functionality or guarantees that this forecasting project does not actually provide.
 
+## V20 winner-first forecast interface
+
+The dashboard highlights the model's **winner pick by total simulated win probability** alongside the highest-probability exact score **subject to that favorite winning**. The unconditional exact-score mode is still shown separately so a modal underdog score can never be misread as a winner pick. The run-total Over/Under markets are independent marginal probabilities; no unverified combined parlay chance is displayed.
+
+This change is an accuracy-of-communication improvement, **not** a model retrain or demonstrated forecasting edge. Original immutable historical snapshots remain unchanged. See [V20 explanation and archived example](WINNER_ALIGNED_SCORE_V20.md).
+
 ## V17 resume-ready additions (accurate as implemented)
 
 - Expanded automated forecast-integrity testing with strict event cutoffs, deduplicated official schedule gates, same-request lineup-handedness provenance and additional independent model-ablation variants.
