@@ -28,7 +28,7 @@ jobs:
           key: mlb-v8-frozen-${{ runner.os }}-python312-${{ hashFiles('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/model_version.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/matchup_model.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_batting.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_model_cache.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2023.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2024.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2025.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/gl20*.zip', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/advanced_pitching_details.csv') }}
       - name: Run V20 chronological 30-game Wild Card/Division/Championship replay; grade official MLB finals afterward
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-        run: python -u -m cloud.v20_lcs_five_game_backtest
+        run: python -u -m cloud.v20_all_postseason_2026_backtest
       - name: Upload complete game predictions, per-market grades and summary
         uses: actions/upload-artifact@v4
         with:
