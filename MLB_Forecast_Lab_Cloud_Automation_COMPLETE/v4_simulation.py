@@ -6,7 +6,12 @@ NOT a validated pitch-by-pitch or player at-bat simulator.
 """
 from __future__ import annotations
 import hashlib,math
+from functools import lru_cache
 import numpy as np
+from scipy.linalg import eigh_tridiagonal
+from scipy.optimize import brentq
+from scipy.special import betainc, ndtr
+from scipy.stats import nbinom, skellam
 
 
 def _positive(x,name):
@@ -15,13 +20,123 @@ def _positive(x,name):
     return f
 
 
+def _home_ninth_profile(starter_mean,starter_era,bullpen_era,order=32):
+    """Deterministic distribution of the normalized ninth-inning rate.
+
+    The starter duration is a clipped N(starter_mean, .9). Include the atoms
+    at both clipping bounds as well as quadrature over the continuous part.
+    Starters never reach the ninth under the simulator's eight-inning cap.
+    """
+    if starter_era==bullpen_era:
+        return np.array([1/9]),np.array([1.])
+    x,w=np.polynomial.legendre.leggauss(order)
+    ip=2.5+(x+1)*(8-2.5)/2
+    z=(ip-starter_mean)/.9
+    weights=w*((8-2.5)/2)*np.exp(-z*z/2)/(.9*np.sqrt(2*np.pi))
+    ip=np.r_[2.5,ip,8.]
+    weights=np.r_[ndtr((2.5-starter_mean)/.9),weights,
+                  ndtr((starter_mean-8)/.9)]
+    weights/=weights.sum()
+    ninth=bullpen_era/(9*bullpen_era+ip*(starter_era-bullpen_era))
+    return ninth,weights
+
+
+def _size_biased_environment(alpha_game,order=48):
+    if not alpha_game:
+        return np.array([1.]),np.array([1.])
+    shape=1/alpha_game+1
+    # Golub-Welsch yields normalized generalized Laguerre weights directly;
+    # unlike raw polynomial weights these never overflow Gamma(shape).
+    indices=np.arange(1,order,dtype=float)
+    x,v=eigh_tridiagonal(2*np.arange(order,dtype=float),
+                         np.sqrt(indices)*np.sqrt(shape+indices-1))
+    weights=v[0]**2
+    # Discard only numerically negligible quadrature components. Retaining
+    # their enormous score tails would dominate runtime at alpha_game=1.
+    keep=weights>1e-14
+    return (x[keep]+shape)*alpha_game,weights[keep]
+
+
+@lru_cache(maxsize=512)
+def _calibrate_home_intensity(home_mean,away_mean,starter_mean,starter_era,
+                              bullpen_era,alpha_team,alpha_game):
+    """Convert expected *observed* regulation runs to a nine-inning intensity.
+
+    For latent total L, the omitted runs have expectation
+        L E[q G T_h P(H_8 > A_9 | G, T_h, T_a, q)].
+    Multiplying a unit-mean gamma density by its variate size-biases its
+    shape from k to k+1. Thus integrate size-biased G, and marginalize the
+    size-biased home team shock analytically as a negative binomial. The
+    away shock keeps its original distribution. This preserves dependence
+    through G without fitting to additional Monte Carlo draws.
+    """
+    ninth,profile_weights=_home_ninth_profile(starter_mean,starter_era,bullpen_era)
+    environment,environment_weights=_size_biased_environment(alpha_game)
+    away_distributions=[]
+    if alpha_team:
+        # The away score does not depend on the unknown home intensity, so
+        # compute its PMF once. Truncation costs at most 1e-12 probability
+        # in each mixture component, including high-dispersion tails.
+        for g in environment:
+            mean=away_mean*g
+            p=1/(1+alpha_team*mean)
+            if alpha_team>=1e-6:
+                limit=int(nbinom.isf(1e-12,1/alpha_team,p))
+            else:
+                # A Chernoff bound avoids NB quantiles with p rounded to 1
+                # near zero dispersion. Evaluate its exact gamma/Poisson
+                # log-MGF using log1p so the Poisson limit stays continuous.
+                delta=9*np.sqrt(mean*(1+alpha_team*mean))+30*(1+alpha_team*mean)
+                while True:
+                    u=alpha_team*delta/(1+alpha_team*mean)
+                    log_bound=np.log1p(u)/alpha_team-(mean+delta)*(
+                        np.log1p(delta/mean)-np.log1p(u))
+                    if log_bound<=np.log(1e-12):break
+                    delta*=2
+                limit=int(np.ceil(mean+delta))
+            scores=np.arange(limit+1,dtype=float)
+            # Recurrence in log space avoids subtracting huge log-gammas
+            # when alpha_team approaches zero, and underflow at score zero.
+            log_pmf=np.empty(limit+1)
+            log_pmf[0]=-np.log1p(alpha_team*mean)/alpha_team
+            log_pmf[1:]=log_pmf[0]+np.cumsum(
+                np.log(mean)+np.log1p(alpha_team*scores[:-1])
+                -np.log1p(alpha_team*mean)-np.log(scores[1:]))
+            away_distributions.append((scores,np.exp(log_pmf)))
+
+    def expected_runs(latent):
+        omitted=0.
+        for i,(g,w) in enumerate(zip(environment,environment_weights)):
+            home_eight=latent*(1-ninth)*g
+            if alpha_team:
+                scores,pmf=away_distributions[i]
+                # P(H_8 > a), with H's gamma shape increased by one.
+                # 1-p written directly avoids cancellation for small alpha.
+                scale=alpha_team*home_eight
+                survival=betainc(scores[None,:]+1,1/alpha_team+1,
+                                 (scale/(1+scale))[:,None])
+                probability=survival@pmf
+            else:
+                probability=skellam.sf(0,home_eight,away_mean*g)
+            omitted+=w*float(np.dot(profile_weights*ninth,probability))
+        return latent*(1-omitted)
+
+    # Even if every possible bottom ninth were omitted, innings 1-8 supply
+    # this upper bracket. Its profile weights match the actual IP sampler.
+    upper=home_mean/(1-float(np.dot(ninth,profile_weights)))
+    latent=brentq(lambda x:expected_runs(x)-home_mean,home_mean,upper,xtol=1e-10)
+    return float(latent),float(expected_runs(latent))
+
+
 def play_games(home_mu,away_mu,n=30000,seed=42,home_starter=None,away_starter=None,
     home_bullpen=None,away_bullpen=None,home_manager_hook=5.,away_manager_hook=5.,
     home_lineup=1.,away_lineup=1.,park_factor=1.,weather_factor=1.,
     postseason=False,alpha_team=.15,alpha_game=.05,extra_max=18):
     """Simulate innings 1-9, conditional bottom ninth, then extras on ties.
 
-    home/away μ come from ONE scoring model. No Elo probability override.
+    home/away μ are expected actual regulation runs from ONE scoring model.
+    The home latent inning intensity accounts for skipped bottom ninths.
+    No Elo probability override.
     Contextual lineup/park/weather multipliers are unvalidated scenario changes.
     """
     if not 100<=int(n)<=250000:raise ValueError('n must be 100..250000')
@@ -55,10 +170,13 @@ def play_games(home_mu,away_mu,n=30000,seed=42,home_starter=None,away_starter=No
     rates_home=f_a*e_sp_a+(1-f_a)*e_bp_a
     rates_away/=rates_away.sum(axis=1,keepdims=True)
     rates_home/=rates_home.sum(axis=1,keepdims=True)
+    latent_h,calibrated_home_mean=_calibrate_home_intensity(
+        m_h,m_a,.7*float(sp_a.get('innings',5))+.3*away_manager_hook,
+        float(e_sp_a),float(e_bp_a),float(alpha_team),float(alpha_game))
     shared=rng.gamma(1/alpha_game,alpha_game,n) if alpha_game else np.ones(n)
     team_h=rng.gamma(1/alpha_team,alpha_team,n) if alpha_team else np.ones(n)
     team_a=rng.gamma(1/alpha_team,alpha_team,n) if alpha_team else np.ones(n)
-    runs_home=rng.poisson(rates_home*(m_h*shared*team_h)[:,None])
+    runs_home=rng.poisson(rates_home*(latent_h*shared*team_h)[:,None])
     runs_away=rng.poisson(rates_away*(m_a*shared*team_a)[:,None])
     final_away=runs_away.sum(axis=1)
     after_eight=runs_home[:,:8].sum(axis=1)
@@ -84,6 +202,11 @@ def play_games(home_mu,away_mu,n=30000,seed=42,home_starter=None,away_starter=No
         reg_away=runs_away,extra_innings=extras,
         config={'n':n,'seed':seed,'base_home_runs':base_h,'base_away_runs':base_a,
           'scenario_home_runs':m_h,'scenario_away_runs':m_a,'postseason':bool(postseason),
+          'latent_home_nine_inning_runs':latent_h,
+          'calibrated_home_regulation_runs':calibrated_home_mean,
+          'home_inning_exposure_policy':'observed regulation mean calibrated before conditional bottom ninth',
+          'home_calibration_method':'deterministic quadrature approximation (48 environment, 32 profile nodes); size-biased gamma/negative-binomial mixture',
+          'extra_innings_home_rate_policy':'scenario_home_runs / 9, with existing extra-inning scale',
           'extra_innings_policy':('no automatic runner' if postseason else 'automatic runner approximation'),
           'dispersion_team':alpha_team,'dispersion_environment':alpha_game})
 
@@ -136,3 +259,4 @@ def summarize(draws):
 
 def seed_for(game_key:str,model_version:str):
     return int.from_bytes(hashlib.sha256((game_key+'|'+model_version).encode()).digest()[:4],'big')
+

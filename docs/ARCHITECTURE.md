@@ -45,6 +45,8 @@ flowchart TD
 - Repository workflow: `.github/workflows/mlb-cloud.yml`, using the `master` branch.
 - Lightweight GitHub Actions gate: `*/5 * * * *` (every five minutes, **best effort**), plus a daily maintenance invocation at 11:17 UTC.
 - The gate looks for games approximately 10–39 minutes before first pitch. The worker performs an independent eligibility check in an 8–30-minute window.
+- Schedule queries use the Eastern official game date and adjacent dates, then filter by the actual UTC first pitch. A West Coast evening game remains discoverable after midnight UTC.
+- Pending, authorized preliminary/lineup updates and revisions can wake the worker while their own windows remain open, including after an earlier attempt found incomplete lineups. The worker still enforces identity, time and one-time-write checks.
 - Network or GitHub delays can cause missed forecasts; an after-start game is **not** treated as a legitimate pregame observation.
 - MLB game type, start time and scheduled status are checked, and a forecast is stamped in UTC with its actual run time.
 
@@ -87,3 +89,4 @@ flowchart LR
 The final forecast acceptance window stays 8–30 minutes before first pitch even though the cheap preflight wake range is wider. Main model rate parameters are unchanged by the archival distribution study; only data provenance and new research-only A/B variants are added.
 
 [Read the V17 evidence and limitations](RELIABILITY_AND_VALIDATION_V17.md).
+

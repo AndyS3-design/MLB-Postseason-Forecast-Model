@@ -17,6 +17,8 @@ A football/soccer-style score graphic or a high simulation count cannot validate
 
 Only the earliest original forecast for each game is counted in the project's **primary** prospective metric report. Explicitly requested pregame revisions are separate records for comparison, not additional independent games.
 
+The V18 main summary requires valid, timezone-aware original pregame timestamps and excludes ambiguous duplicate original game IDs. Its date-cluster bootstrap is available only after at least **30 settled unique games on 10 distinct dates**. A large game count on one or two dates does not establish enough independent date clusters for that interval.
+
 ## Metrics to publish as the sample grows
 
 - **Winner accuracy:** Percentage of settled games for which the favorite won. Interpretation requires a comparable baseline.
@@ -75,3 +77,4 @@ The earlier preview is published as a distinct immutable file and is **not** cou
 ## Postseason scoring changes after the October 2026 retrospective audit
 
 The V13 model incorporates documented official 2020–2025 postseason scoring and a fixed prior-day-only 2026 adaptive scoring context. Its 80-game equivalent strength was selected using only earlier-season 2022–2025 scoring validation, **not** by minimizing the already-known 2026 playoff errors. Nevertheless 2026 games have been reviewed extensively during broader development, so later 2026 diagnostics are not pristine untouched validation. The original preliminary and final predictions remain frozen; experimental postseason calibration should be evaluated only on new paired, timestamped, prospectively settled games. [Read the V13 evidence](POSTSEASON_SCORING_V13.md).
+

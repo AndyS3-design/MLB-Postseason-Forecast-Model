@@ -15,9 +15,9 @@
 ## Forecasting sequence
 
 1. Exclude games occurring on or after the target game's calendar date from feature history.
-2. Compute historical team/league features and fit a **Poisson regression** for run expectations (`v4_matchup_core.py`).
+2. Restore current-season team batting totals from verified cached completed-game boxscores, then compute historical team/league features and fit a **Poisson regression** for observed regulation-run expectations (`v4_matchup_core.py`). Missing batting observations remain unavailable rather than being treated as measured zero totals.
 3. Where data support it, apply separately documented pitcher and postseason research adjustments (`v4_workflow.py`).
-4. Use the game's baseball inputs to simulate **12,000** possible outcomes (`cloud/worker.py`).
+4. Use the game's baseball inputs to simulate **12,000** possible outcomes (`cloud/worker.py`). Convert the fitted home regulation expectation to an inning intensity that accounts for skipped bottom ninths, so the simulator does not apply that exposure reduction twice.
 5. Save winner probability, mean team and combined runs, total-run probabilities, an illustrative score, the snapshot time, model version and coverage metadata.
 
 The simulated **mean run total** may be fractional and need not equal the integer sum of the **illustrative score**. Starting with the V14 display, the score is the **unconditional most common exact simulated final**. Unlike the winning-team probability, it is not restricted to the favorite's outcomes and can even favor the other team. It is neither the mean run total nor a guarantee. The four half-run over/under probabilities (3.5, 4.5, 5.5, 6.5) are derived directly from the complete, saved total-runs probability distribution, without bookmaker odds or market prices.
@@ -48,3 +48,4 @@ For metric definitions and forward-looking validation, see [Validation](VALIDATI
 ## New 2020–2026 scoring study (V13)
 
 The previous fixed postseason context was replaced by the documented [V13 official postseason scoring calibration](POSTSEASON_SCORING_V13.md). It uses all six previous completed seasons (2020–2025), applies day-exclusive current-postseason updates with conservative smoothing, and preserves the new formula's model version in every genuine new forecast. The selection method is an aggregate scoring study rather than an independent proof of a new full-model accuracy advantage.
+
