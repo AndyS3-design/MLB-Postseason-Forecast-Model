@@ -29,6 +29,6 @@ assert.equal(runTotalLines({total_distribution:{'5':.3,'7':.3}}).length,0);
 assert.equal(exactScoreCandidates({score_grid:{cells:Array.from({length:11},(_,h)=>Array.from({length:11},(_,a)=>h===10&&a===0?.5:h===3&&a===2?.2:0))}}).length,0);
 const future={modal_exact_scores:[{home:4,away:2,probability:.04},{home:2,away:3,probability:.07}]};
 assert.equal(exactScoreCandidates(future)[0].probability,.07);
-assert(html.includes('HIGHEST-PROBABILITY EXACT SCORE'));
+assert(html.includes('MOST LIKELY EXACT SCORE IF PICK WINS'));
 assert(html.includes('Over / under total runs'));
 console.log('V14 UI passed: archived true score mode and all four O/U probabilities');
