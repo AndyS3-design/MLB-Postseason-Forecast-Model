@@ -28,12 +28,12 @@ from ingest_mlb import MLB_TO_RETRO
 EASTERN=ZoneInfo('America/New_York')
 
 API='https://statsapi.mlb.com/api/v1/schedule'
-# GitHub cron and runner startup are best-effort. Wake the job earlier, and
-# keep a late recovery opportunity. The WORKER still independently requires
-# the original prediction to finish inside its strict 8–30-minute window.
+# GitHub cron may be delayed or dropped for hours. Reserve a job up to four
+# hours early, then wait in cloud.pregame_wait until the safe final window.
+# The WORKER still independently enforces the strict 8–30-minute cutoff.
 # This is a scheduling envelope, not permission to backdate a forecast.
 MIN_LEAD_MINUTES=10
-MAX_LEAD_MINUTES=39
+MAX_LEAD_MINUTES=240
 GAME_TYPES={'R','F','D','L','W'}
 ALLOWED_STATES={'preview','pre-game','pregame','scheduled','warmup'}
 
@@ -218,7 +218,9 @@ def should_run(now,manual=False,maintenance=False,fetcher=None,catchup=False,roo
         if isinstance(value,Exception):raise value
         return value
     try:
-        matches=find_approaching_games(now,cached_schedule)
+        matches=[match for match in find_approaching_games(now,cached_schedule)
+                 if not (Path(root)/'cloud_records'/'predictions'/
+                         (match['id']+'.json')).exists()]
     except Exception as exc:
         # Fail closed. The next scheduled gate will retry, no fabricated matchups.
         return {'run':False,'reason':'schedule fetch failed: '+str(exc)[:140],
@@ -240,8 +242,9 @@ def should_run(now,manual=False,maintenance=False,fetcher=None,catchup=False,roo
 def main():
     p=argparse.ArgumentParser();p.add_argument('--github-output',type=Path)
     p.add_argument('--manual',action='store_true');p.add_argument('--maintenance',action='store_true')
+    p.add_argument('--recovery',action='store_true')
     args=p.parse_args();now=datetime.now(timezone.utc)
-    catchup=(not args.manual and not args.maintenance and daily_maintenance_due(APP_ROOT,now))
+    catchup=(not args.manual and not args.maintenance and not args.recovery and daily_maintenance_due(APP_ROOT,now))
     result=should_run(now,args.manual,args.maintenance,catchup=catchup)
     print(json.dumps({'now_utc':now.isoformat(),**result},indent=2))
     if args.github_output:
