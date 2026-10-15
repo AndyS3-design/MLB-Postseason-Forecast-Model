@@ -251,9 +251,31 @@ def summarize(draws):
         'conditional_probability':float(fav_joint/favorite_win_probability),
         'winner_side':'home' if winner_home else 'away',
         'method':'most likely exact score among outcomes where the overall model favorite wins'}
+    # True JOINT markets from the SAME score draws. Do not multiply marginal
+    # winner and Over probabilities: those events may be correlated. The
+    # favorite is still defined ONLY by the total winner probability.
+    home_wins=h>a
+    away_wins=a>h
+    favorite_wins=home_wins if winner_home else away_wins
+    win_and_over_probabilities={}
+    for line in (4.5,5.5):
+        high=total>line
+        home_and_over=float(np.mean(home_wins & high))
+        away_and_over=float(np.mean(away_wins & high))
+        aligned=float(np.mean(favorite_wins & high))
+        win_and_over_probabilities[f'{line:.1f}']={
+            'home_win_and_over':home_and_over,
+            'away_win_and_over':away_and_over,
+            'favorite_win_and_over':aligned,
+            'favorite_side':'home' if winner_home else 'away',
+            'over':float(np.mean(high)),
+            'method':'exact joint event frequency from same simulated final scores'}
+        if abs((home_and_over+away_and_over)-float(np.mean(high)))>1e-10:
+            raise AssertionError('Winning sides must partition total-run Over outcomes')
     return dict(score_grid=score_grid, total_pmf=total_pmf, v6_display_score=score_for_display,
        representative_score={'home':int(unique[best,0]),'away':int(unique[best,1]),'probability':fav_joint},
        favorite_aligned_score=favorite_aligned_score,
+       win_and_over_probabilities=win_and_over_probabilities,
        home_win_probability=p_home,away_win_probability=1-p_home,
        under_6_5_probability=float(np.mean(total<=6)),over_6_5_probability=float(np.mean(total>=7)),
        home_minus_1_5_probability=float(np.mean(h-a>=2)),away_plus_1_5_probability=float(np.mean(a-h>=-1)),

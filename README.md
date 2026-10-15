@@ -12,6 +12,8 @@ MLB Forecast Lab is a Python research project that ingests historical and curren
 
 For public website outages, see the [verified GitHub Pages URL and real HTTP health check](docs/PAGES_DEPLOYMENT_HEALTH.md). The deployment workflow now verifies that **the actual public page and forecast JSON are reachable** before marking publication healthy.
 
+See [V22 accuracy goal and joint winner-plus-Over 4.5/5.5 markets](docs/V22_ACCURACY_TARGET_AND_COMBO_ODDS.md). A strict all-30-game audit tracks the 27/30 (90%) aspiration without allowing hindsight selection; the pipeline now saves genuine same-simulation winner-and-Over event probabilities and grades future timestamped originals.
+
 See [V21 postseason-run calibration research](docs/V21_POSTSEASON_RUN_CALIBRATION.md). Historical tests did **not** support changing the live scoring rates; V21 expands the pregame experimental challenger metrics to the Kalshi-relevant Over 4.5/5.5 lines while preserving the original model.
 
 See [V20 winner-first score presentation](docs/WINNER_ALIGNED_SCORE_V20.md) for how the dashboard now displays the actual win-probability favorite and its most frequent winning score separately from the unconditional exact-score mode and Over 5.5 run odds.

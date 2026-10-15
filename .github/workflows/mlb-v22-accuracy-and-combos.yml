@@ -1,0 +1,71 @@
+name: V22 research — 90 percent audit and real combined-market probabilities
+on:
+  push:
+    branches: ['feature/v22-audited-combo-markets-accuracy-gate']
+    paths:
+      - '.github/workflows/mlb-v22-accuracy-and-combos.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v22_accuracy_gate.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v22_accuracy_gate.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v22_joint_markets.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_simulation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v17_prospective.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v22-accuracy-and-combos.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v22_accuracy_gate.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v22_accuracy_gate.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v22_joint_markets.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_simulation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v17_prospective.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/index.html'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  simulation-accuracy-and-market-joint-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Install exact current model environment
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Verify joint market math, no after-first-pitch scores and full 90 percent acceptance gate
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v22_joint_markets cloud.test_v22_accuracy_gate cloud.test_v17_quality cloud.test_v18_simulation cloud.test_v20_winner_score cloud.test_v21_kalshi_shadow -q
+      - name: Verify dashboard JavaScript and existing totals presentations
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          node cloud/test_v14_site.cjs
+          node cloud/test_v20_winner_site.cjs
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('site/index.html').read_text()
+          Path('/tmp/v22-scoreboard.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          assert 'MODEL PICK + GAME-TOTAL OVER' in html
+          assert 'favorite_win_and_over' in html
+          PY
+          node --check /tmp/v22-scoreboard.js
+      - name: Retrieve exact archived 30-game 2026 V20 replay, never modify its probabilities
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/v20-30-games"
+          gh run download 38682612970 --repo "$GITHUB_REPOSITORY" --name v20-all-2026-postseason-winners-overs-4p5-5p5 --dir "$RUNNER_TEMP/v20-30-games"
+          test -s "$RUNNER_TEMP/v20-30-games/all_postseason_2026_v20_per_game.csv"
+      - name: Calculate 27 of 30 goal without cherry-picking games
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python -m cloud.v22_accuracy_gate --replay "$RUNNER_TEMP/v20-30-games/all_postseason_2026_v20_per_game.csv" --out outputs/v22_research/accuracy_gate_30games.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v22-90pct-audit-and-same-simulated-combo-test
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v22_research/accuracy_gate_30games.json
+          retention-days: 60
+          if-no-files-found: error
