@@ -330,7 +330,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2459,
-    "run_started_utc": "2026-10-14T22:47:03.447030+00:00",
+    "run_started_utc": "2026-10-15T02:31:39.226688+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -2196,7 +2196,9 @@
   "prospective_performance": {
     "accuracy": 1.0,
     "elo_brier": 0.17119,
+    "excluded": {},
     "run_mae_per_team": 2.025,
+    "settled_dates": 1,
     "settled_games": 1,
     "status": "Insufficient games for uncertainty interval",
     "under_6_5_brier": 0.38492,
@@ -2213,5 +2215,5 @@
     "preliminary_without_final_count": 1,
     "status": "awaiting_paired_finals"
   },
-  "updated_utc": "2026-10-14T22:47:03.447030+00:00"
+  "updated_utc": "2026-10-15T02:31:39.226688+00:00"
 }
