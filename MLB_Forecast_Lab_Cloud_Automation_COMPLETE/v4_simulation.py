@@ -241,7 +241,20 @@ def summarize(draws):
     score_for_display={'home':int(unique[pick,0]),'away':int(unique[pick,1]),
        'total':int(unique[pick,0]+unique[pick,1]),'probability':float(counts[pick]/n),
        'method':'highest probability exact final score across all simulations; may differ from model favorite'}
-    return dict(score_grid=score_grid, total_pmf=total_pmf, v6_display_score=score_for_display, representative_score={'home':int(unique[best,0]),'away':int(unique[best,1]),'probability':float(counts[best]/n)},home_win_probability=p_home,away_win_probability=1-p_home,
+    # The winner-aligned exact mode is a DIFFERENT, explicitly conditional
+    # presentation statistic: maximize P(exact score) subject to the overall
+    # majority-win side winning. Never overwrite the unconditional exact mode.
+    favorite_win_probability=p_home if winner_home else 1-p_home
+    fav_joint=float(counts[best]/n)
+    favorite_aligned_score={'home':int(unique[best,0]),'away':int(unique[best,1]),
+        'probability':fav_joint,
+        'conditional_probability':float(fav_joint/favorite_win_probability),
+        'winner_side':'home' if winner_home else 'away',
+        'method':'most likely exact score among outcomes where the overall model favorite wins'}
+    return dict(score_grid=score_grid, total_pmf=total_pmf, v6_display_score=score_for_display,
+       representative_score={'home':int(unique[best,0]),'away':int(unique[best,1]),'probability':fav_joint},
+       favorite_aligned_score=favorite_aligned_score,
+       home_win_probability=p_home,away_win_probability=1-p_home,
        under_6_5_probability=float(np.mean(total<=6)),over_6_5_probability=float(np.mean(total>=7)),
        home_minus_1_5_probability=float(np.mean(h-a>=2)),away_plus_1_5_probability=float(np.mean(a-h>=-1)),
        home_expected_runs=float(np.mean(h)),away_expected_runs=float(np.mean(a)),
