@@ -1,0 +1,37 @@
+name: On-demand V20 research — both Oct 15 MLB games
+on:
+  push:
+    branches: ['research/overnight-oct15-two-game-v20']
+    paths:
+      - '.github/workflows/mlb-oct15-overnight-two-game-research.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  overnight-two-game-simulation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Install frozen model environment
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Reuse verified historical scoring-model training cache
+        uses: actions/cache@v4
+        with:
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache
+          key: mlb-v8-frozen-${{ runner.os }}-python312-${{ hashFiles('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/model_version.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/matchup_model.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_batting.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_model_cache.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2023.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2024.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2025.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/gl20*.zip', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/advanced_pitching_details.csv') }}
+      - name: Generate time-stamped overnight research forecasts for BOTH Thursday postseason games
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m cloud.overnight_oct15_research
+      - name: Upload both predictions and their official-data provenance
+        uses: actions/upload-artifact@v4
+        with:
+          name: oct15-two-early-mlb-v20-research-forecasts
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/oct15_two_game_overnight_v20_research.json
+          if-no-files-found: error
+          retention-days: 30
