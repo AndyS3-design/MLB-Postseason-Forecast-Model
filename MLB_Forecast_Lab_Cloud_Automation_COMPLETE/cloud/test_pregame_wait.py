@@ -81,7 +81,7 @@ class AwaitPregameTests(unittest.TestCase):
         matches = preflight.find_approaching_games(self.clock.now, self.fetch,
                                                   max_lead_minutes=preflight.EARLY_RESERVATION_MAX_LEAD_MINUTES)
         self.assertEqual([game['id'] for game in matches], ['849818'])
-        self.assertFalse(preflight.should_run(self.clock.now, fetcher=self.fetch)['run'])
+        self.assertEqual(preflight.find_approaching_games(self.clock.now, self.fetch), [])
         self.assertTrue(preflight.should_run(self.clock.now, fetcher=self.fetch,
                                              reserve_window=True)['run'])
 
