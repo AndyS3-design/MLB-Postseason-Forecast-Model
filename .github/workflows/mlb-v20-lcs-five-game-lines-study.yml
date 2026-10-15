@@ -1,0 +1,38 @@
+name: V20 research — 2026 LCS five-game winner and totals backtest
+on:
+  push:
+    branches: ['research/v20-alcs-nlcs-winner-total-backtest-oct14']
+    paths:
+      - '.github/workflows/mlb-v20-lcs-five-game-lines-study.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v20_lcs_five_game_backtest.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  replay-and-officially-grade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Install exact V20 forecasting environment
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Recover unchanged training-model cache from prior live forecasts when available
+        uses: actions/cache@v4
+        with:
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache
+          key: mlb-v8-frozen-${{ runner.os }}-python312-${{ hashFiles('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/model_version.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/matchup_model.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_batting.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_model_cache.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2023.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2024.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2025.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/gl20*.zip', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/advanced_pitching_details.csv') }}
+      - name: Run chronological V20 LCS replay and only afterward score MLB official final outcomes
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -u -m cloud.v20_lcs_five_game_backtest
+      - name: Upload complete game predictions, per-market grades and summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: v20-five-lcs-games-winners-overs-4p5-5p5
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/research_v20_lcs_five_game/
+          if-no-files-found: error
+          retention-days: 60
