@@ -42,6 +42,11 @@ class GuardTests(unittest.TestCase):
         self.assertEqual(out['status'],'needs_backup_dispatch')
         self.assertEqual(out['missed_game_ids'],[])
 
+    def test_dispatch_hours_early_to_cover_cron_delay(self):
+        with tempfile.TemporaryDirectory() as d:
+            out=evaluate(d,NOW,feed(game(NOW+timedelta(hours=3))))
+        self.assertEqual(out['dispatch_game_ids'], ['849811'])
+
     def test_existing_valid_original_means_no_dispatch_or_false_incident(self):
         start=NOW+timedelta(minutes=25)
         with tempfile.TemporaryDirectory() as d:
@@ -93,7 +98,7 @@ class GuardTests(unittest.TestCase):
 
     def test_out_of_window_or_postponed_does_not_dispatch(self):
         with tempfile.TemporaryDirectory() as d:
-            for lead,state in ((45,'Pre-Game'),(8,'Pre-Game'),(23,'Postponed'),(23,'In Progress')):
+            for lead,state in ((245,'Pre-Game'),(8,'Pre-Game'),(23,'Postponed'),(23,'In Progress')):
                 with self.subTest(lead=lead,state=state):
                     out=evaluate(d,NOW,feed(game(NOW+timedelta(minutes=lead),state=state)))
                     self.assertEqual(out['dispatch_game_ids'],[])
