@@ -103,6 +103,13 @@ class GuardTests(unittest.TestCase):
                     out=evaluate(d,NOW,feed(game(NOW+timedelta(minutes=lead),state=state)))
                     self.assertEqual(out['dispatch_game_ids'],[])
 
+    def test_push_maintenance_is_not_mistaken_for_active_pregame_reservation(self):
+        workflow = (Path(__file__).resolve().parents[2] /
+                    '.github/workflows/mlb-final-forecast-guard.yml').read_text()
+        self.assertIn('--json status,createdAt,event', workflow)
+        self.assertIn("x.get('event') in ('schedule','workflow_dispatch')", workflow)
+        self.assertIn('-f recovery=true', workflow)
+
     def test_no_silent_green_on_total_official_schedule_outage(self):
         with tempfile.TemporaryDirectory() as d:
             def fails(day):
