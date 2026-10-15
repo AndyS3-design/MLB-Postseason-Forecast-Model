@@ -314,6 +314,7 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
         features_cutoff_exclusive=day,
         projected_score={'home':score['home_runs'],'away':score['away_runs'],
                          'sum':score['total'],'exact_probability':float(score['chosen_score_probability'])},
+        favorite_aligned_score=f.get('favorite_aligned_score'),
         predicted_home_win=float(f['home_win_probability']),
         elo_home_win=float(result['baseline']['elo_home_win']),
         expected_runs={'home':float(f['home_expected_runs']),'away':float(f['away_expected_runs']),
