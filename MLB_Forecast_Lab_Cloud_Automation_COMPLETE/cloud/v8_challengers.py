@@ -11,6 +11,7 @@ import json,math
 from time import monotonic
 from typing import Callable
 from v4_workflow import generate
+from v6_baseball_totals import half_run_line_probabilities
 
 def variants(game_type):
     result=[('without_extra_starter_correction',
@@ -56,8 +57,33 @@ def evaluate_pair(originals):
             sums['total_mae_challenger']+=abs(variant['total_expected_runs']-total)
             sums['under_6_5_brier_main']+=(r['under_6_5_probability']-under)**2
             sums['under_6_5_brier_challenger']+=(variant['under_6_5_probability']-under)**2
+        # Line-by-line strictly PAIRED valid cohorts: old shadows lacking
+        # raw PMF cannot be silently included in an apparent calibration win.
+        by_line={}
+        for line,k in ((4.5,'4_5'),(5.5,'5_5')):
+            paired=[]
+            for r in included:
+                variant=r['shadow_forecasts'][name]
+                if ('under_'+k+'_probability' not in variant or
+                        not r.get('total_distribution')):
+                    continue
+                try:
+                    p_main=half_run_line_probabilities(
+                        r['total_distribution'],lines=(line,))[f'{line:.1f}']['under']
+                    p_alt=float(variant['under_'+k+'_probability'])
+                    if not 0<=p_alt<=1 or not math.isfinite(p_alt):
+                        continue
+                except (TypeError,ValueError,KeyError,OverflowError):
+                    continue
+                total=r['official_final']['home']+r['official_final']['away']
+                outcome=int(total<line)
+                paired.append(((p_main-outcome)**2,(p_alt-outcome)**2))
+            by_line[f'{line:.1f}']={'n':len(paired),
+                'under_brier_main':round(sum(x for x,_ in paired)/len(paired),6) if paired else None,
+                'under_brier_challenger':round(sum(y for _,y in paired)/len(paired),6) if paired else None}
         report[name]={'n':len(included),'status':'small sample; exploratory' if len(included)<30 else 'prospective paired comparison',
-                      **{key:round(value/len(included),5) for key,value in sums.items()}}
+                      **{key:round(value/len(included),5) for key,value in sums.items()},
+                      'total_market_pairs':by_line}
     return report
 
 def save_shadow_forecasts(root,game,original,now,started_monotonic,prior,clean,assets,
@@ -95,6 +121,13 @@ def save_shadow_forecasts(root,game,original,now,started_monotonic,prior,clean,a
             values={'home_win_probability':float(f['home_win_probability']),
                     'total_expected_runs':float(f['total_expected_runs']),
                     'under_6_5_probability':float(f['under_6_5_probability'])}
+            # New, genuinely PRE-GAME shadow forecasts save the two Kalshi
+            # half-run line probabilities directly from raw scored simulations.
+            # Never reconstruct challenger PMFs from postgame outcomes.
+            if f.get('total_pmf'):
+                lines=half_run_line_probabilities(f['total_pmf'],lines=(4.5,5.5))
+                values['under_4_5_probability']=float(lines['4.5']['under'])
+                values['under_5_5_probability']=float(lines['5.5']['under'])
             if not all(math.isfinite(v) for v in values.values()):
                 raise ValueError('Non-finite shadow forecast')
             if not 0<=values['home_win_probability']<=1 or not 0<=values['under_6_5_probability']<=1:
