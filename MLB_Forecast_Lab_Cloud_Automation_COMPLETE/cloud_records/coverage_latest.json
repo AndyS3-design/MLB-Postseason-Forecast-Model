@@ -1,15 +1,23 @@
 {
-  "as_of_exclusive_et_date": "2026-10-14",
-  "capture_fraction": null,
+  "as_of_exclusive_et_date": "2026-10-15",
+  "capture_fraction": 0.0,
   "capture_window_fraction": null,
   "captured_pending_settlement_ids": [],
   "captured_within_8_to_30_min_window": 0,
-  "completed_imported_games": 0,
+  "completed_imported_games": 1,
   "games_with_valid_original_pregame_forecast": 0,
-  "games_without_valid_original": 0,
+  "games_without_valid_original": 1,
   "identity_or_result_conflicts": [],
   "late_or_invalid_originals": [],
-  "missing_originals": [],
+  "missing_originals": [
+    {
+      "away": "MIL",
+      "date": "2026-10-14",
+      "game_id": "849811",
+      "home": "LAN",
+      "reason": "No saved original before first pitch"
+    }
+  ],
   "notes": [
     "This metric is not prediction accuracy. It measures the capture rate among imported official final games.",
     "Missing game predictions are counted only after the official final enters local data.",
@@ -20,10 +28,16 @@
   "originals_awaiting_settlement": 0,
   "originals_without_imported_final": 0,
   "paired_shadow_files_for_captured_games": 0,
-  "periods": {},
+  "periods": {
+    "2026-10/postseason": {
+      "captured": 0,
+      "completed": 1,
+      "missing": 1
+    }
+  },
   "scope": "Only official completed MLB games already imported by the cloud service",
   "settled_original_forecasts": 0,
-  "status": "waiting_for_completed_games",
+  "status": "tracking_imported_finals",
   "tracking_start_date": "2026-10-14",
   "unreadable_original_files": []
 }
