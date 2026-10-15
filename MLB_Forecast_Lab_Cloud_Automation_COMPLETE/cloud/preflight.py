@@ -33,7 +33,8 @@ API='https://statsapi.mlb.com/api/v1/schedule'
 # The WORKER still independently enforces the strict 8–30-minute cutoff.
 # This is a scheduling envelope, not permission to backdate a forecast.
 MIN_LEAD_MINUTES=10
-MAX_LEAD_MINUTES=240
+MAX_LEAD_MINUTES=39
+EARLY_RESERVATION_MAX_LEAD_MINUTES=240
 GAME_TYPES={'R','F','D','L','W'}
 ALLOWED_STATES={'preview','pre-game','pregame','scheduled','warmup'}
 
@@ -62,7 +63,7 @@ def _schedule_games(now,fetcher):
         raise errors[0]
 
 
-def find_approaching_games(now,fetcher=None):
+def find_approaching_games(now,fetcher=None,max_lead_minutes=MAX_LEAD_MINUTES):
     if fetcher is None:fetcher=fetch_schedule
     matches=[]
     seen_ids=set()
@@ -76,7 +77,7 @@ def find_approaching_games(now,fetcher=None):
             lead=(start-now).total_seconds()/60
         except (ValueError,KeyError,TypeError):continue
         game_id=str(game.get('gamePk') or '')
-        if MIN_LEAD_MINUTES<=lead<=MAX_LEAD_MINUTES and game_id.isdigit() and game_id not in seen_ids:
+        if MIN_LEAD_MINUTES<=lead<=max_lead_minutes and game_id.isdigit() and game_id not in seen_ids:
             seen_ids.add(game_id)
             matches.append({'id':game_id,
                             'starts_utc':start.isoformat(),
@@ -204,7 +205,7 @@ def daily_maintenance_due(root,now):
     except (OSError,KeyError,ValueError,TypeError,json.JSONDecodeError):
         return True
 
-def should_run(now,manual=False,maintenance=False,fetcher=None,catchup=False,root=APP_ROOT):
+def should_run(now,manual=False,maintenance=False,fetcher=None,catchup=False,root=APP_ROOT,reserve_window=False):
     if manual:return {'run':True,'reason':'manually triggered','approaching_games':[], 'preliminary_games':[], 'pending_request_games':[]}
     if maintenance:return {'run':True,'reason':'daily maintenance','approaching_games':[], 'preliminary_games':[], 'pending_request_games':[]}
     if catchup:return {'run':True,'reason':'catch-up official results maintenance','approaching_games':[], 'preliminary_games':[], 'pending_request_games':[]}
@@ -218,7 +219,8 @@ def should_run(now,manual=False,maintenance=False,fetcher=None,catchup=False,roo
         if isinstance(value,Exception):raise value
         return value
     try:
-        matches=[match for match in find_approaching_games(now,cached_schedule)
+        lead_limit=EARLY_RESERVATION_MAX_LEAD_MINUTES if reserve_window else MAX_LEAD_MINUTES
+        matches=[match for match in find_approaching_games(now,cached_schedule,max_lead_minutes=lead_limit)
                  if not (Path(root)/'cloud_records'/'predictions'/
                          (match['id']+'.json')).exists()]
     except Exception as exc:
@@ -245,7 +247,7 @@ def main():
     p.add_argument('--recovery',action='store_true')
     args=p.parse_args();now=datetime.now(timezone.utc)
     catchup=(not args.manual and not args.maintenance and not args.recovery and daily_maintenance_due(APP_ROOT,now))
-    result=should_run(now,args.manual,args.maintenance,catchup=catchup)
+    result=should_run(now,args.manual,args.maintenance,catchup=catchup,reserve_window=True)
     print(json.dumps({'now_utc':now.isoformat(),**result},indent=2))
     if args.github_output:
         with args.github_output.open('a',encoding='utf-8') as f:
