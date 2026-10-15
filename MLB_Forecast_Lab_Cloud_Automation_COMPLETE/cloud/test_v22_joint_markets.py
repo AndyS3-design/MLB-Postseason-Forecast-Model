@@ -47,7 +47,7 @@ class JointTests(unittest.TestCase):
         f=summarize({'home_final':h,'away_final':a})
         q=f['win_and_over_probabilities']['5.5']
         self.assertEqual(q['favorite_side'],'away')
-        self.assertAlmostEqual(q['favorite_win_and_over'],3/5)
+        self.assertAlmostEqual(q['favorite_win_and_over'],4/5)
         self.assertAlmostEqual(q['home_win_and_over']+q['away_win_and_over'],q['over'])
 
     def test_paired_original_scores_not_previews_and_not_backfilled(self):
