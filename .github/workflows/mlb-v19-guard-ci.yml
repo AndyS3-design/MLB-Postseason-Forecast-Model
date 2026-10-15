@@ -7,12 +7,20 @@ on:
       - '.github/workflows/mlb-v19-guard-ci.yml'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v19_forecast_guard.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v19_forecast_guard.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/pregame_wait.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_pregame_wait.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/preflight.py'
+      - '.github/workflows/mlb-cloud.yml'
   pull_request:
     paths:
       - '.github/workflows/mlb-final-forecast-guard.yml'
       - '.github/workflows/mlb-v19-guard-ci.yml'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v19_forecast_guard.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v19_forecast_guard.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/pregame_wait.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_pregame_wait.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/preflight.py'
+      - '.github/workflows/mlb-cloud.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,7 +33,7 @@ jobs:
       - name: Test missing-original alerts, real game-state and backup dispatch safeguards
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
-          python3 -S -m unittest cloud.test_v19_forecast_guard cloud.test_v9_run_health -v
+          python3 -S -m unittest cloud.test_v19_forecast_guard cloud.test_pregame_wait cloud.test_v11_daily cloud.test_v9_run_health -v
       - name: Inspect real official MLB schedule for current and upcoming games
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |

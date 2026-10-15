@@ -15,7 +15,7 @@ from cloud import preflight
 UTC=timezone.utc
 TRACKING_START=date(2026,10,14)
 DISPATCH_MIN_LEAD=12.
-DISPATCH_MAX_LEAD=34.
+DISPATCH_MAX_LEAD=240.
 MISS_REPORT_MAX_HOURS=18.
 ACTIVE=('scheduled','pre-game','pregame','preview','warmup','warmups')
 STARTED=('in progress','live','final','game over','completed early','completed')
@@ -85,8 +85,8 @@ def evaluate(root,now,fetcher=None):
             report['upcoming'].append({'game_id':gid,'official_date':game_day.isoformat(),
                  'scheduled_utc':start.isoformat(),'lead_minutes':round(lead,1),
                  'mlb_state':status,'original':evidence})
-        # Trigger only while the WORKER has time to finish in its strict
-        # 8–30-minute window; the guard never creates forecasts itself.
+        # Trigger early for the guarded workflow's bounded wait step.
+        # The worker still requires a genuine 8–30-minute final window.
         if (evidence=='missing' and status in ACTIVE
                 and DISPATCH_MIN_LEAD<=lead<=DISPATCH_MAX_LEAD):
             report['dispatch_game_ids'].append(gid)

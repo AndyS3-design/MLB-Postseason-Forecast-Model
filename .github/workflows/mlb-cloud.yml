@@ -2,9 +2,16 @@ name: MLB Forecast Lab — game-time forecasts
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    # Offset from the crowded top of the hour; scheduled events remain best-effort.
+    - cron: '3-59/5 * * * *'
     - cron: '17 11 * * *'
   workflow_dispatch:
+    inputs:
+      recovery:
+        description: 'Official pregame recovery: bounded hold until final window'
+        type: boolean
+        required: false
+        default: false
   push:
     branches: [master]
     paths:
@@ -16,6 +23,8 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/preflight.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/pregame_wait.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_pregame_wait.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v19_forecast_guard.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v19_forecast_guard.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v11_daily.py'
@@ -88,7 +97,9 @@ jobs:
         id: gate
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event_name }}" = "push" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.recovery }}" = "true" ]; then
+            python cloud/preflight.py --recovery --github-output "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event_name }}" = "push" ]; then
             python cloud/preflight.py --manual --github-output "$GITHUB_OUTPUT"
           elif [ "${{ github.event.schedule }}" = "17 11 * * *" ]; then
             python cloud/preflight.py --maintenance --github-output "$GITHUB_OUTPUT"
@@ -100,7 +111,9 @@ jobs:
     needs: check
     if: needs.check.outputs.run_model == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 28
+    # The job may enter up to four hours ahead of first pitch; it sleeps
+    # before running the unchanged timing-verified forecasting worker.
+    timeout-minutes: 285
     permissions:
       contents: write
     steps:
@@ -121,7 +134,13 @@ jobs:
           key: mlb-v8-frozen-${{ runner.os }}-python312-${{ hashFiles('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/model_version.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/matchup_model.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_batting.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_model_cache.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2023.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2024.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2025.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/gl20*.zip', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/advanced_pitching_details.csv') }}
       - name: Verify cloud forecasting safeguards
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-        run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision cloud.test_forecast_finish_time cloud.test_v8_challengers cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v10_schedule_audit cloud.test_v11_daily cloud.test_v12_two_stage cloud.test_v13_postseason_context cloud.test_v13_score_presentation cloud.test_v13_preliminary_update cloud.test_v14_totals cloud.test_v15_lineup_refresh cloud.test_v16_official_hitter_history cloud.test_v17_quality cloud.test_v17_scoring_research cloud.test_public_site_health cloud.test_v18_scheduling cloud.test_v18_batting cloud.test_v18_simulation cloud.test_v18_accuracy cloud.test_v19_forecast_guard cloud.test_v20_winner_score cloud.test_v21_kalshi_shadow cloud.test_v22_joint_markets cloud.test_v22_accuracy_gate cloud.test_v23_elo_ensemble -q
+        run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision cloud.test_forecast_finish_time cloud.test_v8_challengers cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v10_schedule_audit cloud.test_v11_daily cloud.test_v12_two_stage cloud.test_v13_postseason_context cloud.test_v13_score_presentation cloud.test_v13_preliminary_update cloud.test_v14_totals cloud.test_v15_lineup_refresh cloud.test_v16_official_hitter_history cloud.test_v17_quality cloud.test_v17_scoring_research cloud.test_public_site_health cloud.test_v18_scheduling cloud.test_v18_batting cloud.test_v18_simulation cloud.test_v18_accuracy cloud.test_v19_forecast_guard cloud.test_v20_winner_score cloud.test_v21_kalshi_shadow cloud.test_v22_joint_markets cloud.test_v22_accuracy_gate cloud.test_v23_elo_ensemble cloud.test_pregame_wait -q
+      - name: Wait for the official original-pregame window when cron arrives early
+        if: needs.check.outputs.mode == 'pregame' && needs.check.outputs.game_ids != ''
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        env:
+          EXPECTED_GAME_IDS: ${{ needs.check.outputs.game_ids }}
+        run: python -m cloud.pregame_wait --game-ids "$EXPECTED_GAME_IDS"
       - name: Refresh verified MLB data and forecast before first pitch
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
