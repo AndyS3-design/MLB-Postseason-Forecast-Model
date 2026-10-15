@@ -1,0 +1,41 @@
+name: V24 research — chronological winner predictors vs Elo
+on:
+  push:
+    branches: ['research/v24-winner-ablation-chronological']
+    paths:
+      - '.github/workflows/mlb-v24-winner-ablation.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v24_winner_ablation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v24_winner_ablation.py'
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v24-winner-ablation.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v24_winner_ablation.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v24_winner_ablation.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  historical-winner-feature-ablation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Verify chronology and prohibit hindsight or feature leakage
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v24_winner_ablation -v
+      - name: Validate trained winners on archived historical cohorts
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m cloud.v24_winner_ablation --out outputs/v24_research/winner_ablation.json
+      - name: Upload inspectable research report
+        uses: actions/upload-artifact@v4
+        with:
+          name: v24-winner-ablation-research
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v24_research/winner_ablation.json
+          if-no-files-found: error
+          retention-days: 60
