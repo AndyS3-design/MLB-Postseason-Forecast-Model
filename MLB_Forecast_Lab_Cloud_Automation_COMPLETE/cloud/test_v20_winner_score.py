@@ -4,6 +4,7 @@ from pathlib import Path
 import unittest
 import numpy as np
 from v4_simulation import summarize
+from v6_baseball_totals import half_run_line_probabilities
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -44,7 +45,7 @@ class WinnerScorePresentationTests(unittest.TestCase):
         frozen=path.read_bytes()
         record=json.loads(frozen)
         self.assertAlmostEqual(record['predicted_home_win'],.46225)
-        self.assertAlmostEqual(record['total_line_probabilities']['5.5']['over'],.6475833333,places=5)
+        self.assertAlmostEqual(half_run_line_probabilities(record['total_distribution'])['5.5']['over'],.6475833333,places=5)
         self.assertEqual(record['projected_score']['home'],2)
         self.assertEqual(record['projected_score']['away'],3)
         self.assertEqual(path.read_bytes(),frozen)
