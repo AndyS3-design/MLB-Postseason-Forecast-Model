@@ -12,6 +12,8 @@ MLB Forecast Lab is a Python research project that ingests historical and curren
 
 For public website outages, see the [verified GitHub Pages URL and real HTTP health check](docs/PAGES_DEPLOYMENT_HEALTH.md). The deployment workflow now verifies that **the actual public page and forecast JSON are reachable** before marking publication healthy.
 
+See [V20 winner-first score presentation](docs/WINNER_ALIGNED_SCORE_V20.md) for how the dashboard now displays the actual win-probability favorite and its most frequent winning score separately from the unconditional exact-score mode and Over 5.5 run odds.
+
 See [V17 reliability, research and provenance](docs/RELIABILITY_AND_VALIDATION_V17.md) for the next-stage scoring validation and the preserved research-only comparison against neutral contextual overlays.
 
 ## What it does
