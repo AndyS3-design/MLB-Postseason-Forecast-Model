@@ -1,0 +1,39 @@
+name: V19 CI — Independent final forecast guard
+on:
+  push:
+    branches: ['feature/v19-independent-final-forecast-guard']
+    paths:
+      - '.github/workflows/mlb-final-forecast-guard.yml'
+      - '.github/workflows/mlb-v19-guard-ci.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v19_forecast_guard.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v19_forecast_guard.py'
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-final-forecast-guard.yml'
+      - '.github/workflows/mlb-v19-guard-ci.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v19_forecast_guard.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v19_forecast_guard.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit-schedule-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+      - name: Test missing-original alerts, real game-state and backup dispatch safeguards
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python3 -S -m unittest cloud.test_v19_forecast_guard cloud.test_v9_run_health -v
+      - name: Inspect real official MLB schedule for current and upcoming games
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python3 -S -m cloud.v19_forecast_guard --json-file "$RUNNER_TEMP/v19_official_schedule.json"
+          python3 - "$RUNNER_TEMP/v19_official_schedule.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          print('CURRENT_GUARD_STATUS',x['status'])
+          print('UPCOMING_OFFICIAL_GAMES',json.dumps(x['upcoming'],indent=2))
+          print('MISSING_PRIOR_GAME_ORIGINALS',x['missed_game_ids'])
+          PY

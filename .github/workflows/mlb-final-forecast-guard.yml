@@ -1,0 +1,109 @@
+name: MLB Final Forecast — Independent Backup and Missed-Game Alerts
+on:
+  schedule:
+    # Offset from the main */5 forecast cron. GitHub cron is best effort;
+    # this is an additional chance, not a timing guarantee.
+    - cron: '2-59/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/mlb-final-forecast-guard.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v19_forecast_guard.py'
+permissions:
+  contents: read
+  actions: write
+  issues: write
+concurrency:
+  group: mlb-final-forecast-guard
+  cancel-in-progress: false
+jobs:
+  verify-and-recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: master
+      - name: Evaluate official MLB status and committed immutable originals
+        id: probe
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python3 -S -m cloud.v19_forecast_guard --github-output "$GITHUB_OUTPUT" --json-file "$RUNNER_TEMP/mlb_guard.json"
+          python3 - "$RUNNER_TEMP/mlb_guard.json" <<'PY'
+          import json,sys,os
+          data=json.load(open(sys.argv[1]))
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as out:
+              out.write('## Independent MLB pregame forecast monitor\n\n')
+              out.write('Status: **'+data['status']+'**\n\n')
+              for key in ('dispatch_game_ids','at_risk_game_ids','missed_game_ids','invalid_original_game_ids'):
+                  out.write('- '+key+': '+(', '.join(data[key]) or 'none')+'\n')
+              out.write('\nUpcoming official games: '+str(len(data.get('upcoming',[])))+'\n')
+          PY
+      - name: Dispatch primary forecasting workflow if it is absent and pregame time remains
+        if: steps.probe.outputs.dispatch_game_ids != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_GAME_IDS: ${{ steps.probe.outputs.dispatch_game_ids }}
+        run: |
+          set -euo pipefail
+          echo "Official pregame games without final originals: $EXPECTED_GAME_IDS"
+          # Do not flood the main concurrent forecast job while it is already
+          # running or queued. A later independent guard tick retries.
+          gh run list --repo "$GITHUB_REPOSITORY" --workflow mlb-cloud.yml --limit 12 --json status,createdAt > "$RUNNER_TEMP/mlb-main-runs.json"
+          active=$(python3 - "$RUNNER_TEMP/mlb-main-runs.json" <<'PY'
+          import datetime,json,sys
+          now=datetime.datetime.now(datetime.timezone.utc)
+          data=json.load(open(sys.argv[1]))
+          print(int(any(
+              x.get('status') in ('queued','in_progress','waiting','pending','requested') and
+              (now-datetime.datetime.fromisoformat(x['createdAt'].replace('Z','+00:00'))).total_seconds()<1200
+              for x in data)))
+          PY
+          )
+          if [ "$active" = 1 ]; then
+            echo 'Primary forecast job is already queued/running; not dispatching a duplicate.'
+          else
+            gh workflow run mlb-cloud.yml --repo "$GITHUB_REPOSITORY" --ref master
+            echo 'Backup dispatched normal V18+ forecasting workflow. Original worker timing rules still apply.'
+          fi
+      - name: Raise durable GitHub incident for games that ACTUALLY began without an original
+        if: steps.probe.outputs.missed_game_ids != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MISSED_GAME_IDS: ${{ steps.probe.outputs.missed_game_ids }}
+        run: |
+          set -euo pipefail
+          gh issue list --repo "$GITHUB_REPOSITORY" --state all --limit 300 --json title > "$RUNNER_TEMP/mlb-issues.json"
+          python3 - "$RUNNER_TEMP/mlb-issues.json" <<'PY'
+          import datetime,json,os,subprocess,sys
+          titles={x['title'] for x in json.load(open(sys.argv[1]))}
+          for gid in os.environ['MISSED_GAME_IDS'].split(','):
+              if not gid:continue
+              title=f'[forecast-missed] MLB game {gid} began without a frozen final prediction'
+              if title in titles:
+                  print('Existing incident issue found for game',gid)
+                  continue
+              body=(
+                'Independent official MLB schedule monitoring confirmed a game '
+                'is In Progress/Final, but cloud_records/predictions/'+gid+'.json '
+                'is missing or invalid.\n\n'
+                'This is a **missed final prediction window**, not a prediction result. '
+                'Earlier timestamped preliminary records must never be rewritten, '
+                'and an in-game result must never be backdated as pregame.\n\n'
+                'Check the scheduled GitHub Actions jobs, official game-state feed, '
+                'UTC/ET date handling, cache/model build duration and forecast save logs. '
+                'The independent guard checks the real MLB status, separate from the '
+                'ordinary gate.\n\n'
+                'Detected at UTC: '+datetime.datetime.now(datetime.timezone.utc).isoformat()
+              )
+              subprocess.run(['gh','issue','create','--repo',os.environ['GITHUB_REPOSITORY'],
+                  '--title',title,'--body',body],check=True)
+              titles.add(title)
+          PY
+      - name: Warn when the remaining lead time is below the safe backup window
+        if: steps.probe.outputs.at_risk_game_ids != ''
+        env:
+          AT_RISK: ${{ steps.probe.outputs.at_risk_game_ids }}
+        run: |
+          echo "::warning::Official MLB game(s) $AT_RISK are less than 12 minutes from scheduled start without a frozen final. No forecast is fabricated."

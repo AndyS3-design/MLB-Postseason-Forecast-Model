@@ -16,6 +16,8 @@ on:
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/worker.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/preflight.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v19_forecast_guard.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v19_forecast_guard.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v11_daily.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/two_stage.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v12_two_stage.py'
@@ -110,7 +112,7 @@ jobs:
           key: mlb-v8-frozen-${{ runner.os }}-python312-${{ hashFiles('MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/model_version.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/matchup_model.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_batting.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_model_cache.py', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2023.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2024.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/GL2025.TXT', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/gl20*.zip', 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/data/advanced_pitching_details.csv') }}
       - name: Verify cloud forecasting safeguards
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-        run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision cloud.test_forecast_finish_time cloud.test_v8_challengers cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v10_schedule_audit cloud.test_v11_daily cloud.test_v12_two_stage cloud.test_v13_postseason_context cloud.test_v13_score_presentation cloud.test_v13_preliminary_update cloud.test_v14_totals cloud.test_v15_lineup_refresh cloud.test_v16_official_hitter_history cloud.test_v17_quality cloud.test_v17_scoring_research cloud.test_public_site_health cloud.test_v18_scheduling cloud.test_v18_batting cloud.test_v18_simulation cloud.test_v18_accuracy -q
+        run: python -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision cloud.test_forecast_finish_time cloud.test_v8_challengers cloud.test_v9_tracking cloud.test_v9_run_health cloud.test_v10_schedule_audit cloud.test_v11_daily cloud.test_v12_two_stage cloud.test_v13_postseason_context cloud.test_v13_score_presentation cloud.test_v13_preliminary_update cloud.test_v14_totals cloud.test_v15_lineup_refresh cloud.test_v16_official_hitter_history cloud.test_v17_quality cloud.test_v17_scoring_research cloud.test_public_site_health cloud.test_v18_scheduling cloud.test_v18_batting cloud.test_v18_simulation cloud.test_v18_accuracy cloud.test_v19_forecast_guard -q
       - name: Refresh verified MLB data and forecast before first pitch
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
