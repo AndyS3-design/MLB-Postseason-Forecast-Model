@@ -8,6 +8,7 @@ from __future__ import annotations
 import math,random
 from collections import defaultdict
 from cloud.v8_evaluate import valid_original
+from cloud.v23_elo_ensemble import grade_paired_settled
 
 LINES=(3.5,4.5,5.5,6.5)
 BIN_EDGES=(0.,.2,.4,.6,.8,1.000001)
@@ -85,6 +86,10 @@ def score_originals(originals):
             'unique_originals':len(valid),'settled_distribution_complete_games':n,
             'excluded':dict(excluded),
             'warning':'Small samples and past model selection do not establish calibration or a betting advantage.'}
+    # Fixed Elo blend uses the IDENTICAL settled pregame original cohort.
+    # Missing historic shadow probabilities are excluded, never inferred
+    # after an outcome is known.
+    result['winner_ensemble_shadow_v23']=grade_paired_settled(settled)
     if n==0:return result
     winners=[int(home>away) for _,home,away,*_ in settled]
     preds=[x[5] for x in settled]
