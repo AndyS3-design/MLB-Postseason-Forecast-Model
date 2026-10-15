@@ -1,0 +1,47 @@
+name: V21 research — postseason scoring calibration and 30-game sensitivity
+on:
+  push:
+    branches: ['feature/v21-postseason-score-calibration']
+    paths:
+      - '.github/workflows/mlb-v21-stage-calibration-study.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v21_stage_calibration.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v21_stage_calibration.py'
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v21-stage-calibration-study.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v21_stage_calibration.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v21_stage_calibration.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  stage-calibration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify historical season isolation and study invariants
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python3 -S -m unittest cloud.test_v21_stage_calibration -v
+      - name: Reuse exact saved thirty-game V20 forecast / official results artifact read-only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/v20-30-game"
+          gh run download 38682612970 --repo "$GITHUB_REPOSITORY" --name v20-all-2026-postseason-winners-overs-4p5-5p5 --dir "$RUNNER_TEMP/v20-30-game"
+          test -s "$RUNNER_TEMP/v20-30-game/all_postseason_2026_v20_per_game.csv"
+          echo "Saved V20 backtest acquired without regenerating or retuning any 2026 probabilities."
+      - name: Select stage correction ONLY on 2021–2022, score 2023–2025 and examine 2026 AFTER selection
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python3 -S -m cloud.v21_stage_calibration --v20-replay "$RUNNER_TEMP/v20-30-game/all_postseason_2026_v20_per_game.csv" --out outputs/v21_research/stage_calibration.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v21-stage-calibration-and-v20-30game-unseen-sensitivity
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v21_research/stage_calibration.json
+          if-no-files-found: error
+          retention-days: 60
