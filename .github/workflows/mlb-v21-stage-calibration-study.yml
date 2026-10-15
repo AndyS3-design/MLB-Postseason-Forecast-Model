@@ -6,6 +6,8 @@ on:
       - '.github/workflows/mlb-v21-stage-calibration-study.yml'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v21_stage_calibration.py'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v21_stage_calibration.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v21_kalshi_shadow.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v8_challengers.py'
   pull_request:
     paths:
       - '.github/workflows/mlb-v21-stage-calibration-study.yml'
@@ -27,6 +29,11 @@ jobs:
       - name: Verify historical season isolation and study invariants
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: python3 -S -m unittest cloud.test_v21_stage_calibration -v
+      - name: Install pinned environment for experimental shadow forecast tests
+        run: python -m pip install -r MLB_Forecast_Lab_Cloud_Automation_COMPLETE/requirements-ci-py312.txt
+      - name: Verify immutable forecast challenger probabilities for Over 4.5 and Over 5.5
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v21_kalshi_shadow cloud.test_v8_challengers -v
       - name: Reuse exact saved thirty-game V20 forecast / official results artifact read-only
         env:
           GH_TOKEN: ${{ github.token }}
