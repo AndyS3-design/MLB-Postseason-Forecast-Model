@@ -107,7 +107,7 @@ class GuardTests(unittest.TestCase):
         workflow = (Path(__file__).resolve().parents[2] /
                     '.github/workflows/mlb-final-forecast-guard.yml').read_text()
         self.assertIn('--json status,createdAt,event', workflow)
-        self.assertIn("x.get('event') in ('schedule','workflow_dispatch')", workflow)
+        self.assertIn("x.get('event') == 'workflow_dispatch'", workflow)
         self.assertIn('-f recovery=true', workflow)
 
     def test_no_silent_green_on_total_official_schedule_outage(self):
