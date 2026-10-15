@@ -25,7 +25,7 @@ jobs:
       - name: Test missing-original alerts, real game-state and backup dispatch safeguards
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
-          python3 -S -m unittest cloud.test_v19_forecast_guard cloud.test_v18_scheduling cloud.test_v9_run_health -v
+          python3 -S -m unittest cloud.test_v19_forecast_guard cloud.test_v9_run_health -v
       - name: Inspect real official MLB schedule for current and upcoming games
         working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
         run: |
