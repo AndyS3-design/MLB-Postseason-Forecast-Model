@@ -77,9 +77,13 @@ class AwaitPregameTests(unittest.TestCase):
                          max_wait_minutes=20)
 
     def test_wider_preflight_catches_game_hours_before_first_pitch(self):
-        self.assertGreater(preflight.MAX_LEAD_MINUTES, 180)
-        matches = preflight.find_approaching_games(self.clock.now, self.fetch)
+        self.assertGreater(preflight.EARLY_RESERVATION_MAX_LEAD_MINUTES, 180)
+        matches = preflight.find_approaching_games(self.clock.now, self.fetch,
+                                                  max_lead_minutes=preflight.EARLY_RESERVATION_MAX_LEAD_MINUTES)
         self.assertEqual([game['id'] for game in matches], ['849818'])
+        self.assertFalse(preflight.should_run(self.clock.now, fetcher=self.fetch)['run'])
+        self.assertTrue(preflight.should_run(self.clock.now, fetcher=self.fetch,
+                                             reserve_window=True)['run'])
 
 
 if __name__ == '__main__':
