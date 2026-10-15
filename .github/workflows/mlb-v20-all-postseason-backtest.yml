@@ -3,7 +3,7 @@ on:
   push:
     branches: ['research/v20-entire-2026-postseason-winner-total-backtest']
     paths:
-      - '.github/workflows/mlb-v20-lcs-five-game-lines-study.yml'
+      - '.github/workflows/mlb-v20-all-postseason-backtest.yml'
       - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v20_all_postseason_2026_backtest.py'
   workflow_dispatch:
 permissions:
