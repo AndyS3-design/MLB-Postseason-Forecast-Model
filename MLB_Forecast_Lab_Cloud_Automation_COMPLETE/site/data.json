@@ -233,6 +233,26 @@
       "elo_brier_same_games": 0.171189,
       "paired_date_bootstrap_95_delta_vs_elo": null,
       "paired_date_bootstrap_note": "Positive delta favors Elo. Only shown after at least 30 games on 10 dates; retrospective development history limits causal claims."
+    },
+    "winner_and_over_joint": {
+      "4.5": {
+        "brier": null,
+        "correct_at_50_percent": null,
+        "mean_forecast_probability": null,
+        "n": 0,
+        "realized_hit_rate": null,
+        "status": "descriptive_only_insufficient_new_originals",
+        "warning": "No guaranteed combo win rate or market edge. Only new actual frozen pregame joint probabilities qualify."
+      },
+      "5.5": {
+        "brier": null,
+        "correct_at_50_percent": null,
+        "mean_forecast_probability": null,
+        "n": 0,
+        "realized_hit_rate": null,
+        "status": "descriptive_only_insufficient_new_originals",
+        "warning": "No guaranteed combo win rate or market edge. Only new actual frozen pregame joint probabilities qualify."
+      }
     }
   },
   "local_timezone": "America/New_York",
@@ -341,7 +361,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2460,
-    "run_started_utc": "2026-10-15T04:59:46.071085+00:00",
+    "run_started_utc": "2026-10-15T05:24:52.805556+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -2240,5 +2260,5 @@
     "preliminary_without_final_count": 1,
     "status": "awaiting_paired_finals"
   },
-  "updated_utc": "2026-10-15T04:59:46.071085+00:00"
+  "updated_utc": "2026-10-15T05:24:52.805556+00:00"
 }
