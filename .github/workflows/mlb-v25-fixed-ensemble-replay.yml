@@ -1,0 +1,46 @@
+name: V25 research — fixed V23 ensemble on frozen 30-game V20 replay
+on:
+  push:
+    branches: ['research/v25-fixed-v23-30game-replay']
+    paths:
+      - '.github/workflows/mlb-v25-fixed-ensemble-replay.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v25_fixed_ensemble_replay.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v25_fixed_ensemble_replay.py'
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v25-fixed-ensemble-replay.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v25_fixed_ensemble_replay.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v25_fixed_ensemble_replay.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit-original-30-and-predeclared-50-50:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate non-tunable formula and all-game complete cohort
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v25_fixed_ensemble_replay cloud.test_v22_accuracy_gate -q
+      - name: Download immutable archived V20 research predictions (never re-generate with known scores)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/v20-30games"
+          gh run download 38682612970 --repo "$GITHUB_REPOSITORY" --name v20-all-2026-postseason-winners-overs-4p5-5p5 --dir "$RUNNER_TEMP/v20-30games"
+          test -s "$RUNNER_TEMP/v20-30games/all_postseason_2026_v20_per_game.csv"
+      - name: Score V23 fixed weight on all original 30 matchups and paired Elo
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: |
+          python -m cloud.v25_fixed_ensemble_replay --replay "$RUNNER_TEMP/v20-30games/all_postseason_2026_v20_per_game.csv" --out outputs/v25_research/fixed_v23_30games.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v25-v23-immutable-30game-winner-comparison
+          path: MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v25_research/fixed_v23_30games.json
+          if-no-files-found: error
+          retention-days: 60
