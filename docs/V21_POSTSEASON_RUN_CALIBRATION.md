@@ -52,6 +52,16 @@ The next properly testable change should address missing verified *game-specific
 
 For new genuine future originals, compare the current model with counterfactual shadows on the **same games** and track mean-run signed bias, MAE, 4.5/5.5 Brier scores, winner Brier and combined-event probabilities. Avoid selecting the model on the same games used as the claim of accuracy. Prospective source timestamps and first-pitch cutoffs remain binding.
 
+## Prospective scoring test added for Kalshi-style lines
+
+The **underlying live model stays unchanged**. The existing immutable `cloud/v8_challengers.py` research-shadow pipeline now additionally saves `under_4_5_probability` and `under_5_5_probability` for **new shadow forecasts created before first pitch**, calculated only from each challenger's exact simulated final-run PMF. This permits same-game comparisons of the existing historical-playoff correction, no current-year adaptation, no-playoff-context, neutral experimental context and no extra starter correction.
+
+Once official final scores arrive, the paired evaluator reports, **for each line separately**, the number of genuinely eligible matched pregame originals and challenger variants, plus both Under-line Brier scores. Missing saved PMFs or older shadows without those line fields count as **unavailable**, never zero-error wins. The original forecast is always saved first; no experimental values replace or rewrite a user's predicted winner or Over/Under probabilities.
+
+This evaluates prospectively whether *removing* or altering context actually helps the real 4.5/5.5 markets before selecting any scoring-rate change. A high historical Over hit rate alone is inadequate, especially given 2026's retrospective construction and unverified past starters/lineups.
+
+**Checks:** `python -m unittest cloud.test_v21_kalshi_shadow cloud.test_v8_challengers -v`. The research workflow and main forecast CI run these alongside their original cutoffs and score-simulation safeguards. GitHub notifications or the daily report may show `n=0` until enough truly timestamped matches settle.
+
 ## Reproduce the research (no unpinned dependencies)
 
 From the application folder:
