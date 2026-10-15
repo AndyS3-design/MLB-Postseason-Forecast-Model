@@ -13,7 +13,7 @@ All those statistics can simultaneously be true. The biggest probability assigne
 - **Over 5.5 runs: 64.8%**, Under 5.5: 35.2%. These refer to all scorelines, not the subset in which Milwaukee wins.
 - Secondary, explanatory section: **Unconditional most frequent exact score: Dodgers 3–2 Brewers, 5.233%**. It does *not* change the winner pick.
 
-This is a presentation correction, **not a new or retroactively modified October 14 forecast**. The saved `projected_score`, `v6_display_score` and `modal_exact_scores` remain the actual unconditional mode. The older frozen versions (original preliminary, updated V13, official-lineup update) stay create-exclusive and immutable.
+This is a presentation correction, **not a new or retroactively modified October 14 forecast**. Older saved `projected_score` values retain their ORIGINAL version-dependent meaning (some V13 records used a winner-aligned illustrative score; newer versions stored the unconditional exact mode). The simulator's existing `v6_display_score` and `modal_exact_scores` continue to mean the unconditional exact mode. Every older frozen version (original preliminary, updated V13 and official-lineup update) stays create-exclusive and immutable.
 
 ## New forecast data and historical fallback
 
