@@ -28,6 +28,7 @@ from cloud.v9_tracking import summarize as prospective_capture_report
 from cloud.v10_schedule_audit import reconcile as official_schedule_reconciliation
 from cloud.two_stage import eligible_preliminary, paired_stage_metrics
 from cloud.v17_prospective import score_originals as evaluate_full_distribution
+from cloud.v23_elo_ensemble import freeze as freeze_v23_elo_ensemble
 from cloud.v8_evaluate import valid_original
 from cloud.preflight import official_schedule_days
 from cloud.official_hitter_history import collect_verified_lineup_history
@@ -349,6 +350,12 @@ def store_pregame(game,now,games,root,assets,starter_backfill=None,revision=Fals
             if preliminary_update else 'Updated verified pitcher history and newer training inputs; original remains immutable'
             if revision else None),
         data_quality='LIMITED' if status['data_gaps'] else 'FEATURES AVAILABLE')
+    # V23 research-only alternative: freeze the fixed, preregistered 50/50
+    # model/Elo winner probability beside NEW official originals. No older
+    # forecasts, preview scores, revisions, or production picks are changed.
+    if rec['forecast_kind']=='original_pregame':
+        rec['research_winner_ensemble']=freeze_v23_elo_ensemble(
+            rec['predicted_home_win'],rec['elo_home_win'])
     # A second deadline check covers formatting and payload preparation time.
     final_check=now+timedelta(seconds=max(0.,monotonic()-computation_start))
     if final_check>=start:
