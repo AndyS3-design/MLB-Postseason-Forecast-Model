@@ -50,12 +50,13 @@ jobs:
           echo "Official pregame games without final originals: $EXPECTED_GAME_IDS"
           # Do not flood the main concurrent forecast job while it is already
           # running or queued. Include legitimate early waiting jobs.
-          gh run list --repo "$GITHUB_REPOSITORY" --workflow mlb-cloud.yml --limit 12 --json status,createdAt > "$RUNNER_TEMP/mlb-main-runs.json"
+          gh run list --repo "$GITHUB_REPOSITORY" --workflow mlb-cloud.yml --limit 12 --json status,createdAt,event > "$RUNNER_TEMP/mlb-main-runs.json"
           active=$(python3 - "$RUNNER_TEMP/mlb-main-runs.json" <<'PY'
           import datetime,json,sys
           now=datetime.datetime.now(datetime.timezone.utc)
           data=json.load(open(sys.argv[1]))
           print(int(any(
+              x.get('event') in ('schedule','workflow_dispatch') and
               x.get('status') in ('queued','in_progress','waiting','pending','requested') and
               (now-datetime.datetime.fromisoformat(x['createdAt'].replace('Z','+00:00'))).total_seconds()<21600
               for x in data)))
