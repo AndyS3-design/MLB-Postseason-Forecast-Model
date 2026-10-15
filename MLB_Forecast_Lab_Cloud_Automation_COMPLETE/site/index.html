@@ -245,7 +245,7 @@ if((updatedPreliminary||lineupPreliminary)&&early){
  const jointDisplay=comboRows.length?
   '<div class="card" style="margin-top:14px"><h3>MODEL PICK + GAME-TOTAL OVER — JOINT PROBABILITIES</h3><div class="two-col">'+
     comboRows.map(x=>'<div><strong>'+esc(win)+' &amp; Over '+x.line.toFixed(1)+'</strong><div class="score" style="font-size:24px">'+pct(x.p)+'</div></div>').join('')+
-    '</div><p class="prose">Measured directly in the same simulated final scores. These are not products of separate probabilities or demonstrated Kalshi trading edges.</p></div>'
+    '</div><p class="prose">Measured directly in the same simulated final scores. These are not products of separate probabilities or demonstrated profitable trading edges.</p></div>'
   :'';
 
  const overUnderTable=totalLines.length===4
