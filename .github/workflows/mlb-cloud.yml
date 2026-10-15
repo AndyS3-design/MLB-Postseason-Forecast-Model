@@ -149,34 +149,58 @@ jobs:
           else
             python -m cloud.worker run
           fi
-      - name: Preserve immutable predictions and updated data
+      - name: Persist original predictions independently before site updates
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          root=MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+          shopt -s nullglob
+          for file in "$root"/cloud_records/predictions/*.json; do
+            if git cat-file -e "HEAD:$file" 2>/dev/null; then
+              if ! git show "HEAD:$file" | cmp -s - "$file"; then
+                echo "::error::Existing original forecast changed: $file"
+                exit 1
+              fi
+              continue
+            fi
+            echo "Saving immutable original: $file"
+            # GitHub Contents create-only endpoint: never pass an existing blob SHA.
+            # A concurrent writer returns 409/422, then verify exact bytes.
+            payload=$(mktemp)
+            FILE="$file" python3 -c 'import os,json,base64; p=os.environ["FILE"]; print(json.dumps({"message":"Preserve original pregame forecast","content":base64.b64encode(open(p,"rb").read()).decode(),"branch":"master"}))' > "$payload"
+            if ! gh api --method PUT "repos/$GH_REPO/contents/$file" --input "$payload"; then
+              remote=$(mktemp)
+              if ! gh api -H "Accept: application/vnd.github.raw+json" "repos/$GH_REPO/contents/$file" > "$remote" || ! cmp -s "$file" "$remote"; then
+                echo "::error::Original forecast was not durably persisted: $file"
+                exit 1
+              fi
+              echo "Identical original already persisted by concurrent workflow."
+            fi
+            rm -f "$payload"
+          done
+
+      - name: Publish secondary status and website data (noncritical)
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'mlb-forecast-bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          # Never commit Python serialized model artifacts. Cache is managed
-          # by GitHub Actions, and original forecast JSON remains committed.
-          git add -A -- MLB_Forecast_Lab_Cloud_Automation_COMPLETE/
+          root=MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+          git add -A -- "$root/"
+          git reset -q -- "$root/cloud_records/predictions/" || true
           if git diff --cached --name-only | grep -E '^MLB_Forecast_Lab_Cloud_Automation_COMPLETE/outputs/v8_cache/'; then
             echo 'Refusing to commit serialized model cache artifacts.' >&2
             exit 1
           fi
-          if git diff --cached --quiet; then
-            echo 'No new data or pregame records.'
-          else
-            git commit -m 'MLB forecast: persist official data and timestamped pregame results'
-            for attempt in 1 2 3; do
-              if git pull --rebase origin master && git push origin HEAD:master; then
-                break
-              fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'MLB forecast: refresh secondary status and website'
+            if ! (git pull --rebase origin master && git push origin HEAD:master); then
               git rebase --abort || true
-              if [ "$attempt" -eq 3 ]; then
-                echo 'The remote branch changed. Failing safely; please rerun.' >&2
-                exit 1
-              fi
-              sleep 5
-            done
+              echo "::warning::Secondary data sync conflicted; immutable original forecast is already saved."
+            fi
           fi
       - name: Upload baseball forecast website
         uses: actions/upload-pages-artifact@v4
