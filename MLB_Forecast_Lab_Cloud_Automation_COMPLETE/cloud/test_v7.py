@@ -21,9 +21,11 @@ class GateTests(unittest.TestCase):
         self.assertTrue(should_run(self.now,fetcher=fetcher)['run'])
         self.assertEqual(len(find_approaching_games(self.now,fetcher)),1)
     def test_gate_early_and_after_start_are_skipped(self):
-        for minutes in (120,9,-1):
+        for minutes in (MAX_LEAD_MINUTES+1,9,-1):
             f=lambda day:self.payload([game(self.now,minutes)]) if day==self.now.date() else self.payload([])
             self.assertFalse(should_run(self.now,fetcher=f)['run'])
+        f=lambda day:self.payload([game(self.now,120)]) if day==self.now.date() else self.payload([])
+        self.assertTrue(should_run(self.now,fetcher=f)['run']) # early safe holding pattern
         f=lambda day:self.payload([game(self.now,10)]) if day==self.now.date() else self.payload([])
         self.assertTrue(should_run(self.now,fetcher=f)['run']) # valid late recovery wake
     def test_gate_rejects_live_or_final(self):
