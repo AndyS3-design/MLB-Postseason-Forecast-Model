@@ -17,3 +17,16 @@ The research workflow is `.github/workflows/mlb-v24-winner-ablation.yml`. Detail
 ## Promotion and model accuracy
 
 Requiring 90% in all playoff games is aspirational, not a calibration guarantee. If this study loses to Elo, reject its candidate. If it improves probability metrics, future genuinely timestamped matched pregame predictions are still required before deployment. Do not select on the sample being presented as a holdout, omit losses, or backfill old forecasts.
+
+
+## Verified October 15, 2026 experimental results
+
+[GitHub Actions V24 run (passed)](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model/actions/runs/38693386638).
+
+* Only 2023 regular games trained the feature selection candidates, 2024 regular games selected `elo_plus_form_rest` with C=0.3 (validation 1,357/2,427 correct, Brier 0.2440771); refit 2023-24 regular before later-season diagnostics.
+* 2025 regular: candidate **1,345/2,425 (55.4639%)**, Brier **0.2441099**, versus Elo **1,334/2,425 (55.0103%)**, Brier **0.2440532**. Candidate slightly worse on Brier.
+* 2025 postseason: candidate **25/47 (53.1915%)**, Brier **0.2469226**, versus Elo **23/47 (48.9362%)**, Brier **0.2480056**.
+* 2026 regular: candidate **1,331/2,429 (54.7962%)**, Brier **0.2464354**, versus Elo **1,341/2,429 (55.2079%)**, Brier **0.2462690**.
+* **2026 postseason** (30 official completed games): candidate **17/30 (56.6667%)**, Brier **0.2447001**, versus Elo **19/30 (63.3333%)**, Brier **0.2359202**.
+
+**Promotion rejected.** Across the large 2025/2026 regular-season cohorts, probability skill did not beat Elo, and 2026 playoffs were materially worse. Neither 90% winner accuracy nor stronger unseen-game prediction has been demonstrated. The original production scoring, V23 frozen challenger, and V22 run-total joint odds remain unchanged. These 2025/2026 historical diagnostics are *not* untouched prospective tests.
