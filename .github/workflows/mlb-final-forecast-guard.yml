@@ -5,6 +5,11 @@ on:
     # this is an additional chance, not a timing guarantee.
     - cron: '2-59/5 * * * *'
   workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/mlb-final-forecast-guard.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v19_forecast_guard.py'
 permissions:
   contents: read
   actions: write
