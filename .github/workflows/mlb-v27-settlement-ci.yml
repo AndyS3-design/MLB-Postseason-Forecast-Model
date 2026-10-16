@@ -1,0 +1,42 @@
+name: V27 CI — immutable forecasts and official settlement persistence
+on:
+  push:
+    branches: ['fix/v27-immutable-original-settlement-20261016']
+    paths:
+      - '.github/workflows/mlb-v27-settlement-ci.yml'
+      - '.github/workflows/mlb-cloud.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v27_original_persistence.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v27_original_persistence.py'
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v27-settlement-ci.yml'
+      - '.github/workflows/mlb-cloud.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v27_original_persistence.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v27_original_persistence.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-persistence-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test append-only original and official final behavior
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v27_original_persistence -v
+      - name: Validate Python and connected production workflow wiring
+        run: |
+          python -m py_compile MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v27_original_persistence.py
+          python - <<'PY'
+          from pathlib import Path
+          wf=Path('.github/workflows/mlb-cloud.yml').read_text()
+          assert 'cloud.v27_original_persistence --repo' in wf
+          assert 'cloud.test_v27_original_persistence' in wf
+          assert 'Existing original forecast changed: $file' not in wf
+          assert 'git restore --worktree -- "$root/cloud_records/predictions/"' in wf
+          print('V27 production path and fail-closed cleanup validated')
+          PY
