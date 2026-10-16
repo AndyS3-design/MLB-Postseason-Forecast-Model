@@ -1,6 +1,22 @@
 {
   "daily_maintenance": "complete",
-  "events": [],
+  "events": [
+    {
+      "away": "TBA",
+      "game_id": "849817",
+      "home": "CLE",
+      "minutes_before_game": 379.7,
+      "shadow_research": {
+        "status": "not_requested"
+      },
+      "status": "preliminary_saved"
+    }
+  ],
+  "frozen_model_cache": {
+    "hit": true,
+    "load_or_fit_seconds": 0.023,
+    "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+  },
   "historical_game_logs": {
     "available": [
       2016,
@@ -14,8 +30,9 @@
     "downloaded": [],
     "unavailable": {}
   },
-  "known_pre_game_records": 7,
-  "new_settlements": 0,
+  "known_pre_game_records": 9,
+  "model_assets_build_seconds": 7.009,
+  "new_settlements": 1,
   "official_schedule_audit_status": "needs_attention",
   "pitching_import_status": {
     "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
@@ -30,7 +47,34 @@
     "recent_cached_games": 130,
     "status": "ok"
   },
-  "refreshed_finished_games": 2460,
-  "run_started_utc": "2026-10-15T17:23:04.389291+00:00",
+  "refreshed_finished_games": 2462,
+  "run_started_utc": "2026-10-16T17:39:57.355914+00:00",
+  "starter_history_backfill": {
+    "849817": {
+      "cutoff_exclusive": "2026-10-16",
+      "errors": [],
+      "new_boxscores": 21,
+      "sides": {
+        "away": {
+          "game_logs_found": 31,
+          "pitcher_id": "MLB-607259",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 3,
+          "source": "MLB official completed game boxscores",
+          "status": "verified starter history"
+        },
+        "home": {
+          "game_logs_found": 41,
+          "pitcher_id": "MLB-542888",
+          "prior_verified_starts_after": 0,
+          "prior_verified_starts_before": 0,
+          "source": "not available",
+          "status": "limited or unavailable verified starts"
+        }
+      },
+      "source": "MLB official game logs + completed game boxscores",
+      "status": "partial"
+    }
+  },
   "status": "finished"
 }

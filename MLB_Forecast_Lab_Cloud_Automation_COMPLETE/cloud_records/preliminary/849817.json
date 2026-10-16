@@ -1,0 +1,444 @@
+{
+  "away": "TBA",
+  "away_name": "Tampa Bay Rays",
+  "data_quality": "LIMITED",
+  "date": "2026-10-16",
+  "elo_home_win": 0.47332509942356304,
+  "expected_runs": {
+    "away": 3.96175,
+    "home": 3.6671666666666667,
+    "total": 7.628916666666667
+  },
+  "favorite_aligned_score": {
+    "away": 3,
+    "conditional_probability": 0.08356500408830746,
+    "home": 2,
+    "method": "most likely exact score among outcomes where the overall model favorite wins",
+    "probability": 0.042583333333333334,
+    "winner_side": "away"
+  },
+  "features_cutoff_exclusive": "2026-10-16",
+  "forecast_created_utc": "2026-10-16T17:40:19.290696+00:00",
+  "forecast_kind": "preliminary_pregame",
+  "game_id": "849817",
+  "game_start_utc": "2026-10-17T00:00:00+00:00",
+  "game_type": "Postseason",
+  "health": {
+    "bullpen_workload": {
+      "away": {
+        "historical_relievers_observed": 12,
+        "note": "Exploratory fatigue proxies are not independently fitted scoring multipliers.",
+        "relievers_flagged_as_fatigued": 0,
+        "relievers_in_sample": 9,
+        "relievers_with_pitch_history": 9,
+        "roster_verified": true,
+        "source": "Official bullpen ID filtered; still a workload proxy",
+        "status": "official pregame roster subset",
+        "total_reported_pitches_last_3d": 91,
+        "use_in_forecast": false
+      },
+      "home": {
+        "historical_relievers_observed": 12,
+        "note": "Exploratory fatigue proxies are not independently fitted scoring multipliers.",
+        "relievers_flagged_as_fatigued": 0,
+        "relievers_in_sample": 12,
+        "relievers_with_pitch_history": 12,
+        "roster_verified": true,
+        "source": "Official bullpen ID filtered; still a workload proxy",
+        "status": "official pregame roster subset",
+        "total_reported_pitches_last_3d": 91,
+        "use_in_forecast": false
+      }
+    },
+    "data_gaps": [
+      "home starter fewer than three known previous starts",
+      "home batting order not confirmed before first pitch",
+      "away rolling batting totals unavailable for 2 of 15 recent prior games; OBP/ISO use verified totals and league priors",
+      "away batting order not confirmed before first pitch"
+    ],
+    "frozen_model_cache": {
+      "hit": true,
+      "load_or_fit_seconds": 0.023,
+      "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+    },
+    "lineups_confirmed": {
+      "away": false,
+      "home": false
+    },
+    "model_assets_build_seconds": 7.009,
+    "official_hitter_history": {
+      "prior_pa": {},
+      "status": "not_requested"
+    },
+    "official_snapshot_collected": true,
+    "pitcher_calibrated": true,
+    "run_model_training_coverage": "10 seasons: 2016\u20132025",
+    "run_model_training_years": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "starter_backfill": {
+      "cutoff_exclusive": "2026-10-16",
+      "errors": [],
+      "new_boxscores": 21,
+      "sides": {
+        "away": {
+          "game_logs_found": 31,
+          "pitcher_id": "MLB-607259",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 3,
+          "source": "MLB official completed game boxscores",
+          "status": "verified starter history"
+        },
+        "home": {
+          "game_logs_found": 41,
+          "pitcher_id": "MLB-542888",
+          "prior_verified_starts_after": 0,
+          "prior_verified_starts_before": 0,
+          "source": "not available",
+          "status": "limited or unavailable verified starts"
+        }
+      },
+      "source": "MLB official game logs + completed game boxscores",
+      "status": "partial"
+    },
+    "starter_pitcher_history": {
+      "away": 8,
+      "home": 0
+    }
+  },
+  "home": "CLE",
+  "home_name": "Cleveland Guardians",
+  "lineup_adjustment": {
+    "away": {
+      "factor": 1.0,
+      "history_source": "cached_prior_boxscores_or_neutral",
+      "prior_plate_appearances": 0,
+      "status": "Unavailable: verified nine-player lineup required"
+    },
+    "home": {
+      "factor": 1.0,
+      "history_source": "cached_prior_boxscores_or_neutral",
+      "prior_plate_appearances": 0,
+      "status": "Unavailable: verified nine-player lineup required"
+    }
+  },
+  "lineup_evidence": null,
+  "minutes_before_game": 379.7,
+  "modal_exact_scores": [
+    {
+      "away": 2,
+      "home": 3,
+      "probability": 0.04716666666666667
+    },
+    {
+      "away": 3,
+      "home": 4,
+      "probability": 0.04516666666666667
+    },
+    {
+      "away": 3,
+      "home": 2,
+      "probability": 0.042583333333333334
+    },
+    {
+      "away": 4,
+      "home": 3,
+      "probability": 0.03525
+    },
+    {
+      "away": 1,
+      "home": 2,
+      "probability": 0.034
+    },
+    {
+      "away": 4,
+      "home": 5,
+      "probability": 0.03191666666666667
+    },
+    {
+      "away": 2,
+      "home": 1,
+      "probability": 0.029583333333333333
+    }
+  ],
+  "model_commit": "7440186b8075722bb0855116fcdfe2642cd821d4",
+  "model_training_cutoff": "2016,2017,2018,2019,2020,2021,2022,2023,2024,2025",
+  "model_version": "18.0.0-forecast-integrity",
+  "original_forecast_created_utc": null,
+  "predicted_home_win": 0.49041666666666667,
+  "projected_score": {
+    "away": 2,
+    "exact_probability": 0.04716666666666667,
+    "home": 3,
+    "sum": 5
+  },
+  "projected_score_method": "unconditional_simulated_exact_mode",
+  "revision_reason": null,
+  "scenario": {
+    "park_factor": 1.0,
+    "postseason_factor": 0.854106093625342,
+    "starter_weight": 0.25,
+    "weather_factor": 1.0
+  },
+  "score_grid": {
+    "away_axis": "columns",
+    "cap": 10,
+    "cells": [
+      [
+        0.0,
+        0.01075,
+        0.011333333333333334,
+        0.009916666666666667,
+        0.008083333333333333,
+        0.006666666666666667,
+        0.0035833333333333333,
+        0.0020833333333333333,
+        0.0015833333333333333,
+        0.0005833333333333334,
+        0.001
+      ],
+      [
+        0.012916666666666667,
+        0.0,
+        0.029583333333333333,
+        0.023,
+        0.017916666666666668,
+        0.013916666666666667,
+        0.011,
+        0.005833333333333334,
+        0.00275,
+        0.00325,
+        0.003833333333333333
+      ],
+      [
+        0.0135,
+        0.034,
+        0.0,
+        0.042583333333333334,
+        0.023916666666666666,
+        0.01775,
+        0.013333333333333334,
+        0.009833333333333333,
+        0.006083333333333333,
+        0.0028333333333333335,
+        0.007333333333333333
+      ],
+      [
+        0.010666666666666666,
+        0.025,
+        0.04716666666666667,
+        0.0,
+        0.03525,
+        0.02125,
+        0.013833333333333333,
+        0.008583333333333333,
+        0.005416666666666667,
+        0.00325,
+        0.005
+      ],
+      [
+        0.0075,
+        0.017916666666666668,
+        0.024416666666666666,
+        0.04516666666666667,
+        0.0,
+        0.027083333333333334,
+        0.012416666666666666,
+        0.007833333333333333,
+        0.006166666666666667,
+        0.00275,
+        0.005583333333333333
+      ],
+      [
+        0.004583333333333333,
+        0.0135,
+        0.01725,
+        0.019083333333333334,
+        0.03191666666666667,
+        0.0,
+        0.015083333333333334,
+        0.00775,
+        0.004333333333333333,
+        0.00225,
+        0.005
+      ],
+      [
+        0.0030833333333333333,
+        0.00675,
+        0.010333333333333333,
+        0.011833333333333333,
+        0.014,
+        0.0185,
+        0.0,
+        0.00775,
+        0.0035833333333333333,
+        0.002,
+        0.003833333333333333
+      ],
+      [
+        0.0019166666666666666,
+        0.004166666666666667,
+        0.00525,
+        0.006083333333333333,
+        0.0065,
+        0.006166666666666667,
+        0.01,
+        0.0,
+        0.003416666666666667,
+        0.0025833333333333333,
+        0.0020833333333333333
+      ],
+      [
+        0.0008333333333333334,
+        0.0020833333333333333,
+        0.002916666666666667,
+        0.004083333333333333,
+        0.00375,
+        0.00375,
+        0.0033333333333333335,
+        0.005083333333333333,
+        0.0,
+        0.00125,
+        0.0019166666666666666
+      ],
+      [
+        0.0005833333333333334,
+        0.00125,
+        0.00175,
+        0.0020833333333333333,
+        0.0023333333333333335,
+        0.00125,
+        0.0016666666666666668,
+        0.0014166666666666668,
+        0.0016666666666666668,
+        0.0,
+        0.0013333333333333333
+      ],
+      [
+        0.0003333333333333333,
+        0.0019166666666666666,
+        0.0030833333333333333,
+        0.0030833333333333333,
+        0.0031666666666666666,
+        0.0025,
+        0.0025,
+        0.0013333333333333333,
+        0.00125,
+        0.0014166666666666668,
+        0.0015
+      ]
+    ],
+    "home_axis": "rows",
+    "samples": 12000
+  },
+  "source": "Official MLB pregame schedule; baseball-only model; no market inputs",
+  "starting_pitchers": {
+    "away": "Nick Martinez",
+    "home": "Shawn Armstrong"
+  },
+  "team_indices": {
+    "CLE": {
+      "attack": 107,
+      "available": true,
+      "defense": 112,
+      "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+      "fielding_games": 0,
+      "games": 30,
+      "offense": 107,
+      "pitching": 119,
+      "pitching_games": 30,
+      "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+      "runs_allowed_per_game": 3.77,
+      "runs_scored_per_game": 4.87
+    },
+    "TBA": {
+      "attack": 99,
+      "available": true,
+      "defense": 122,
+      "defense_source": "Runs allowed proxy (INCLUDES pitching; fielding unavailable)",
+      "fielding_games": 0,
+      "games": 30,
+      "offense": 99,
+      "pitching": 115,
+      "pitching_games": 30,
+      "pitching_source": "Team pitching ERA (starter + bullpen), smoothed",
+      "runs_allowed_per_game": 3.3,
+      "runs_scored_per_game": 4.33
+    }
+  },
+  "total_distribution": {
+    "1": 0.023666666666666666,
+    "10": 0.05525,
+    "11": 0.06525,
+    "12": 0.03425,
+    "13": 0.038,
+    "14": 0.01775,
+    "15": 0.019916666666666666,
+    "16": 0.010666666666666666,
+    "17": 0.008166666666666666,
+    "18": 0.0045,
+    "19": 0.00525,
+    "2": 0.024833333333333332,
+    "20": 0.0020833333333333333,
+    "21": 0.0014166666666666668,
+    "22": 0.0011666666666666668,
+    "23": 0.00025,
+    "24": 0.0005,
+    "25": 0.0004166666666666667,
+    "26": 0.00016666666666666666,
+    "27": 0.00016666666666666666,
+    "3": 0.08416666666666667,
+    "4": 0.06358333333333334,
+    "5": 0.13683333333333333,
+    "6": 0.08241666666666667,
+    "7": 0.13716666666666666,
+    "8": 0.07641666666666666,
+    "9": 0.10575
+  },
+  "total_line_probabilities": {
+    "3.5": {
+      "over": 0.8673333333333333,
+      "under": 0.13266666666666665
+    },
+    "4.5": {
+      "over": 0.80375,
+      "under": 0.19625
+    },
+    "5.5": {
+      "over": 0.6669166666666666,
+      "under": 0.33308333333333334
+    },
+    "6.5": {
+      "over": 0.5845,
+      "under": 0.4155
+    }
+  },
+  "under_6_5_probability": 0.4155,
+  "win_and_over_probabilities": {
+    "4.5": {
+      "away_win_and_over": 0.41691666666666666,
+      "favorite_side": "away",
+      "favorite_win_and_over": 0.41691666666666666,
+      "home_win_and_over": 0.3868333333333333,
+      "method": "exact joint event frequency from same simulated final scores",
+      "over": 0.80375
+    },
+    "5.5": {
+      "away_win_and_over": 0.34975,
+      "favorite_side": "away",
+      "favorite_win_and_over": 0.34975,
+      "home_win_and_over": 0.31716666666666665,
+      "method": "exact joint event frequency from same simulated final scores",
+      "over": 0.6669166666666667
+    }
+  }
+}
