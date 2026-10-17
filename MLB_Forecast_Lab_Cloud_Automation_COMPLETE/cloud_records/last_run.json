@@ -1,6 +1,22 @@
 {
   "daily_maintenance": "complete",
-  "events": [],
+  "events": [
+    {
+      "away": "TBA",
+      "game_id": "849816",
+      "home": "CLE",
+      "minutes_before_game": 593.2,
+      "shadow_research": {
+        "status": "not_requested"
+      },
+      "status": "preliminary_saved"
+    }
+  ],
+  "frozen_model_cache": {
+    "hit": false,
+    "load_or_fit_seconds": 2.352,
+    "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+  },
   "historical_game_logs": {
     "available": [
       2016,
@@ -14,7 +30,8 @@
     "downloaded": [],
     "unavailable": {}
   },
-  "known_pre_game_records": 9,
+  "known_pre_game_records": 10,
+  "model_assets_build_seconds": 9.448,
   "new_settlements": 0,
   "official_schedule_audit_status": "needs_attention",
   "pitching_import_status": {
@@ -31,6 +48,33 @@
     "status": "ok"
   },
   "refreshed_finished_games": 2462,
-  "run_started_utc": "2026-10-17T05:58:40.130136+00:00",
+  "run_started_utc": "2026-10-17T14:14:20.034397+00:00",
+  "starter_history_backfill": {
+    "849816": {
+      "cutoff_exclusive": "2026-10-17",
+      "errors": [],
+      "new_boxscores": 16,
+      "sides": {
+        "away": {
+          "game_logs_found": 0,
+          "pitcher_id": "MLB-607259",
+          "prior_verified_starts_after": 8,
+          "prior_verified_starts_before": 8,
+          "source": "local history",
+          "status": "sufficient verified starts already cached"
+        },
+        "home": {
+          "game_logs_found": 41,
+          "pitcher_id": "MLB-542888",
+          "prior_verified_starts_after": 0,
+          "prior_verified_starts_before": 0,
+          "source": "not available",
+          "status": "limited or unavailable verified starts"
+        }
+      },
+      "source": "MLB official game logs + completed game boxscores",
+      "status": "partial"
+    }
+  },
   "status": "finished"
 }
