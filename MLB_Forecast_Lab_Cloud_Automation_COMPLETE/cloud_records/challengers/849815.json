@@ -1,0 +1,52 @@
+{
+  "away": "CLE",
+  "date": "2026-10-19",
+  "features_cutoff_exclusive": "2026-10-19",
+  "game_id": "849815",
+  "game_start_utc": "2026-10-20T00:08:00+00:00",
+  "home": "TBA",
+  "limitations": "Do not select winning challenger retrospectively on the games used to compare them.",
+  "model_version": "18.0.0-forecast-integrity",
+  "original_forecast_created_utc": "2026-10-19T23:39:18.727447+00:00",
+  "shadow_created_utc": "2026-10-19T23:39:46.204999+00:00",
+  "simulations_per_variant": 12000,
+  "source": "Same original pregame inputs and official snapshot; baseball-only; RESEARCH ONLY",
+  "variants": {
+    "historic_postseason_only": {
+      "description": "2020\u201325 historic playoff run correction without current-2026 adaptation",
+      "home_win_probability": 0.6223333333333333,
+      "status": "saved",
+      "total_expected_runs": 7.736833333333333,
+      "under_4_5_probability": 0.19083333333333333,
+      "under_5_5_probability": 0.3265,
+      "under_6_5_probability": 0.40825
+    },
+    "without_experimental_context": {
+      "description": "Same frozen run model with lineup, roster bullpen, park and weather overlay factors neutralized",
+      "home_win_probability": 0.616,
+      "status": "saved",
+      "total_expected_runs": 7.307916666666666,
+      "under_4_5_probability": 0.2225,
+      "under_5_5_probability": 0.3675,
+      "under_6_5_probability": 0.4533333333333333
+    },
+    "without_extra_starter_correction": {
+      "description": "Original scoring model with no additional calibrated starter correction",
+      "home_win_probability": 0.5965,
+      "status": "saved",
+      "total_expected_runs": 7.543,
+      "under_4_5_probability": 0.20541666666666666,
+      "under_5_5_probability": 0.3455833333333333,
+      "under_6_5_probability": 0.42766666666666664
+    },
+    "without_postseason_context": {
+      "description": "Regular-season run rate with no postseason overlay",
+      "home_win_probability": 0.62775,
+      "status": "saved",
+      "total_expected_runs": 8.566916666666666,
+      "under_4_5_probability": 0.147,
+      "under_5_5_probability": 0.25908333333333333,
+      "under_6_5_probability": 0.33366666666666667
+    }
+  }
+}
