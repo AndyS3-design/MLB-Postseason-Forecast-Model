@@ -1,53 +1,36 @@
 {
-  "events": [
-    {
-      "away": "TBA",
-      "game_id": "849817",
-      "home": "CLE",
-      "minutes_before_game": 28.7,
-      "shadow_research": {
-        "n_variants": 4,
-        "path": "/home/runner/work/MLB-Postseason-Forecast-Model/MLB-Postseason-Forecast-Model/MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/challengers/849817.json",
-        "status": "shadows_saved"
-      },
-      "status": "saved"
-    }
-  ],
-  "frozen_model_cache": {
-    "hit": false,
-    "load_or_fit_seconds": 1.933,
-    "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+  "daily_maintenance": "complete",
+  "events": [],
+  "historical_game_logs": {
+    "available": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "downloaded": [],
+    "unavailable": {}
   },
   "known_pre_game_records": 12,
-  "model_assets_build_seconds": 7.926,
-  "new_settlements": 0,
-  "run_started_utc": "2026-10-18T20:39:01.542945+00:00",
-  "starter_history_backfill": {
-    "849817": {
-      "cutoff_exclusive": "2026-10-18",
-      "errors": [],
-      "new_boxscores": 5,
-      "sides": {
-        "away": {
-          "game_logs_found": 30,
-          "pitcher_id": "MLB-656876",
-          "prior_verified_starts_after": 8,
-          "prior_verified_starts_before": 3,
-          "source": "MLB official completed game boxscores",
-          "status": "verified starter history"
-        },
-        "home": {
-          "game_logs_found": 0,
-          "pitcher_id": "MLB-800048",
-          "prior_verified_starts_after": 17,
-          "prior_verified_starts_before": 17,
-          "source": "local history",
-          "status": "sufficient verified starts already cached"
-        }
-      },
-      "source": "MLB official game logs + completed game boxscores",
-      "status": "complete"
-    }
+  "new_settlements": 1,
+  "official_schedule_audit_status": "needs_attention",
+  "pitching_import_status": {
+    "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
+    "calibration": "done",
+    "last_attempt_utc": "2026-10-13T22:08:24.861679+00:00",
+    "note": "Retrosheet starter history loaded",
+    "status": "imported"
   },
+  "recent_boxscores": {
+    "errors": [],
+    "new_games": 26,
+    "recent_cached_games": 130,
+    "status": "ok"
+  },
+  "refreshed_finished_games": 2464,
+  "run_started_utc": "2026-10-19T06:44:27.556547+00:00",
   "status": "finished"
 }
