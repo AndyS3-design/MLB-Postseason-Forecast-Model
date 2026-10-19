@@ -4,6 +4,14 @@
   "data_quality": "LIMITED",
   "date": "2026-10-18",
   "elo_home_win": 0.46247174626782617,
+  "evaluation": {
+    "abs_run_error_per_team": 1.4952083333333333,
+    "abs_total_error": 2.9904166666666665,
+    "correct_winner": true,
+    "elo_brier": 0.2138801160960126,
+    "under_6_5_brier": 0.2615470069444444,
+    "winner_brier": 0.20611600000000002
+  },
   "expected_runs": {
     "away": 3.756,
     "home": 3.2344166666666667,
@@ -275,6 +283,12 @@
   "model_commit": "f5cde136f011a425d36b6ffe84bf86c7ad2a39c6",
   "model_training_cutoff": "2016,2017,2018,2019,2020,2021,2022,2023,2024,2025",
   "model_version": "18.0.0-forecast-integrity",
+  "official_final": {
+    "away": 3,
+    "home": 1,
+    "settled_at_utc": "2026-10-19T06:44:31.415467+00:00",
+    "source": "Official MLB schedule API"
+  },
   "original_forecast_created_utc": null,
   "predicted_home_win": 0.454,
   "projected_score": {
