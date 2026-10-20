@@ -394,7 +394,7 @@
       "downloaded": [],
       "unavailable": {}
     },
-    "new_settlements": 1,
+    "new_settlements": 0,
     "official_schedule_audit_status": "needs_attention",
     "pitching_import_status": {
       "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
@@ -410,7 +410,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2465,
-    "run_started_utc": "2026-10-20T06:42:57.675152+00:00",
+    "run_started_utc": "2026-10-20T15:40:35.084783+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -7196,5 +7196,5 @@
     "preliminary_without_final_count": 2,
     "status": "small_sample_exploratory"
   },
-  "updated_utc": "2026-10-20T06:42:57.675152+00:00"
+  "updated_utc": "2026-10-20T15:40:35.084783+00:00"
 }
