@@ -339,28 +339,24 @@
     ]
   },
   "official_schedule_audit": {
-    "as_of_exclusive_et_date": "2026-10-21",
-    "completed_games_imported": 6,
+    "as_of_exclusive_et_date": "2026-10-22",
+    "completed_games_imported": 5,
     "identity_or_score_conflicts": [],
     "import_coverage_fraction": 1.0,
     "invalid_original_count": 0,
     "invalid_originals": [],
     "missing_import_count": 0,
     "missing_imports": [],
-    "missing_original_count": 2,
+    "missing_original_count": 1,
     "missing_originals": [
-      {
-        "date": "2026-10-14",
-        "game_id": "849811"
-      },
       {
         "date": "2026-10-15",
         "game_id": "849818"
       }
     ],
     "notes": "Rolling operational audit, not a historical replay or proof of forecast accuracy.",
-    "official_capture_fraction": 0.6667,
-    "official_completed_games": 6,
+    "official_capture_fraction": 0.8,
+    "official_completed_games": 5,
     "official_finals_missing_scores": [
       {
         "game_id": "849817",
@@ -369,14 +365,14 @@
     ],
     "official_finals_missing_scores_count": 1,
     "official_games_with_valid_original": 4,
-    "official_games_without_valid_original": 2,
+    "official_games_without_valid_original": 1,
     "score_conflict_count": 0,
     "source": "Independent official MLB schedule (not imported CSVs)",
     "status": "needs_attention",
     "tracking_start_date": "2026-10-14",
     "unreadable_original_file_count": 0,
     "window_days": 7,
-    "window_start_date": "2026-10-14"
+    "window_start_date": "2026-10-15"
   },
   "operations": {
     "daily_maintenance": "complete",
@@ -410,7 +406,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2465,
-    "run_started_utc": "2026-10-21T15:59:01.192077+00:00",
+    "run_started_utc": "2026-10-22T07:10:04.902959+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -7032,7 +7028,7 @@
     }
   ],
   "prospective_capture": {
-    "as_of_exclusive_et_date": "2026-10-21",
+    "as_of_exclusive_et_date": "2026-10-22",
     "capture_fraction": 0.6667,
     "capture_window_fraction": 1.0,
     "captured_pending_settlement_ids": [],
@@ -7196,5 +7192,5 @@
     "preliminary_without_final_count": 2,
     "status": "small_sample_exploratory"
   },
-  "updated_utc": "2026-10-21T15:59:01.192077+00:00"
+  "updated_utc": "2026-10-22T07:10:04.902959+00:00"
 }
