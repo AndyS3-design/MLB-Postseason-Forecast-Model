@@ -165,7 +165,7 @@ jobs:
           if python3 -c 'import json,sys;sys.exit(0 if json.load(open(sys.argv[1]))["first_writer_accepted"] else 1)' "$RUNNER_TEMP/v29_persistence.json"; then
             echo "SKIP_SECONDARY_ON_FIRST_WRITER=1" >> "$GITHUB_ENV"
             git restore --worktree -- "$root/site"
-            git clean -f -- "$root/site"
+            git clean -fd -- "$root/site"
             echo "::warning::First writer is authoritative; publish only previously committed site, not losing simulation."
           fi
           # Only after EVERY original is durably verified: drop local copies
