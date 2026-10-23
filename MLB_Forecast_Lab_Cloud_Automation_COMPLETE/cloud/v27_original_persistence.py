@@ -10,6 +10,7 @@ import argparse
 import base64
 from datetime import datetime, timezone
 import json
+import math
 from pathlib import Path
 import subprocess
 
@@ -112,6 +113,38 @@ def remote_compatible(local, remote):
     return 'already_persisted'
 
 
+def accept_existing_first_writer(local, remote, filename):
+    """Only a verified, same-game, immutable remote original may win a race.
+
+    This is deliberately restricted to cases where the local checkout had no
+    original in HEAD. Existing HEAD originals must still match byte-for-byte
+    in all prediction fields, and this never writes or replaces a forecast.
+    """
+    if not isinstance(local, dict) or not isinstance(remote, dict):
+        raise ImmutableOriginalError('First-writer records must be objects')
+    frozen_remote = _core(remote)
+    validate_new_original(frozen_remote, filename)
+    if 'official_final' in remote:
+        validate_settlement(remote)
+    elif 'evaluation' in remote:
+        raise ImmutableOriginalError('Remote first writer has orphan evaluation')
+    for field in ('game_id', 'date', 'home', 'away', 'game_start_utc', 'game_type'):
+        if local.get(field) != remote.get(field):
+            raise ImmutableOriginalError('Remote first writer game identity differs: ' + field)
+    # Check the original probabilities and simulation data were not corrupted.
+    # Do not recalculate any win-plus-Over probability from marginals.
+    for field in ('predicted_home_win', 'elo_home_win'):
+        try:
+            p = float(remote[field])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ImmutableOriginalError('Remote first writer missing probability: ' + field) from exc
+        if not 0 <= p <= 1 or not math.isfinite(p):
+            raise ImmutableOriginalError('Remote first writer invalid probability: ' + field)
+    if 'win_and_over_probabilities' in local and 'win_and_over_probabilities' not in remote:
+        raise ImmutableOriginalError('Remote first writer lacks frozen same-simulation joint odds')
+    return 'first_writer_accepted'
+
+
 def _head_content(path):
     proc = subprocess.run(['git', 'show', 'HEAD:' + path], capture_output=True)
     if proc.returncode:
@@ -164,7 +197,8 @@ def sync(root, transport, head_reader=_head_content):
     root = Path(root)
     folder = root / 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE' / 'cloud_records' / 'predictions'
     report = {'checked': 0, 'unchanged': 0, 'created': 0,
-              'settlements_appended': 0, 'already_persisted': 0}
+              'settlements_appended': 0, 'already_persisted': 0,
+              'first_writer_accepted': 0}
     for file in sorted(folder.glob('*.json')):
         rel = file.relative_to(root).as_posix()
         local = json.loads(file.read_text(encoding='utf-8'))
@@ -177,6 +211,13 @@ def sync(root, transport, head_reader=_head_content):
             found = transport.get(rel)
             if found is not None:
                 remote, sha = found
+                if old is None:
+                    accept_existing_first_writer(local, remote, file.name)
+                    if _core(local) == _core(remote):
+                        report['already_persisted'] += 1
+                    else:
+                        report['first_writer_accepted'] += 1
+                    break
                 if old is not None and _core(old) != _core(remote):
                     raise ImmutableOriginalError('HEAD and remote original disagree')
                 decision = remote_compatible(local, remote)
@@ -205,8 +246,11 @@ def main():
     parser.add_argument('--repo', required=True)
     parser.add_argument('--root', type=Path, default=Path('.'))
     parser.add_argument('--branch', default='master')
+    parser.add_argument('--report-file', type=Path, default=None)
     args = parser.parse_args()
     result = sync(args.root, GithubContents(args.repo, args.branch))
+    if args.report_file is not None:
+        args.report_file.write_text(json.dumps(result, sort_keys=True) + '\n', encoding='utf-8')
     print('V27_IMMUTABLE_PERSISTENCE', json.dumps(result, sort_keys=True), flush=True)
 
 

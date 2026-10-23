@@ -147,5 +147,96 @@ class PersistenceTests(unittest.TestCase):
                 sync(d,MemoryRemote(),lambda _:original())
 
 
+    def _race_fixture(self, remote_record, local_record=None):
+        context=tempfile.TemporaryDirectory()
+        self.addCleanup(context.cleanup)
+        root=Path(context.name)
+        folder=root/'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/predictions'
+        folder.mkdir(parents=True)
+        path=folder/'849810.json'
+        path.write_text(json.dumps(local_record or original()))
+        relative=path.relative_to(root).as_posix()
+        transport=MemoryRemote({relative:(remote_record,'first-writer-sha')})
+        return root, transport, relative
+
+    def test_first_writer_accepts_different_valid_simulation_without_overwrite(self):
+        saved={**original(), 'predicted_home_win':.71, 'elo_home_win':.51,
+               'win_and_over_probabilities':{'5.5':{'favorite_win_and_over':.40}}}
+        root,remote,path=self._race_fixture(saved)
+        result=sync(root,remote,lambda _:None)
+        self.assertEqual(result['first_writer_accepted'],1)
+        self.assertEqual(result['created'],0)
+        self.assertEqual(remote.calls,[])
+        self.assertEqual(remote.data[path][0],saved)
+
+    def test_first_writer_rejects_different_game_identity(self):
+        for key,value in [('game_id','999999'),('date','2026-10-16'),
+                          ('home','TBA'),('away','CLE'),
+                          ('game_start_utc','2026-10-16T01:00:00Z'),
+                          ('game_type','L')]:
+            with self.subTest(field=key):
+                bad={**original(),key:value}
+                root,remote,_=self._race_fixture(bad)
+                with self.assertRaises(ImmutableOriginalError):
+                    sync(root,remote,lambda _:None)
+                self.assertEqual(remote.calls,[])
+
+    def test_first_writer_rejects_post_pitch_or_invalid_probability(self):
+        for bad in [
+            {**original(),'forecast_created_utc':'2026-10-16T00:01:00Z'},
+            {**original(),'predicted_home_win':1.5},
+            {**original(),'elo_home_win':float('nan')},
+        ]:
+            root,remote,_=self._race_fixture(bad)
+            with self.assertRaises(ImmutableOriginalError):
+                sync(root,remote,lambda _:None)
+            self.assertEqual(remote.calls,[])
+
+    def test_first_writer_must_preserve_existing_joint_odds(self):
+        bad=original()
+        del bad['win_and_over_probabilities']
+        root,remote,_=self._race_fixture(bad)
+        with self.assertRaisesRegex(ImmutableOriginalError,'joint odds'):
+            sync(root,remote,lambda _:None)
+        self.assertEqual(remote.calls,[])
+
+    def test_first_writer_accepts_authoritative_settlement_without_rewriting(self):
+        saved=settled({**original(),'predicted_home_win':.71})
+        root,remote,path=self._race_fixture(saved)
+        result=sync(root,remote,lambda _:None)
+        self.assertEqual(result['first_writer_accepted'],1)
+        self.assertEqual(remote.calls,[])
+        self.assertEqual(remote.data[path][0]['official_final'],saved['official_final'])
+
+    def test_first_writer_rejects_invalid_settlement(self):
+        bad=settled(original(),home=6,away=6)
+        root,remote,_=self._race_fixture(bad)
+        with self.assertRaises(ImmutableOriginalError):
+            sync(root,remote,lambda _:None)
+        self.assertEqual(remote.calls,[])
+
+    def test_race_after_failed_create_preserves_first_writer(self):
+        root,remote,path=self._race_fixture(original())
+        remote.data.clear()
+        saved={**original(),'predicted_home_win':.71}
+        def racing_put(path,record,sha=None):
+            remote.calls.append((path,sha))
+            remote.data[path]=(saved,'winning-sha')
+            return False
+        remote.put=racing_put
+        result=sync(root,remote,lambda _:None)
+        self.assertEqual(result['first_writer_accepted'],1)
+        self.assertEqual(len(remote.calls),1)
+        self.assertEqual(remote.data[path][0],saved)
+
+    def test_website_fallback_prevents_losing_forecast_publication(self):
+        workflow=(Path(__file__).resolve().parents[2]/'.github/workflows/mlb-cloud.yml').read_text()
+        self.assertIn('--report-file "$RUNNER_TEMP/v29_persistence.json"',workflow)
+        self.assertIn('SKIP_SECONDARY_ON_FIRST_WRITER=1',workflow)
+        self.assertIn('git restore --worktree -- "$root/site"',workflow)
+        self.assertIn('git clean -fd -- "$root/site"',workflow)
+        self.assertIn('if [ "${SKIP_SECONDARY_ON_FIRST_WRITER:-}" = "1" ]; then',workflow)
+
+
 if __name__=='__main__':
     unittest.main()

@@ -159,7 +159,15 @@ jobs:
         run: |
           set -euo pipefail
           root=MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-          PYTHONPATH="$root" python3 -m cloud.v27_original_persistence --repo "$GH_REPO" --root .
+          PYTHONPATH="$root" python3 -m cloud.v27_original_persistence --repo "$GH_REPO" --root . --report-file "$RUNNER_TEMP/v29_persistence.json"
+          # When a concurrent runner already saved a different valid original,
+          # never publish this run's losing simulation to the public website.
+          if python3 -c 'import json,sys;sys.exit(0 if json.load(open(sys.argv[1]))["first_writer_accepted"] else 1)' "$RUNNER_TEMP/v29_persistence.json"; then
+            echo "SKIP_SECONDARY_ON_FIRST_WRITER=1" >> "$GITHUB_ENV"
+            git restore --worktree -- "$root/site"
+            git clean -fd -- "$root/site"
+            echo "::warning::First writer is authoritative; publish only previously committed site, not losing simulation."
+          fi
           # Only after EVERY original is durably verified: drop local copies
           # that differ from remote to avoid conflict during secondary git pull.
           git restore --worktree -- "$root/cloud_records/predictions/"
@@ -169,6 +177,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${SKIP_SECONDARY_ON_FIRST_WRITER:-}" = "1" ]; then
+            echo "::notice::Secondary status/site commit skipped to protect authoritative first forecast."
+            exit 0
+          fi
           git config user.name 'mlb-forecast-bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           root=MLB_Forecast_Lab_Cloud_Automation_COMPLETE
