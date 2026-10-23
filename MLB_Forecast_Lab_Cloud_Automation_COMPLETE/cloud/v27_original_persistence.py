@@ -243,8 +243,11 @@ def main():
     parser.add_argument('--repo', required=True)
     parser.add_argument('--root', type=Path, default=Path('.'))
     parser.add_argument('--branch', default='master')
+    parser.add_argument('--report-file', type=Path, default=None)
     args = parser.parse_args()
     result = sync(args.root, GithubContents(args.repo, args.branch))
+    if args.report_file is not None:
+        args.report_file.write_text(json.dumps(result, sort_keys=True) + '\n', encoding='utf-8')
     print('V27_IMMUTABLE_PERSISTENCE', json.dumps(result, sort_keys=True), flush=True)
 
 
