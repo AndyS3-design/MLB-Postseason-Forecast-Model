@@ -213,7 +213,10 @@ def sync(root, transport, head_reader=_head_content):
                 remote, sha = found
                 if old is None:
                     accept_existing_first_writer(local, remote, file.name)
-                    report['first_writer_accepted'] += 1
+                    if _core(local) == _core(remote):
+                        report['already_persisted'] += 1
+                    else:
+                        report['first_writer_accepted'] += 1
                     break
                 if old is not None and _core(old) != _core(remote):
                     raise ImmutableOriginalError('HEAD and remote original disagree')
