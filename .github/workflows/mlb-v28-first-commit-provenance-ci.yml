@@ -1,0 +1,34 @@
+name: V28 CI — frozen original GitHub first-commit provenance
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v28-first-commit-provenance-ci.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v28_first_commit_provenance.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v28_first_commit_provenance.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  first-commit-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Deterministic immutable-original regression tests
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v28_first_commit_provenance -v
+      - name: Independently verify first GitHub commit for all saved tracked originals
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -m MLB_Forecast_Lab_Cloud_Automation_COMPLETE.cloud.v28_first_commit_provenance \
+            --repo "${{ github.repository }}" \
+            --output "$RUNNER_TEMP/v28-first-commit-provenance.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v28-first-commit-provenance
+          path: ${{ runner.temp }}/v28-first-commit-provenance.json
