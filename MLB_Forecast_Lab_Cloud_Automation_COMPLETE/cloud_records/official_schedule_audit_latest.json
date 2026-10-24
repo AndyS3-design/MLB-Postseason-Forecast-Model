@@ -1,6 +1,6 @@
 {
-  "as_of_exclusive_et_date": "2026-10-23",
-  "completed_games_imported": 3,
+  "as_of_exclusive_et_date": "2026-10-24",
+  "completed_games_imported": 4,
   "identity_or_score_conflicts": [],
   "import_coverage_fraction": 1.0,
   "invalid_original_count": 0,
@@ -11,21 +11,16 @@
   "missing_originals": [],
   "notes": "Rolling operational audit, not a historical replay or proof of forecast accuracy.",
   "official_capture_fraction": 1.0,
-  "official_completed_games": 3,
-  "official_finals_missing_scores": [
-    {
-      "game_id": "849817",
-      "reason": "Official final lacks final scores"
-    }
-  ],
-  "official_finals_missing_scores_count": 1,
-  "official_games_with_valid_original": 3,
+  "official_completed_games": 4,
+  "official_finals_missing_scores": [],
+  "official_finals_missing_scores_count": 0,
+  "official_games_with_valid_original": 4,
   "official_games_without_valid_original": 0,
   "score_conflict_count": 0,
   "source": "Independent official MLB schedule (not imported CSVs)",
-  "status": "needs_attention",
+  "status": "reconciled",
   "tracking_start_date": "2026-10-14",
   "unreadable_original_file_count": 0,
   "window_days": 7,
-  "window_start_date": "2026-10-16"
+  "window_start_date": "2026-10-17"
 }

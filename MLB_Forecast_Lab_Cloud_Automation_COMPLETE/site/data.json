@@ -2,18 +2,18 @@
   "disclaimer": "Baseball-only research forecast. Past outcome never enters a pregame prediction. Unverified advanced inputs are marked missing.",
   "full_distribution_validation": {
     "combined_runs": {
-      "mae": 2.77748,
-      "mean_actual": 7.6,
-      "mean_forecast": 7.63835,
-      "signed_bias": 0.03835
+      "mae": 2.80829,
+      "mean_actual": 7.16667,
+      "mean_forecast": 7.69235,
+      "signed_bias": 0.52568
     },
     "comparability_note": "Version cohorts are disclosed; pooled metrics mix versions and are not an A/B test.",
     "excluded": {},
     "model_versions": {
-      "18.0.0-forecast-integrity": 4,
+      "18.0.0-forecast-integrity": 5,
       "4.0.0-research": 1
     },
-    "settled_distribution_complete_games": 5,
+    "settled_distribution_complete_games": 6,
     "status": "awaiting_30_plus_frozen_originals",
     "total_lines": {
       "3.5": {
@@ -23,8 +23,8 @@
             "actual_frequency": 0.0,
             "high": 0.2,
             "low": 0.0,
-            "n": 5,
-            "predicted_mean": 0.1393
+            "n": 6,
+            "predicted_mean": 0.1357
           },
           {
             "actual_frequency": null,
@@ -55,19 +55,19 @@
             "predicted_mean": null
           }
         ],
-        "n": 5,
-        "under_brier": 0.019903,
-        "under_forecast_mean": 0.13927
+        "n": 6,
+        "under_brier": 0.018909,
+        "under_forecast_mean": 0.13574
       },
       "4.5": {
-        "actual_under_frequency": 0.4,
+        "actual_under_frequency": 0.33333,
         "calibration": [
           {
-            "actual_frequency": 0.3333,
+            "actual_frequency": 0.25,
             "high": 0.2,
             "low": 0.0,
-            "n": 3,
-            "predicted_mean": 0.1801
+            "n": 4,
+            "predicted_mean": 0.179
           },
           {
             "actual_frequency": 0.5,
@@ -98,12 +98,12 @@
             "predicted_mean": null
           }
         ],
-        "n": 5,
-        "under_brier": 0.271224,
-        "under_forecast_mean": 0.20112
+        "n": 6,
+        "under_brier": 0.231158,
+        "under_forecast_mean": 0.19686
       },
       "5.5": {
-        "actual_under_frequency": 0.4,
+        "actual_under_frequency": 0.5,
         "calibration": [
           {
             "actual_frequency": null,
@@ -113,11 +113,11 @@
             "predicted_mean": null
           },
           {
-            "actual_frequency": 0.4,
+            "actual_frequency": 0.5,
             "high": 0.4,
             "low": 0.2,
-            "n": 5,
-            "predicted_mean": 0.3371
+            "n": 6,
+            "predicted_mean": 0.3307
           },
           {
             "actual_frequency": null,
@@ -141,12 +141,12 @@
             "predicted_mean": null
           }
         ],
-        "n": 5,
-        "under_brier": 0.234381,
-        "under_forecast_mean": 0.33707
+        "n": 6,
+        "under_brier": 0.277179,
+        "under_forecast_mean": 0.33075
       },
       "6.5": {
-        "actual_under_frequency": 0.4,
+        "actual_under_frequency": 0.5,
         "calibration": [
           {
             "actual_frequency": null,
@@ -156,11 +156,11 @@
             "predicted_mean": null
           },
           {
-            "actual_frequency": 0.5,
+            "actual_frequency": 0.6667,
             "high": 0.4,
             "low": 0.2,
-            "n": 2,
-            "predicted_mean": 0.3725
+            "n": 3,
+            "predicted_mean": 0.3767
           },
           {
             "actual_frequency": 0.3333,
@@ -184,16 +184,16 @@
             "predicted_mean": null
           }
         ],
-        "n": 5,
-        "under_brier": 0.231964,
-        "under_forecast_mean": 0.42095
+        "n": 6,
+        "under_brier": 0.256306,
+        "under_forecast_mean": 0.41499
       }
     },
     "unique_originals": 6,
     "warning": "Small samples and past model selection do not establish calibration or a betting advantage.",
     "winner": {
-      "brier": 0.20642,
-      "brier_delta_vs_elo": 0.009865,
+      "brier": 0.196989,
+      "brier_delta_vs_elo": 0.004842,
       "calibration": [
         {
           "actual_frequency": null,
@@ -220,8 +220,8 @@
           "actual_frequency": 1.0,
           "high": 0.8,
           "low": 0.6,
-          "n": 1,
-          "predicted_mean": 0.6258
+          "n": 2,
+          "predicted_mean": 0.6194
         },
         {
           "actual_frequency": null,
@@ -231,58 +231,58 @@
           "predicted_mean": null
         }
       ],
-      "elo_brier_same_games": 0.196554,
+      "elo_brier_same_games": 0.192146,
       "paired_date_bootstrap_95_delta_vs_elo": null,
       "paired_date_bootstrap_note": "Positive delta favors Elo. Only shown after at least 30 games on 10 dates; retrospective development history limits causal claims."
     },
     "winner_and_over_joint": {
       "4.5": {
-        "brier": 0.231646,
-        "correct_at_50_percent": 2,
-        "mean_forecast_probability": 0.43308,
-        "n": 4,
-        "realized_hit_rate": 0.5,
+        "brier": 0.234222,
+        "correct_at_50_percent": 3,
+        "mean_forecast_probability": 0.44757,
+        "n": 5,
+        "realized_hit_rate": 0.6,
         "status": "descriptive_only_insufficient_new_originals",
         "warning": "No guaranteed combo win rate or market edge. Only new actual frozen pregame joint probabilities qualify."
       },
       "5.5": {
-        "brier": 0.246029,
-        "correct_at_50_percent": 2,
-        "mean_forecast_probability": 0.3586,
-        "n": 4,
-        "realized_hit_rate": 0.5,
+        "brier": 0.233774,
+        "correct_at_50_percent": 3,
+        "mean_forecast_probability": 0.37285,
+        "n": 5,
+        "realized_hit_rate": 0.4,
         "status": "descriptive_only_insufficient_new_originals",
         "warning": "No guaranteed combo win rate or market edge. Only new actual frozen pregame joint probabilities qualify."
       }
     },
     "winner_ensemble_shadow_v23": {
-      "blend_minus_elo_brier": 0.004106,
-      "blend_minus_original_brier": -0.004402,
+      "blend_minus_elo_brier": 0.001226,
+      "blend_minus_original_brier": -0.001527,
       "different_winner_picks_from_original": 1,
       "elo": {
-        "brier": 0.202896,
+        "brier": 0.196337,
         "winner_accuracy": 1.0,
-        "winner_correct": 4
+        "winner_correct": 5
       },
       "excluded": {
         "missing_frozen_candidate": 1
       },
       "fixed_50_50_blend": {
-        "brier": 0.207002,
+        "brier": 0.197563,
         "winner_accuracy": 1.0,
-        "winner_correct": 4
+        "winner_correct": 5
       },
       "method": "v23_fixed_50_model_50_elo",
-      "n": 4,
+      "n": 5,
       "note": "Scores compare identical frozen, settled games. A positive Brier delta means the blend was worse. No challenger promotion based on this cohort.",
       "original": {
-        "brier": 0.211404,
-        "winner_accuracy": 0.75,
-        "winner_correct": 3
+        "brier": 0.19909,
+        "winner_accuracy": 0.8,
+        "winner_correct": 4
       },
       "production_forecasts_changed": false,
       "status": "exploratory_small_sample",
-      "unique_pregame_dates": 4,
+      "unique_pregame_dates": 5,
       "warning": "Never refit on the 2026 postseason; 30 games or a high pick percentage alone cannot establish a reliable betting edge."
     }
   },
@@ -294,13 +294,13 @@
       "both_starters_have_3plus_verified_starts_fraction": 0.5,
       "mean_lead_minutes": 42.4,
       "original_forecasts": 6,
-      "settled_originals": 5,
+      "settled_originals": 6,
       "within_8_to_30_minutes_fraction": 0.8333
     },
     "performance": {
-      "correct_winner_fraction": 0.8,
-      "elo_brier": 0.19655,
-      "n": 5,
+      "correct_winner_fraction": 0.8333,
+      "elo_brier": 0.19215,
+      "n": 6,
       "reliability_bins": [
         {
           "actual_home_win_rate": 0.25,
@@ -313,23 +313,23 @@
         },
         {
           "actual_home_win_rate": 1.0,
-          "mean_forecast": 0.626,
-          "n": 1,
+          "mean_forecast": 0.619,
+          "n": 2,
           "range": [
             0.6,
             0.8
           ]
         }
       ],
-      "run_mae_per_team": 1.59,
+      "run_mae_per_team": 1.571,
       "status": "preliminary: small sample",
-      "total_run_mae": 2.777,
-      "under_6_5_brier": 0.23196,
+      "total_run_mae": 2.808,
+      "under_6_5_brier": 0.25631,
       "winner_accuracy_wilson_95": [
-        0.3755,
-        0.9638
+        0.4365,
+        0.9699
       ],
-      "winner_brier": 0.20642
+      "winner_brier": 0.19699
     },
     "status": "prospective_first_pitch_locked",
     "warnings": [
@@ -339,8 +339,8 @@
     ]
   },
   "official_schedule_audit": {
-    "as_of_exclusive_et_date": "2026-10-23",
-    "completed_games_imported": 3,
+    "as_of_exclusive_et_date": "2026-10-24",
+    "completed_games_imported": 4,
     "identity_or_score_conflicts": [],
     "import_coverage_fraction": 1.0,
     "invalid_original_count": 0,
@@ -351,74 +351,52 @@
     "missing_originals": [],
     "notes": "Rolling operational audit, not a historical replay or proof of forecast accuracy.",
     "official_capture_fraction": 1.0,
-    "official_completed_games": 3,
-    "official_finals_missing_scores": [
-      {
-        "game_id": "849817",
-        "reason": "Official final lacks final scores"
-      }
-    ],
-    "official_finals_missing_scores_count": 1,
-    "official_games_with_valid_original": 3,
+    "official_completed_games": 4,
+    "official_finals_missing_scores": [],
+    "official_finals_missing_scores_count": 0,
+    "official_games_with_valid_original": 4,
     "official_games_without_valid_original": 0,
     "score_conflict_count": 0,
     "source": "Independent official MLB schedule (not imported CSVs)",
-    "status": "needs_attention",
+    "status": "reconciled",
     "tracking_start_date": "2026-10-14",
     "unreadable_original_file_count": 0,
     "window_days": 7,
-    "window_start_date": "2026-10-16"
+    "window_start_date": "2026-10-17"
   },
   "operations": {
-    "events": [
-      {
-        "away": "TBA",
-        "game_id": "849805",
-        "home": "MIL",
-        "minutes_before_game": 28.7,
-        "shadow_research": {
-          "n_variants": 4,
-          "path": "/home/runner/work/MLB-Postseason-Forecast-Model/MLB-Postseason-Forecast-Model/MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/challengers/849805.json",
-          "status": "shadows_saved"
-        },
-        "status": "saved"
-      }
-    ],
-    "frozen_model_cache": {
-      "hit": false,
-      "load_or_fit_seconds": 2.232,
-      "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+    "daily_maintenance": "complete",
+    "events": [],
+    "historical_game_logs": {
+      "available": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "downloaded": [],
+      "unavailable": {}
     },
-    "model_assets_build_seconds": 8.531,
-    "new_settlements": 0,
-    "run_started_utc": "2026-10-23T23:31:02.141771+00:00",
-    "starter_history_backfill": {
-      "849805": {
-        "cutoff_exclusive": "2026-10-23",
-        "errors": [],
-        "new_boxscores": 0,
-        "sides": {
-          "away": {
-            "game_logs_found": 0,
-            "pitcher_id": "MLB-607259",
-            "prior_verified_starts_after": 9,
-            "prior_verified_starts_before": 9,
-            "source": "local history",
-            "status": "sufficient verified starts already cached"
-          },
-          "home": {
-            "game_logs_found": 0,
-            "pitcher_id": "MLB-694819",
-            "prior_verified_starts_after": 8,
-            "prior_verified_starts_before": 8,
-            "source": "local history",
-            "status": "sufficient verified starts already cached"
-          }
-        },
-        "source": "MLB official game logs + completed game boxscores",
-        "status": "complete"
-      }
+    "new_settlements": 1,
+    "official_schedule_audit_status": "reconciled",
+    "pitching_import_status": {
+      "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
+      "calibration": "done",
+      "last_attempt_utc": "2026-10-13T22:08:24.861679+00:00",
+      "note": "Retrosheet starter history loaded",
+      "status": "imported"
     },
+    "recent_boxscores": {
+      "errors": [],
+      "new_games": 26,
+      "recent_cached_games": 130,
+      "status": "ok"
+    },
+    "refreshed_finished_games": 2466,
+    "run_started_utc": "2026-10-24T07:12:03.125430+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -428,6 +406,14 @@
       "data_quality": "FEATURES AVAILABLE",
       "date": "2026-10-23",
       "elo_home_win": 0.5875622128795871,
+      "evaluation": {
+        "abs_run_error_per_team": 1.4811666666666665,
+        "abs_total_error": 2.9623333333333335,
+        "correct_winner": true,
+        "elo_brier": 0.17010492824478304,
+        "under_6_5_brier": 0.37802002777777777,
+        "winner_brier": 0.14983350694444444
+      },
       "expected_runs": {
         "away": 3.5934166666666667,
         "home": 4.368916666666666,
@@ -697,6 +683,12 @@
       "model_commit": "5d34ab25b869962aae9785c13e05b1fa1b4fdd7c",
       "model_training_cutoff": "2016,2017,2018,2019,2020,2021,2022,2023,2024,2025",
       "model_version": "18.0.0-forecast-integrity",
+      "official_final": {
+        "away": 2,
+        "home": 3,
+        "settled_at_utc": "2026-10-24T07:12:10.385841+00:00",
+        "source": "Official MLB schedule API"
+      },
       "original_forecast_created_utc": null,
       "predicted_home_win": 0.6129166666666667,
       "preliminary_comparison": {
@@ -1204,6 +1196,12 @@
       "model_commit": "18b2ba4c387247c0c3981981bf04018a6421553a",
       "model_training_cutoff": "2016,2017,2018,2019,2020,2021,2022,2023,2024,2025",
       "model_version": "18.0.0-forecast-integrity",
+      "official_final": {
+        "away": 2,
+        "home": 3,
+        "settled_at_utc": "2026-10-24T07:12:10.385841+00:00",
+        "source": "Official MLB schedule API"
+      },
       "original_forecast_created_utc": null,
       "predicted_home_win": 0.60075,
       "projected_score": {
@@ -8094,13 +8092,13 @@
     }
   ],
   "prospective_capture": {
-    "as_of_exclusive_et_date": "2026-10-23",
-    "capture_fraction": 0.6667,
+    "as_of_exclusive_et_date": "2026-10-24",
+    "capture_fraction": 0.7143,
     "capture_window_fraction": 1.0,
     "captured_pending_settlement_ids": [],
-    "captured_within_8_to_30_min_window": 4,
-    "completed_imported_games": 6,
-    "games_with_valid_original_pregame_forecast": 4,
+    "captured_within_8_to_30_min_window": 5,
+    "completed_imported_games": 7,
+    "games_with_valid_original_pregame_forecast": 5,
     "games_without_valid_original": 2,
     "identity_or_result_conflicts": [],
     "late_or_invalid_originals": [],
@@ -8129,134 +8127,134 @@
     ],
     "originals_awaiting_settlement": 0,
     "originals_without_imported_final": 0,
-    "paired_shadow_files_for_captured_games": 3,
+    "paired_shadow_files_for_captured_games": 4,
     "periods": {
       "2026-10/postseason": {
-        "captured": 4,
-        "completed": 6,
+        "captured": 5,
+        "completed": 7,
         "missing": 2
       }
     },
     "scope": "Only official completed MLB games already imported by the cloud service",
-    "settled_original_forecasts": 4,
+    "settled_original_forecasts": 5,
     "status": "tracking_imported_finals",
     "tracking_start_date": "2026-10-14",
     "unreadable_original_files": []
   },
   "prospective_performance": {
-    "accuracy": 0.8,
-    "elo_brier": 0.19655,
+    "accuracy": 0.8333,
+    "elo_brier": 0.19215,
     "excluded": {},
-    "run_mae_per_team": 1.59,
-    "settled_dates": 5,
-    "settled_games": 5,
+    "run_mae_per_team": 1.571,
+    "settled_dates": 6,
+    "settled_games": 6,
     "status": "Insufficient games for uncertainty interval",
-    "under_6_5_brier": 0.23196,
-    "winner_brier": 0.20642
+    "under_6_5_brier": 0.25631,
+    "winner_brier": 0.19699
   },
   "shadow_comparisons": {
     "historic_postseason_only": {
-      "n": 3,
+      "n": 4,
       "status": "small sample; exploratory",
-      "total_mae_challenger": 2.53467,
-      "total_mae_main": 2.68961,
+      "total_mae_challenger": 2.74425,
+      "total_mae_main": 2.75779,
       "total_market_pairs": {
         "4.5": {
-          "n": 3,
-          "under_brier_challenger": 0.226162,
-          "under_brier_main": 0.219238
+          "n": 4,
+          "under_brier_challenger": 0.175909,
+          "under_brier_main": 0.172136
         },
         "5.5": {
-          "n": 3,
-          "under_brier_challenger": 0.202222,
-          "under_brier_main": 0.201874
+          "n": 4,
+          "under_brier_challenger": 0.284011,
+          "under_brier_main": 0.274197
         }
       },
-      "under_6_5_brier_challenger": 0.20595,
-      "under_6_5_brier_main": 0.21377,
-      "winner_brier_challenger": 0.19884,
-      "winner_brier_main": 0.19882
+      "under_6_5_brier_challenger": 0.26156,
+      "under_6_5_brier_main": 0.25483,
+      "winner_brier_challenger": 0.18678,
+      "winner_brier_main": 0.18657
     },
     "without_experimental_context": {
-      "n": 3,
+      "n": 4,
       "status": "small sample; exploratory",
-      "total_mae_challenger": 2.75894,
-      "total_mae_main": 2.68961,
+      "total_mae_challenger": 2.78629,
+      "total_mae_main": 2.75779,
       "total_market_pairs": {
         "4.5": {
-          "n": 3,
-          "under_brier_challenger": 0.223923,
-          "under_brier_main": 0.219238
+          "n": 4,
+          "under_brier_challenger": 0.176414,
+          "under_brier_main": 0.172136
         },
         "5.5": {
-          "n": 3,
-          "under_brier_challenger": 0.210855,
-          "under_brier_main": 0.201874
+          "n": 4,
+          "under_brier_challenger": 0.275276,
+          "under_brier_main": 0.274197
         }
       },
-      "under_6_5_brier_challenger": 0.22224,
-      "under_6_5_brier_main": 0.21377,
-      "winner_brier_challenger": 0.19963,
-      "winner_brier_main": 0.19882
+      "under_6_5_brier_challenger": 0.25769,
+      "under_6_5_brier_main": 0.25483,
+      "winner_brier_challenger": 0.186,
+      "winner_brier_main": 0.18657
     },
     "without_extra_starter_correction": {
-      "n": 3,
+      "n": 4,
       "status": "small sample; exploratory",
-      "total_mae_challenger": 2.68525,
-      "total_mae_main": 2.68961,
+      "total_mae_challenger": 2.77573,
+      "total_mae_main": 2.75779,
       "total_market_pairs": {
         "4.5": {
-          "n": 3,
-          "under_brier_challenger": 0.226799,
-          "under_brier_main": 0.219238
+          "n": 4,
+          "under_brier_challenger": 0.177169,
+          "under_brier_main": 0.172136
         },
         "5.5": {
-          "n": 3,
-          "under_brier_challenger": 0.207455,
-          "under_brier_main": 0.201874
+          "n": 4,
+          "under_brier_challenger": 0.280112,
+          "under_brier_main": 0.274197
         }
       },
-      "under_6_5_brier_challenger": 0.21577,
-      "under_6_5_brier_main": 0.21377,
-      "winner_brier_challenger": 0.21204,
-      "winner_brier_main": 0.19882
+      "under_6_5_brier_challenger": 0.25969,
+      "under_6_5_brier_main": 0.25483,
+      "winner_brier_challenger": 0.19766,
+      "winner_brier_main": 0.18657
     },
     "without_postseason_context": {
-      "n": 3,
+      "n": 4,
       "status": "small sample; exploratory",
-      "total_mae_challenger": 2.22428,
-      "total_mae_main": 2.68961,
+      "total_mae_challenger": 2.72673,
+      "total_mae_main": 2.75779,
       "total_market_pairs": {
         "4.5": {
-          "n": 3,
-          "under_brier_challenger": 0.242287,
-          "under_brier_main": 0.219238
+          "n": 4,
+          "under_brier_challenger": 0.184814,
+          "under_brier_main": 0.172136
         },
         "5.5": {
-          "n": 3,
-          "under_brier_challenger": 0.20875,
-          "under_brier_main": 0.201874
+          "n": 4,
+          "under_brier_challenger": 0.311733,
+          "under_brier_main": 0.274197
         }
       },
-      "under_6_5_brier_challenger": 0.2013,
-      "under_6_5_brier_main": 0.21377,
-      "winner_brier_challenger": 0.19788,
-      "winner_brier_main": 0.19882
+      "under_6_5_brier_challenger": 0.28055,
+      "under_6_5_brier_main": 0.25483,
+      "winner_brier_challenger": 0.18537,
+      "winner_brier_main": 0.18657
     }
   },
   "two_stage_comparison": {
     "excluded_model_version_mismatch": 0,
     "final_original_count": 6,
-    "final_total_mae": 2.28261,
-    "final_winner_brier": 0.21317,
+    "final_total_mae": 2.45254,
+    "final_winner_brier": 0.19733,
     "invalid_preliminary_files": 0,
     "notes": "Paired same-version comparisons only; transitions between model versions are excluded to avoid confusing new coefficients with fresher pregame data.",
-    "paired_settled_games": 3,
+    "paired_settled_games": 4,
     "preliminary_count": 7,
-    "preliminary_total_mae": 2.45542,
-    "preliminary_winner_brier": 0.21218,
+    "preliminary_total_mae": 2.56002,
+    "preliminary_winner_brier": 0.19899,
     "preliminary_without_final_count": 2,
     "status": "small_sample_exploratory"
   },
-  "updated_utc": "2026-10-23T23:31:02.141771+00:00"
+  "updated_utc": "2026-10-24T07:12:03.125430+00:00"
 }
