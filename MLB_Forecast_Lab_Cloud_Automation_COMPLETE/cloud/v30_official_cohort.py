@@ -264,7 +264,9 @@ def grade(games, records, baseline, *, as_of, verifier):
         report["over"][key] = {"original": metrics(totals[key]),
                                "older_year_constant": metrics([(baseline["over"][key], y)
                                                                 for _, y in totals[key]])}
-        report["same_simulation_joint"][key] = metrics(joints[key])
+        report["same_simulation_joint"][key] = {**metrics(joints[key]),
+            "events_occurred": sum(y for _, y in joints[key]),
+            "correct_is_threshold_classification_not_event_count": True}
     return report
 
 
