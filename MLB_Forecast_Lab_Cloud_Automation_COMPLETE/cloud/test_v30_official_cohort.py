@@ -114,6 +114,15 @@ class V30Tests(unittest.TestCase):
         self.assertEqual(result["same_simulation_joint"]["5.5"]["n"], 1)
         self.assertEqual(result["over"]["4.5"]["original"]["n"], 1)
 
+    def test_joint_event_count_not_confused_with_threshold_accuracy(self):
+        result = grade(fixture_games(), {"849802": record()}, BASE,
+                       as_of=__import__("datetime").date(2026, 10, 25),
+                       verifier=lambda *_: None)
+        joint = result["same_simulation_joint"]["4.5"]
+        self.assertEqual(joint["events_occurred"], 1)
+        self.assertEqual(joint["correct"], 0)
+        self.assertTrue(joint["correct_is_threshold_classification_not_event_count"])
+
     def test_historical_baseline_rejects_2026(self):
         rows = [{"year": str(y), "game_id": str(y), "home_runs": "5",
                  "away_runs": "4", "total_runs": "9"} for y in range(2020, 2027)]
