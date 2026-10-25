@@ -1,0 +1,36 @@
+name: V30 CI — official full-cohort prospective research
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-v30-official-cohort-ci.yml'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v30_official_cohort.py'
+      - 'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/test_v30_official_cohort.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-official-cohort:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: No-hindsight offline regression suite
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        run: python -m unittest cloud.test_v30_official_cohort -v
+      - name: Independently reconcile official full postseason cohort and first-commit originals
+        working-directory: MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -m cloud.v30_official_cohort \
+            --repo "${{ github.repository }}" \
+            --as-of 2026-10-25 \
+            --output "$RUNNER_TEMP/v30_official_cohort.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v30-official-cohort
+          path: ${{ runner.temp }}/v30_official_cohort.json
