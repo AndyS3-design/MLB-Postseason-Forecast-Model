@@ -1,11 +1,11 @@
 {
-  "as_of_exclusive_et_date": "2026-10-24",
-  "capture_fraction": 0.7143,
+  "as_of_exclusive_et_date": "2026-10-25",
+  "capture_fraction": 0.75,
   "capture_window_fraction": 1.0,
   "captured_pending_settlement_ids": [],
-  "captured_within_8_to_30_min_window": 5,
-  "completed_imported_games": 7,
-  "games_with_valid_original_pregame_forecast": 5,
+  "captured_within_8_to_30_min_window": 6,
+  "completed_imported_games": 8,
+  "games_with_valid_original_pregame_forecast": 6,
   "games_without_valid_original": 2,
   "identity_or_result_conflicts": [],
   "late_or_invalid_originals": [],
@@ -34,16 +34,16 @@
   ],
   "originals_awaiting_settlement": 0,
   "originals_without_imported_final": 0,
-  "paired_shadow_files_for_captured_games": 4,
+  "paired_shadow_files_for_captured_games": 5,
   "periods": {
     "2026-10/postseason": {
-      "captured": 5,
-      "completed": 7,
+      "captured": 6,
+      "completed": 8,
       "missing": 2
     }
   },
   "scope": "Only official completed MLB games already imported by the cloud service",
-  "settled_original_forecasts": 5,
+  "settled_original_forecasts": 6,
   "status": "tracking_imported_finals",
   "tracking_start_date": "2026-10-14",
   "unreadable_original_files": []
