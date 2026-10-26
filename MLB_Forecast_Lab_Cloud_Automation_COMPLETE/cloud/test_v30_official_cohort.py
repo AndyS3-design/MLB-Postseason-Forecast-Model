@@ -123,6 +123,41 @@ class V30Tests(unittest.TestCase):
         self.assertEqual(joint["correct"], 0)
         self.assertTrue(joint["correct_is_threshold_classification_not_event_count"])
 
+    def test_as_of_is_exclusive_and_never_grades_today(self):
+        from datetime import date
+        fixture = {"dates": [{"date": "2026-10-24", "games": [official()]}]}
+        self.assertEqual(official_games(fixture, date(2026, 10, 24), lambda _: None), [])
+        self.assertEqual(len(official_games(fixture, date(2026, 10, 25),
+                                            lambda _: None)), 1)
+
+    def test_90pct_gate_requires_thirty_full_cohort_games(self):
+        from datetime import date
+        games, records = [], {}
+        for i in range(30):
+            gid = str(850000 + i)
+            g = dict(fixture_games()[0], game_id=gid,
+                     home=5 if i < 27 else 3, away=4)
+            r = record()
+            r["game_id"] = gid
+            games.append(g)
+            records[gid] = r
+        grade30 = grade(games, records, BASE, as_of=date(2026, 10, 25),
+                        verifier=lambda *_: None)
+        self.assertEqual(grade30["official_completed_games"], 30)
+        self.assertEqual(grade30["correct_full_cohort"], 27)
+        self.assertTrue(grade30["prospective_90pct_verified"])
+        self.assertEqual(grade30["prospective_90pct_minimum_games"], 30)
+        grade29 = grade(games[:29], records, BASE, as_of=date(2026, 10, 25),
+                        verifier=lambda *_: None)
+        self.assertEqual(grade29["correct_full_cohort"], 27)
+        self.assertFalse(grade29["prospective_90pct_verified"])
+        records.pop(games[0]["game_id"])
+        missing = grade(games, records, BASE, as_of=date(2026, 10, 25),
+                        verifier=lambda *_: None)
+        self.assertEqual(missing["correct_full_cohort"], 26)
+        self.assertEqual(len(missing["missing_ids"]), 1)
+        self.assertFalse(missing["prospective_90pct_verified"])
+
     def test_historical_baseline_rejects_2026(self):
         rows = [{"year": str(y), "game_id": str(y), "home_runs": "5",
                  "away_runs": "4", "total_runs": "9"} for y in range(2020, 2027)]
