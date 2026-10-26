@@ -257,8 +257,10 @@ def grade(games, records, baseline, *, as_of, verifier):
               "total_run_mae": round(sum(expected_errors) / len(expected_errors), 6) if expected_errors else None,
               "historical_total_mae_same_games": round(sum(baseline_errors) / len(baseline_errors), 6) if baseline_errors else None,
               "over": {}, "same_simulation_joint": {},
-              "forecast_weights_changed": False, "prospective_90pct_verified": False,
-              "note": "Missing forecasts count as wrong; matched Brier only. Git first-commit provenance required. No 2026 fitting, no synthetic joint odds."}
+              "forecast_weights_changed": False,
+              "prospective_90pct_verified": n >= 30 and correct_full * 10 >= 9 * n,
+              "prospective_90pct_minimum_games": 30,
+              "note": "Missing forecasts count as wrong; matched Brier only. Git first-commit provenance required. No 2026 fitting, no synthetic joint odds. The 90pct field is a numerical full-cohort threshold, not proof of sustained predictive skill."}
     for line in LINES:
         key = str(line)
         report["over"][key] = {"original": metrics(totals[key]),
