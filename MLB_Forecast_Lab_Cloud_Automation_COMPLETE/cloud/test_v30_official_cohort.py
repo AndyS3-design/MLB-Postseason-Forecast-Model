@@ -2,7 +2,7 @@
 import unittest
 
 from cloud.v30_official_cohort import (
-    official_games, historical, grade, validate, metrics,
+    official_games, historical, grade, validate, metrics, paired_winner_test,
 )
 
 def official(gid=849802, home=5, away=4, complete=True):
@@ -164,6 +164,38 @@ class V30Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "year/ID"):
             historical(rows)
         self.assertEqual(historical(rows[:-1])["n"], 6)
+
+    def test_exact_mcnemar_small_discordant_sample(self):
+        first = [(.6, 1), (.4, 0)]
+        second = [(.4, 1), (.6, 0)]
+        result = paired_winner_test(first, second)
+        self.assertEqual(result["n_matched"], 2)
+        self.assertEqual(result["first_only_correct"], 2)
+        self.assertEqual(result["second_only_correct"], 0)
+        self.assertEqual(result["discordant"], 2)
+        self.assertEqual(result["exact_two_sided_p"], 0.5)
+
+    def test_exact_mcnemar_ten_unopposed_disagreements(self):
+        result = paired_winner_test([(.6, 1)] * 10, [(.4, 1)] * 10)
+        self.assertAlmostEqual(result["exact_two_sided_p"], .001953125)
+
+    def test_exact_mcnemar_no_disagreement_and_identity_guards(self):
+        self.assertEqual(paired_winner_test([(.6, 1)], [(.8, 1)])
+                         ["exact_two_sided_p"], 1.0)
+        with self.assertRaisesRegex(ValueError, "sample sizes"):
+            paired_winner_test([(.6, 1)], [])
+        with self.assertRaisesRegex(ValueError, "outcomes differ"):
+            paired_winner_test([(.6, 1)], [(.6, 0)])
+
+    def test_scorecard_reports_exact_paired_comparisons(self):
+        result = grade(fixture_games(), {"849802": record()}, BASE,
+                       as_of=__import__("datetime").date(2026, 10, 25),
+                       verifier=lambda *_: None)
+        tests = result["paired_winner_tests"]
+        self.assertEqual(set(tests), {"original_vs_elo", "original_vs_v23",
+                                      "elo_vs_v23"})
+        self.assertEqual(tests["original_vs_elo"]["n_matched"], 1)
+        self.assertEqual(tests["original_vs_elo"]["exact_two_sided_p"], 1.0)
 
     def test_probabilistic_brier_on_same_game(self):
         result = grade(fixture_games(), {"849802": record()}, BASE,
