@@ -365,53 +365,38 @@
     "window_start_date": "2026-10-20"
   },
   "operations": {
-    "events": [
-      {
-        "away": "MIL",
-        "game_id": "849803",
-        "home": "TBA",
-        "minutes_before_game": 447.2,
-        "shadow_research": {
-          "status": "not_requested"
-        },
-        "status": "preliminary_saved"
-      }
-    ],
-    "frozen_model_cache": {
-      "hit": false,
-      "load_or_fit_seconds": 2.117,
-      "sha256": "403f21e7f5f870b55b06936789166bbf36de834b4d009371e970faecb87bb856"
+    "daily_maintenance": "complete",
+    "events": [],
+    "historical_game_logs": {
+      "available": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "downloaded": [],
+      "unavailable": {}
     },
-    "model_assets_build_seconds": 9.106,
     "new_settlements": 0,
-    "run_started_utc": "2026-10-27T16:32:32.047877+00:00",
-    "starter_history_backfill": {
-      "849803": {
-        "cutoff_exclusive": "2026-10-27",
-        "errors": [],
-        "new_boxscores": 0,
-        "sides": {
-          "away": {
-            "game_logs_found": 0,
-            "pitcher_id": "",
-            "prior_verified_starts_after": 0,
-            "prior_verified_starts_before": 0,
-            "source": "not available",
-            "status": "starter ID not announced or not MLB ID"
-          },
-          "home": {
-            "game_logs_found": 0,
-            "pitcher_id": "MLB-643377",
-            "prior_verified_starts_after": 9,
-            "prior_verified_starts_before": 9,
-            "source": "local history",
-            "status": "sufficient verified starts already cached"
-          }
-        },
-        "source": "MLB official game logs + completed game boxscores",
-        "status": "partial"
-      }
+    "official_schedule_audit_status": "reconciled",
+    "pitching_import_status": {
+      "calibrated_at_utc": "2026-10-13T22:08:24.861679+00:00",
+      "calibration": "done",
+      "last_attempt_utc": "2026-10-13T22:08:24.861679+00:00",
+      "note": "Retrosheet starter history loaded",
+      "status": "imported"
     },
+    "recent_boxscores": {
+      "errors": [],
+      "new_games": 26,
+      "recent_cached_games": 130,
+      "status": "ok"
+    },
+    "refreshed_finished_games": 2468,
+    "run_started_utc": "2026-10-27T16:43:43.341468+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -10852,5 +10837,5 @@
     "preliminary_without_final_count": 3,
     "status": "small_sample_exploratory"
   },
-  "updated_utc": "2026-10-27T16:32:32.047877+00:00"
+  "updated_utc": "2026-10-27T16:43:43.341468+00:00"
 }
