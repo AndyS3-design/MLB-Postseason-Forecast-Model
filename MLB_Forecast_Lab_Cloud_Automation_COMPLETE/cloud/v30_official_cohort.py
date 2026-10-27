@@ -160,6 +160,33 @@ def metrics(pairs):
             "brier": round(sum((p - y) ** 2 for p, y in pairs) / n, 6) if n else None}
 
 
+def paired_winner_test(first, second):
+    """Exact two-sided McNemar test; predictions must be on identical games.
+
+    A paired test avoids pretending the same games are independent samples.
+    This is a descriptive significance diagnostic, never a promotion gate.
+    """
+    if len(first) != len(second):
+        raise ValueError("Paired winner sample sizes differ")
+    first_only = second_only = 0
+    for (p1, y1), (p2, y2) in zip(first, second):
+        if y1 != y2:
+            raise ValueError("Paired winner outcomes differ")
+        one = (prob(p1) >= .5) == bool(y1)
+        two = (prob(p2) >= .5) == bool(y2)
+        first_only += int(one and not two)
+        second_only += int(two and not one)
+    discordant = first_only + second_only
+    # Under the null, the discordant wins follow Binomial(discordant, 0.5).
+    # The exact two-sided p-value remains valid even with very few games.
+    p_value = (min(1.0, 2 * sum(math.comb(discordant, i)
+                               for i in range(min(first_only, second_only) + 1))
+                   / (2 ** discordant)) if discordant else 1.0)
+    return {"n_matched": len(first), "first_only_correct": first_only,
+            "second_only_correct": second_only, "discordant": discordant,
+            "exact_two_sided_p": round(p_value, 8)}
+
+
 def validate(record, game, *, verifier):
     if (record.get("forecast_kind") != "original_pregame" or
             str(record.get("game_id")) != game["game_id"] or
@@ -253,6 +280,10 @@ def grade(games, records, baseline, *, as_of, verifier):
               "full_cohort_accuracy": round(correct_full / n, 6) if n else None,
               "capture_rate": round(len(pairs["original"]) / n, 6) if n else None,
               "matched_winners": {k: metrics(v) for k, v in pairs.items()},
+              "paired_winner_tests": {
+                  "original_vs_elo": paired_winner_test(pairs["original"], pairs["elo"]),
+                  "original_vs_v23": paired_winner_test(pairs["original"], pairs["v23"]),
+                  "elo_vs_v23": paired_winner_test(pairs["elo"], pairs["v23"])},
               "historical_baseline_games": baseline["n"],
               "total_run_mae": round(sum(expected_errors) / len(expected_errors), 6) if expected_errors else None,
               "historical_total_mae_same_games": round(sum(baseline_errors) / len(baseline_errors), 6) if baseline_errors else None,
