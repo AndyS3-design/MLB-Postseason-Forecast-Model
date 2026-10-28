@@ -6,7 +6,8 @@ from cloud.v30_official_cohort import (
 )
 
 def official(gid=849802, home=5, away=4, complete=True):
-    teams = {"home": {"team": {"id": 158}}, "away": {"team": {"id": 139}}}
+    teams = {"home": {"team": {"id": 158, "name": "Milwaukee Brewers"}},
+             "away": {"team": {"id": 139, "name": "Tampa Bay Rays"}}}
     if complete:
         teams["home"]["score"] = home
         teams["away"]["score"] = away
@@ -18,6 +19,7 @@ def record():
     m, e = .541, .596
     return {"game_id": "849802", "date": "2026-10-24",
             "forecast_kind": "original_pregame", "home": "MIL", "away": "TBA",
+            "home_name": "Milwaukee Brewers", "away_name": "Tampa Bay Rays",
             "forecast_created_utc": "2026-10-24T23:31:13Z",
             "game_start_utc": "2026-10-25T00:00:00Z",
             "predicted_home_win": m, "elo_home_win": e,
@@ -71,6 +73,44 @@ class V30Tests(unittest.TestCase):
         with self.assertRaises((KeyError, ValueError)):
             official_games(data, __import__("datetime").date(2026, 10, 25),
                            lambda _: {"gameData": {"game": {"pk": 999}}})
+
+    def test_official_team_name_must_be_present(self):
+        from datetime import date
+        bad = official()
+        del bad["teams"]["home"]["team"]["name"]
+        with self.assertRaisesRegex(ValueError, "Official team identity unavailable"):
+            official_games({"dates": [{"date": "2026-10-24", "games": [bad]}]},
+                           date(2026, 10, 25), lambda _: None)
+
+    def test_conflicting_official_team_identity_duplicate_rejected(self):
+        from datetime import date
+        changed = official()
+        changed["teams"]["away"]["team"]["name"] = "Cleveland Guardians"
+        with self.assertRaisesRegex(ValueError, "Conflicting official final"):
+            official_games({"dates": [{"date": "2026-10-24",
+                                       "games": [official(), changed]}]},
+                           date(2026, 10, 25), lambda _: None)
+
+    def test_swapped_forecast_team_names_invalid_not_excluded(self):
+        from datetime import date
+        bad = record()
+        bad["home_name"], bad["away_name"] = bad["away_name"], bad["home_name"]
+        result = grade(fixture_games(), {"849802": bad}, BASE,
+                       as_of=date(2026, 10, 25), verifier=lambda *_: None)
+        self.assertEqual(result["official_completed_games"], 1)
+        self.assertEqual(result["valid_frozen_originals"], 0)
+        self.assertEqual(result["correct_full_cohort"], 0)
+        self.assertEqual(result["matched_winners"]["original"]["n"], 0)
+        self.assertIn("team identity", result["invalid_originals"][0]["reason"])
+
+    def test_missing_forecast_team_name_invalid(self):
+        from datetime import date
+        bad = record()
+        bad.pop("home_name")
+        result = grade(fixture_games(), {"849802": bad}, BASE,
+                       as_of=date(2026, 10, 25), verifier=lambda *_: None)
+        self.assertEqual(result["correct_full_cohort"], 0)
+        self.assertEqual(result["valid_frozen_originals"], 0)
 
     def test_missing_forecast_remains_in_denominator(self):
         game = fixture_games()[0]
