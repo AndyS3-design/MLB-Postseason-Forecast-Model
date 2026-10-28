@@ -66,6 +66,17 @@ def fetch_schedule(as_of):
                         "gameTypes": ",".join(sorted(TYPES)), "hydrate": "linescore"})
     return fetch_json(API + "?" + params)
 
+def official_team_names(game, game_id):
+    """Require named official home/away teams before grading any forecast."""
+    try:
+        names = [game["teams"][side]["team"]["name"] for side in ("home", "away")]
+    except (KeyError, TypeError) as exc:
+        raise ValueError("Official team identity unavailable " + game_id) from exc
+    if (not all(isinstance(name, str) and name.strip() for name in names)
+            or names[0] == names[1]):
+        raise ValueError("Official team identity unavailable " + game_id)
+    return names
+
 
 def official_games(schedule, as_of, fetch_feed):
     """Every completed official postseason game, including scoreless Finals.
@@ -92,6 +103,7 @@ def official_games(schedule, as_of, fetch_feed):
             if not START <= d < as_of:
                 continue
             teams = g.get("teams") or {}
+            home_name, away_name = official_team_names(g, gid)
             try:
                 h, a = score(teams["home"]["score"]), score(teams["away"]["score"])
                 if h == a:
@@ -100,11 +112,14 @@ def official_games(schedule, as_of, fetch_feed):
                 unresolved.setdefault(gid, []).append((g, d))
                 continue
             record = {"game_id": gid, "date": d.isoformat(), "home": h, "away": a,
+                      "home_team_name": home_name, "away_team_name": away_name,
                       "game_start_utc": g.get("gameDate"),
                       "home_team_id": teams.get("home", {}).get("team", {}).get("id"),
                       "away_team_id": teams.get("away", {}).get("team", {}).get("id")}
             if gid in found and any(found[gid][k] != record[k]
-                                     for k in ("date", "home", "away")):
+                                     for k in ("date", "home", "away",
+                                               "home_team_name", "away_team_name",
+                                               "home_team_id", "away_team_id")):
                 raise ValueError("Conflicting official final " + gid)
             found[gid] = record
     for gid, entries in sorted(unresolved.items()):
@@ -127,7 +142,9 @@ def official_games(schedule, as_of, fetch_feed):
                 if tid is not None and int(tid) != int(data["teams"][side]["id"]):
                     raise ValueError("Official feed team mismatch " + gid)
         g = entries[0][0]
+        home_name, away_name = official_team_names(g, gid)
         found[gid] = {"game_id": gid, "date": d.isoformat(), "home": h, "away": a,
+                      "home_team_name": home_name, "away_team_name": away_name,
                       "game_start_utc": g.get("gameDate"),
                       "home_team_id": g.get("teams", {}).get("home", {}).get("team", {}).get("id"),
                       "away_team_id": g.get("teams", {}).get("away", {}).get("team", {}).get("id")}
@@ -194,6 +211,9 @@ def validate(record, game, *, verifier):
             not record.get("home") or not record.get("away") or
             record["home"] == record["away"]):
         raise ValueError("Original identity mismatch")
+    if (record.get("home_name") != game.get("home_team_name") or
+            record.get("away_name") != game.get("away_team_name")):
+        raise ValueError("Original official team identity mismatch")
     created = instant(record["forecast_created_utc"])
     start = instant(record["game_start_utc"])
     if not created < start or (game.get("game_start_utc") and
