@@ -29,6 +29,9 @@ def record():
                 "home_win_probability": (m + e) / 2},
             "expected_runs": {"total": 7.0},
             "total_distribution": {"4": .25, "9": .75},
+            "total_line_probabilities": {
+                "4.5": {"over": .75, "under": .25},
+                "5.5": {"over": .75, "under": .25}},
             "win_and_over_probabilities": {
                 "4.5": {"home_win_and_over": .40, "away_win_and_over": .35,
                         "favorite_win_and_over": .40, "favorite_side": "home", "over": .75},
@@ -153,6 +156,52 @@ class V30Tests(unittest.TestCase):
         self.assertEqual(result["same_simulation_joint"]["4.5"]["n"], 0)
         self.assertEqual(result["same_simulation_joint"]["5.5"]["n"], 1)
         self.assertEqual(result["over"]["4.5"]["original"]["n"], 1)
+
+    def test_v34_frozen_over_probability_matches_same_simulation_pmf(self):
+        from datetime import date
+        result = grade(fixture_games(), {"849802": record()}, BASE,
+                       as_of=date(2026, 10, 25), verifier=lambda *_: None)
+        self.assertEqual(result["valid_frozen_total_forecasts"], 1)
+        self.assertEqual(result["invalid_total_forecasts"], [])
+        self.assertEqual(result["over"]["4.5"]["original"]["n"], 1)
+        self.assertEqual(result["same_simulation_joint"]["4.5"]["missing_or_invalid_joint_ids"], [])
+
+    def test_v34_mismatched_displayed_over_is_excluded_and_reported(self):
+        from datetime import date
+        bad = record()
+        bad["total_line_probabilities"]["4.5"]["over"] = .99
+        result = grade(fixture_games(), {"849802": bad}, BASE,
+                       as_of=date(2026, 10, 25), verifier=lambda *_: None)
+        # Do not change winner grading or remove the game from the denominator.
+        self.assertEqual(result["official_completed_games"], 1)
+        self.assertEqual(result["correct_full_cohort"], 1)
+        self.assertEqual(result["matched_winners"]["original"]["n"], 1)
+        self.assertEqual(result["valid_frozen_total_forecasts"], 0)
+        self.assertEqual(result["over"]["4.5"]["original"]["n"], 0)
+        self.assertEqual(result["over"]["5.5"]["original"]["n"], 0)
+        self.assertEqual(result["invalid_total_forecasts"][0]["game_id"], "849802")
+        self.assertIn("conflicts with PMF", result["invalid_total_forecasts"][0]["reason"])
+
+    def test_v34_missing_published_over_is_reported_not_silently_skipped(self):
+        from datetime import date
+        bad = record()
+        bad.pop("total_line_probabilities")
+        result = grade(fixture_games(), {"849802": bad}, BASE,
+                       as_of=date(2026, 10, 25), verifier=lambda *_: None)
+        self.assertEqual(result["correct_full_cohort"], 1)
+        self.assertEqual(result["valid_frozen_total_forecasts"], 0)
+        self.assertEqual(len(result["invalid_total_forecasts"]), 1)
+
+    def test_v34_missing_joint_is_explicitly_reported_without_synthesis(self):
+        from datetime import date
+        bad = record()
+        bad["win_and_over_probabilities"].pop("5.5")
+        result = grade(fixture_games(), {"849802": bad}, BASE,
+                       as_of=date(2026, 10, 25), verifier=lambda *_: None)
+        self.assertEqual(result["over"]["5.5"]["original"]["n"], 1)
+        self.assertEqual(result["same_simulation_joint"]["5.5"]["n"], 0)
+        self.assertEqual(result["same_simulation_joint"]["5.5"]["missing_or_invalid_joint_ids"], ["849802"])
+        self.assertEqual(result["same_simulation_joint"]["4.5"]["n"], 1)
 
     def test_joint_event_count_not_confused_with_threshold_accuracy(self):
         result = grade(fixture_games(), {"849802": record()}, BASE,
