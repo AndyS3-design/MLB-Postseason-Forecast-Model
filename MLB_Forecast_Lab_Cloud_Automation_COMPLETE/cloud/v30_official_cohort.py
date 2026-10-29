@@ -241,6 +241,8 @@ def grade(games, records, baseline, *, as_of, verifier):
     pairs = {"original": [], "elo": [], "v23": []}
     totals, joints = {str(x): [] for x in LINES}, {str(x): [] for x in LINES}
     expected_errors, baseline_errors, missing, invalid = [], [], [], []
+    invalid_totals = []
+    invalid_joints = {str(x): [] for x in LINES}
     correct_full = 0
     for g in games:
         gid = g["game_id"]
@@ -260,12 +262,26 @@ def grade(games, records, baseline, *, as_of, verifier):
         pmf = r.get("total_distribution") or {}
         try:
             dist = {int(k): prob(p) for k, p in pmf.items()}
-            if not dist or len(dist) != len(pmf) or abs(sum(dist.values()) - 1) > 1e-6:
+            if (not dist or len(dist) != len(pmf) or any(t < 0 for t in dist)
+                    or abs(sum(dist.values()) - 1) > 1e-6):
                 raise ValueError("Invalid total PMF")
             expected = float(r["expected_runs"]["total"])
             if not math.isfinite(expected) or expected < 0:
                 raise ValueError("Invalid expected total")
-        except (KeyError, TypeError, ValueError, OverflowError):
+            # Grade the actual frozen displayed probabilities, not an unverified
+            # reconstruction that might disagree with the published forecast.
+            published = r.get("total_line_probabilities") or {}
+            for line in LINES:
+                key = str(line)
+                shown = published[key]
+                simulated_over = sum(p for t, p in dist.items() if t > line)
+                if (not math.isclose(prob(shown["over"]), simulated_over,
+                                     rel_tol=0, abs_tol=1e-6) or
+                        not math.isclose(prob(shown["under"]), 1 - simulated_over,
+                                         rel_tol=0, abs_tol=1e-6)):
+                    raise ValueError("Frozen displayed Over probability conflicts with PMF: " + key)
+        except (KeyError, TypeError, ValueError, OverflowError) as exc:
+            invalid_totals.append({"game_id": gid, "reason": str(exc)})
             continue
         actual = g["home"] + g["away"]
         expected_errors.append(abs(actual - expected))
@@ -277,6 +293,7 @@ def grade(games, records, baseline, *, as_of, verifier):
             totals[key].append((over, target))
             raw = (r.get("win_and_over_probabilities") or {}).get(key)
             if not isinstance(raw, dict):
+                invalid_joints[key].append(gid)
                 continue
             try:
                 h, a = prob(raw["home_win_and_over"]), prob(raw["away_win_and_over"])
@@ -286,10 +303,12 @@ def grade(games, records, baseline, *, as_of, verifier):
                         abs(h + a - over) > 1e-6 or
                         abs(prob(raw["over"]) - over) > 1e-6 or
                         abs(joint - (h if fav == "home" else a)) > 1e-6):
+                    invalid_joints[key].append(gid)
                     continue
                 joints[key].append((joint, int(bool(target) and
                                               (bool(y) == (fav == "home")))))
             except (KeyError, ValueError, TypeError):
+                invalid_joints[key].append(gid)
                 continue
     n = len(games)
     report = {"study": "V30 official prospective cohort (read-only)",
@@ -299,6 +318,8 @@ def grade(games, records, baseline, *, as_of, verifier):
               "correct_full_cohort": correct_full,
               "full_cohort_accuracy": round(correct_full / n, 6) if n else None,
               "capture_rate": round(len(pairs["original"]) / n, 6) if n else None,
+              "valid_frozen_total_forecasts": len(expected_errors),
+              "invalid_total_forecasts": invalid_totals,
               "matched_winners": {k: metrics(v) for k, v in pairs.items()},
               "paired_winner_tests": {
                   "original_vs_elo": paired_winner_test(pairs["original"], pairs["elo"]),
@@ -319,6 +340,7 @@ def grade(games, records, baseline, *, as_of, verifier):
                                                                 for _, y in totals[key]])}
         report["same_simulation_joint"][key] = {**metrics(joints[key]),
             "events_occurred": sum(y for _, y in joints[key]),
+            "missing_or_invalid_joint_ids": invalid_joints[key],
             "correct_is_threshold_classification_not_event_count": True}
     return report
 
