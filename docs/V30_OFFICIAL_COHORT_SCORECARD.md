@@ -17,3 +17,11 @@ The read-only report now includes **exact two-sided McNemar tests** for original
 ## V33 (October 28, 2026): independent official team identity
 
 The read-only grader now requires the official MLB schedule to provide distinct home/away team names and requires each saved original's frozen `home_name` and `away_name` to match the corresponding official names. Conflicting duplicate official finals (including team IDs/names) fail closed. A missing, swapped, or incorrectly labeled forecast remains in the **full official denominator as incorrect**, rather than being evaluated against the wrong home-win outcome. This is an integrity guard, not a 2026-trained model change. Existing genuine same-simulation winner-plus-Over odds and old original files are untouched.
+
+## V34: Frozen Over-probability and joint-coverage audit (October 29, 2026)
+
+For each verified original, the independent read-only evaluator now requires the **published** frozen `total_line_probabilities` Over and Under 4.5/5.5 probabilities to match the probabilities implied by the **same saved simulation** `total_distribution` (absolute tolerance 1e-6). The simulated distribution must have nonnegative run counts and total probability one. This prevents a scorecard from silently grading an internally reconstructed probability that differs from the forecast actually displayed before first pitch.
+
+The report explicitly records `valid_frozen_total_forecasts`, `invalid_total_forecasts` (with game IDs and reasons), and per-threshold `missing_or_invalid_joint_ids`. A missing or inconsistent total/joint forecast is **not imputed**, and the game remains in the complete official winner denominator. The original, Elo, and V23 winner probabilities and all stored records remain untouched.
+
+This is a **data-integrity/coverage improvement**, not a fitted forecasting model or a claim of increased winner accuracy. The 2020–2025 historical baseline, strictly prospective first-commit checks, and genuine same-simulation joint odds are unchanged.
