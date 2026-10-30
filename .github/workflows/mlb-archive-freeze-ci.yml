@@ -1,0 +1,63 @@
+name: Final 2026 archive — integrity and no recurring schedules
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/mlb-archive-freeze-ci.yml'
+      - '.github/workflows/mlb-cloud.yml'
+      - '.github/workflows/mlb-final-forecast-guard.yml'
+      - '.github/workflows/mlb-v30-official-cohort-ci.yml'
+      - 'README.md'
+      - 'docs/FINAL_2026_RESULTS.md'
+      - 'docs/PORTFOLIO.md'
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/mlb-archive-freeze-ci.yml'
+      - '.github/workflows/mlb-cloud.yml'
+      - '.github/workflows/mlb-final-forecast-guard.yml'
+      - '.github/workflows/mlb-v30-official-cohort-ci.yml'
+      - 'README.md'
+      - 'docs/FINAL_2026_RESULTS.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  archive-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify archives, frozen originals, and no scheduled background runs
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          root=Path('.')
+          for name in (
+              'mlb-cloud.yml',
+              'mlb-final-forecast-guard.yml',
+              'mlb-v30-official-cohort-ci.yml',
+          ):
+              body=(root/'.github/workflows'/name).read_text()
+              assert '  schedule:' not in body, f'{name} still runs cron'
+              assert '  workflow_dispatch:' in body, f'{name} missing manual rerun'
+              print('PAUSED CRON, MANUAL PRESERVED:', name)
+          report=(root/'docs/FINAL_2026_RESULTS.md').read_text()
+          readme=(root/'README.md').read_text()
+          assert '5/11' in readme and '90%' in readme
+          assert '5/11' in report and '0.218730' in report and '0.207307' in report
+          assert '2026' in report and 'retrospective' in report.lower()
+          assert 'docs/FINAL_2026_RESULTS.md' in readme
+          folder=root/'MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/predictions'
+          records=list(folder.glob('*.json'))
+          assert len(records)>=9, 'Archived originals are unexpectedly missing'
+          for path in records:
+              original=json.loads(path.read_text())
+              assert isinstance(original,dict)
+              assert str(original.get('game_id'))==path.stem
+          print('PRESERVED ORIGINALS:',len(records))
+          print('ARCHIVE DOCUMENTATION AND STATUS: PASS')
+          PY
