@@ -25,3 +25,7 @@ For each verified original, the independent read-only evaluator now requires the
 The report explicitly records `valid_frozen_total_forecasts`, `invalid_total_forecasts` (with game IDs and reasons), and per-threshold `missing_or_invalid_joint_ids`. A missing or inconsistent total/joint forecast is **not imputed**, and the game remains in the complete official winner denominator. The original, Elo, and V23 winner probabilities and all stored records remain untouched.
 
 This is a **data-integrity/coverage improvement**, not a fitted forecasting model or a claim of increased winner accuracy. The 2020–2025 historical baseline, strictly prospective first-commit checks, and genuine same-simulation joint odds are unchanged.
+
+## V35: Coherent same-simulation outputs (October 30, 2026)
+
+The read-only scorecard now rejects a frozen total-run point expectation if it disagrees with the probability-weighted mean of its saved total-run PMF (absolute tolerance 1e-6). It also rejects a purported winner-plus-Over probability if its home or away joint probability exceeds the corresponding frozen winner marginal. These are mathematical consistency requirements, not fitted parameters. The total forecast or individual joint market is marked invalid and its coverage reported; the official winner denominator and valid frozen winner grading remain unchanged. No original file, model weight, probability, or historical result is rewritten. The checks are regression-tested with deliberate inconsistent fixtures and are applied to the same untouched 2026 prospective cohort.

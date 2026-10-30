@@ -27,7 +27,7 @@ def record():
                 "method": "v23_fixed_50_model_50_elo",
                 "model_weight": .5, "elo_weight": .5,
                 "home_win_probability": (m + e) / 2},
-            "expected_runs": {"total": 7.0},
+            "expected_runs": {"total": 7.75},
             "total_distribution": {"4": .25, "9": .75},
             "total_line_probabilities": {
                 "4.5": {"over": .75, "under": .25},
@@ -202,6 +202,43 @@ class V30Tests(unittest.TestCase):
         self.assertEqual(result["same_simulation_joint"]["5.5"]["n"], 0)
         self.assertEqual(result["same_simulation_joint"]["5.5"]["missing_or_invalid_joint_ids"], ["849802"])
         self.assertEqual(result["same_simulation_joint"]["4.5"]["n"], 1)
+
+    def test_v35_expected_total_must_match_frozen_pmf_mean(self):
+        from datetime import date
+        bad = record()
+        bad["expected_runs"]["total"] = 10.0
+        result = grade(fixture_games(), {"849802": bad}, BASE,
+                       as_of=date(2026, 10, 25), verifier=lambda *_: None)
+        self.assertEqual(result["correct_full_cohort"], 1)
+        self.assertEqual(result["matched_winners"]["original"]["n"], 1)
+        self.assertEqual(result["valid_frozen_total_forecasts"], 0)
+        self.assertIn("PMF mean", result["invalid_total_forecasts"][0]["reason"])
+
+    def test_v35_joint_home_cannot_exceed_home_win_probability(self):
+        from datetime import date
+        bad = record()
+        raw = bad["win_and_over_probabilities"]["4.5"]
+        raw.update(home_win_and_over=.60, away_win_and_over=.15,
+                   favorite_win_and_over=.60)
+        result = grade(fixture_games(), {"849802": bad}, BASE,
+                       as_of=date(2026, 10, 25), verifier=lambda *_: None)
+        self.assertEqual(result["correct_full_cohort"], 1)
+        self.assertEqual(result["over"]["4.5"]["original"]["n"], 1)
+        self.assertEqual(result["same_simulation_joint"]["4.5"]["n"], 0)
+        self.assertEqual(result["same_simulation_joint"]["4.5"]["missing_or_invalid_joint_ids"], ["849802"])
+        self.assertEqual(result["same_simulation_joint"]["5.5"]["n"], 1)
+
+    def test_v35_joint_away_cannot_exceed_away_win_probability(self):
+        from datetime import date
+        bad = record()
+        raw = bad["win_and_over_probabilities"]["4.5"]
+        raw.update(home_win_and_over=.15, away_win_and_over=.60,
+                   favorite_win_and_over=.15)
+        result = grade(fixture_games(), {"849802": bad}, BASE,
+                       as_of=date(2026, 10, 25), verifier=lambda *_: None)
+        self.assertEqual(result["valid_frozen_total_forecasts"], 1)
+        self.assertEqual(result["same_simulation_joint"]["4.5"]["n"], 0)
+        self.assertEqual(result["same_simulation_joint"]["5.5"]["n"], 1)
 
     def test_joint_event_count_not_confused_with_threshold_accuracy(self):
         result = grade(fixture_games(), {"849802": record()}, BASE,

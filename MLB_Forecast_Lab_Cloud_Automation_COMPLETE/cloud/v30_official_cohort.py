@@ -268,6 +268,11 @@ def grade(games, records, baseline, *, as_of, verifier):
             expected = float(r["expected_runs"]["total"])
             if not math.isfinite(expected) or expected < 0:
                 raise ValueError("Invalid expected total")
+            # A genuine same-simulation expected total must equal the mean of
+            # its frozen total-run PMF. Do not grade an unrelated point forecast.
+            pmf_mean = sum(t * p for t, p in dist.items())
+            if not math.isclose(expected, pmf_mean, rel_tol=0, abs_tol=1e-6):
+                raise ValueError("Frozen expected total conflicts with PMF mean")
             # Grade the actual frozen displayed probabilities, not an unverified
             # reconstruction that might disagree with the published forecast.
             published = r.get("total_line_probabilities") or {}
@@ -302,7 +307,11 @@ def grade(games, records, baseline, *, as_of, verifier):
                 if (raw.get("favorite_side") != fav or
                         abs(h + a - over) > 1e-6 or
                         abs(prob(raw["over"]) - over) > 1e-6 or
-                        abs(joint - (h if fav == "home" else a)) > 1e-6):
+                        abs(joint - (h if fav == "home" else a)) > 1e-6 or
+                        # Joint events are subsets of the winner events.
+                        # Reject mathematically impossible same-simulation
+                        # probabilities instead of silently grading them.
+                        h > m + 1e-6 or a > (1 - m) + 1e-6):
                     invalid_joints[key].append(gid)
                     continue
                 joints[key].append((joint, int(bool(target) and
