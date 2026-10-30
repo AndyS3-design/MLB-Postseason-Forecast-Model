@@ -27,7 +27,7 @@ def record():
                 "method": "v23_fixed_50_model_50_elo",
                 "model_weight": .5, "elo_weight": .5,
                 "home_win_probability": (m + e) / 2},
-            "expected_runs": {"total": 7.0},
+            "expected_runs": {"total": 7.75},
             "total_distribution": {"4": .25, "9": .75},
             "total_line_probabilities": {
                 "4.5": {"over": .75, "under": .25},
