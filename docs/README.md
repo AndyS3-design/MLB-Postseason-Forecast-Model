@@ -3,8 +3,8 @@
 These are the **maintained** documents for the baseball-only GitHub Actions + GitHub Pages version of the project. Earlier root-level installation guides describe previous releases and are kept as historical development artifacts.
 
 | Document | What you'll learn |
-| [Final 2026 results and archive](FINAL_2026_RESULTS.md) | Verified 11-game complete prospective denominator, Elo/V23 comparisons, historical replay, limitations, paused schedules and replay instructions |
 |---|---|
+| [Final 2026 results and archive](FINAL_2026_RESULTS.md) | Verified 11-game complete prospective denominator, Elo/V23 comparisons, historical replay, limitations, paused schedules and replay instructions |
 | [Architecture](ARCHITECTURE.md) | Data flow, worker, simulation, immutable records and static dashboard |
 | [Model and data](MODEL_AND_DATA.md) | Historical inputs, training, pitching, probabilities and data provenance |
 | [V18 forecast integrity](V18_FORECAST_INTEGRITY.md) | Game-date scheduling, refresh retries, current batting features, home-inning exposure and date-cluster uncertainty |
