@@ -1,9 +1,6 @@
 name: MLB Final Forecast — Independent Backup and Missed-Game Alerts
 on:
-  schedule:
-    # Offset from the main */5 forecast cron. GitHub cron is best effort;
-    # this is an additional chance, not a timing guarantee.
-    - cron: '7-59/10 * * * *'
+  # 2026 season archived: recurring schedule paused; use workflow_dispatch to run manually.
   workflow_dispatch:
   push:
     branches: [master]

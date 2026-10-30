@@ -1,10 +1,7 @@
 name: MLB Forecast Lab — game-time forecasts
 
 on:
-  schedule:
-    # Offset from the crowded top of the hour; scheduled events remain best-effort.
-    - cron: '3-59/5 * * * *'
-    - cron: '17 11 * * *'
+  # 2026 season archived: recurring schedule paused; use workflow_dispatch to run manually.
   workflow_dispatch:
     inputs:
       recovery:

@@ -1,4 +1,5 @@
 # Project status and roadmap
+> **2026 completed:** The season is archived, recurring GitHub Actions schedules are paused, and no ongoing 90%-accuracy optimization is claimed. The final verified 11-game official cohort was **5/11 (45.5%)** including missing pregame forecasts. See [FINAL_2026_RESULTS.md](FINAL_2026_RESULTS.md) for measured results and future restart prerequisites. Older roadmap items below are historical research opportunities, not active work commitments.
 
 _Last reviewed: October 13, 2026. This is a technical checklist, not a performance claim._
 

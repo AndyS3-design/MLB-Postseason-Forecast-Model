@@ -1,95 +1,77 @@
 # MLB Forecast Lab
+### Automated baseball forecasting, simulation and verifiable model evaluation
 
-**Cloud-hosted, baseball-only MLB forecasting and model-evaluation project.**
+**Python · scikit-learn · Pandas · NumPy · MLB/Retrosheet data · GitHub Actions · GitHub Pages**
 
-**Current repository:** [MLB-Postseason-Forecast-Model](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model). Original pregame predictions and experiment records are immutable, and accuracy claims require independent prospective evidence.
+[**View the historical dashboard**](https://andys3-design.github.io/MLB-Postseason-Forecast-Model/) · [**Final 2026 results**](docs/FINAL_2026_RESULTS.md) · [**Architecture**](docs/ARCHITECTURE.md) · [**Résumé / portfolio guide**](docs/PORTFOLIO.md)
 
-[Live forecast dashboard](https://andys3-design.github.io/MLB-Postseason-Forecast-Model/) · [GitHub Actions runs](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model/actions) · [Documentation index](docs/README.md)
+> **2026 postseason project complete — archived for portfolio demonstration (October 30, 2026).** Scheduled forecasting and daily research checks are **paused**, while manual GitHub Actions runs, CI checks, the public demonstration site and historical data remain available. This is educational research, not a validated betting strategy.
 
-MLB Forecast Lab is a Python research project that ingests historical and current MLB data, builds run-scoring and win-probability forecasts, simulates possible scores, and saves **time-stamped predictions before first pitch**. A GitHub Actions workflow runs independently of a personal computer and publishes a phone-friendly GitHub Pages site.
+## What I built
 
-> **Status:** Working public deployment; prospective accuracy evaluation is in progress. The model is experimental. More historical data or a successful individual prediction does **not** establish improved forecasting accuracy.
+MLB Forecast Lab is an automated, cloud-hosted baseball analytics project. It ingests historical baseball results and official MLB information, estimates scoring and winner probabilities, simulates possible final scores and publishes a mobile-friendly dashboard.
 
-For public website outages, see the [verified GitHub Pages URL and real HTTP health check](docs/PAGES_DEPLOYMENT_HEALTH.md). The deployment workflow now verifies that **the actual public page and forecast JSON are reachable** before marking publication healthy.
+- **Baseball modeling:** Supports 2016–2025 historical regular-season training using recency-weighted Poisson regression, a fixed Elo benchmark and approximately **12,000 score simulations** per cloud prediction.
+- **Probabilistic output:** Estimated home/away win chances, expected runs, an illustrative exact-score outcome, game-total distributions and Over/Under probabilities (including 4.5 and 5.5 runs).
+- **Genuine joint forecasts:** Saves winner-plus-Over event probabilities from the **same simulations**, rather than multiplying independently estimated event probabilities.
+- **Data engineering and CI/CD:** GitHub Actions preflight checks, data-quality flags, automated tests, original pre-first-pitch capture, postgame official settlement and GitHub Pages deployment.
+- **Integrity and scientific method:** Immutable pregame predictions, first-commit provenance audits, GitHub SHA-guarded settlement updates, first-writer-wins concurrency protection, independent official complete-cohort scoring and statistically careful benchmark comparisons.
 
-See [V22 accuracy goal and joint winner-plus-Over 4.5/5.5 markets](docs/V22_ACCURACY_TARGET_AND_COMBO_ODDS.md). A strict all-30-game audit tracks the 27/30 (90%) aspiration without allowing hindsight selection; the pipeline now saves genuine same-simulation winner-and-Over event probabilities and grades future timestamped originals.
+## Final performance: transparent results
 
-See [V21 postseason-run calibration research](docs/V21_POSTSEASON_RUN_CALIBRATION.md). Historical tests did **not** support changing the live scoring rates; V21 expands the pregame experimental challenger metrics to the Kalshi-relevant Over 4.5/5.5 lines while preserving the original model.
+The project's real monitored postseason cohort began on **October 14, 2026**, with the following outcome after the completed 2026 postseason:
 
-See [V20 winner-first score presentation](docs/WINNER_ALIGNED_SCORE_V20.md) for how the dashboard now displays the actual win-probability favorite and its most frequent winning score separately from the unconditional exact-score mode and Over 5.5 run odds.
+| Outcome | Final figure |
+|---|---:|
+| Official games included | 11 |
+| Valid frozen pre-first-pitch originals | 9/11 (81.8% capture) |
+| Correct winner selections, **including missing originals as misses** | **5/11 (45.5%)** |
+| Correct winners on the nine matched original forecasts | 5/9 (55.6%) |
+| Elo winners on those exact same nine games | 8/9 (88.9%) |
+| V23 fixed 50/50 blend on those same nine games | 8/9 (88.9%) |
 
-See [V17 reliability, research and provenance](docs/RELIABILITY_AND_VALIDATION_V17.md) for the next-stage scoring validation and the preserved research-only comparison against neutral contextual overlays.
+Winner **Brier score (lower is better)** for the matched nine: original **0.218730**, Elo **0.207307**, V23 **0.212643**. On those nine original forecasts, the model called Over 4.5 correctly in **8/9** and Over 5.5 in **6/9**; total-runs MAE was **2.388**. A 2020–2025 postseason constant-runs baseline had total MAE **2.307**.
 
-## What it does
+**A 90% win-pick target was explored but not reached.** The 2026 complete-cohort outcome is **45.5%**, not 90%. The older 30-game **retrospective** replay was **19/30 (63.3%)** for both original and Elo, and must never be confused with the live pregame cohort.
 
-- **Baseball-only inputs:** Retrosheet historical game logs, official MLB game results and pregame information; no sportsbook odds or prediction-market prices in the deployed forecasting pipeline.
-- **Historical training:** Supports 2016–2025 regular-season records with recency-weighted Poisson regression (roughly a 3-year weighting half-life). Training coverage is recorded for each new forecast.
-- **Game-specific context:** Previous team performance, starting-pitcher history, bullpen data, a historically tested postseason scoring context from official 2020–2025 games plus only earlier completed 2026 games, and available lineup information. Missing or experimental inputs are identified instead of silently invented.
-- **Simulation:** Runs 12,000 simulated games per cloud forecast, publishing expected runs, a representative projected score, winner probabilities and a distribution of possible totals.
-- **Two-stage game-day forecasts (V12):** Publishes an immutable preliminary preview after 10 AM Eastern when sufficient time remains, then independently calculates a final original approximately 20 minutes before first pitch. Both versions are timestamped and accessible; only the final counts toward primary accuracy. The final is not guaranteed if GitHub misses its cutoff.
-- **Pregame integrity:** Saves the original final forecast with its actual creation time and model version. One-off revisions, when authorized before first pitch, are stored separately; the original is never overwritten.
-- **Independent schedule cross-check (V10):** Reconciles a rolling seven-day sample of official MLB final games against imported results and frozen original forecasts, flagging missing imports that V9 alone cannot detect.
-- **Live forecast-capture monitoring (V9):** Counts imported completed games that had a genuine original pre-first-pitch forecast, separately flags missed/late predictions, and records settlement status. Starts October 14, 2026; zero completed games is shown as not measurable, not as success.
-- **Prospective research comparisons:** Future eligible games can also save separately timestamped alternative forecasts, to test additional pitcher and postseason-scoring corrections without changing the primary prediction.
-- **Automated publishing and evaluation:** Uses GitHub Actions and GitHub Pages; later attaches official finals and calculates error metrics against an Elo baseline.
+The matched Elo advantage is based on only nine games; an exact paired test returned **p = 0.25** and does not prove reliable future superiority. Missing original forecasts have no valid Brier probability and are *not* imputed.
 
-## Quick start
+[**Read the full results and methods, including Over and joint probabilities**](docs/FINAL_2026_RESULTS.md). The [final independent official-cohort workflow](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model/actions/runs/41058727480) verified the counts.
 
-The maintained cloud application is inside [`MLB_Forecast_Lab_Cloud_Automation_COMPLETE/`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/), **not** the older root-level `dashboard.py` or `index.html`.
+## Repository guide
 
-1. To **view** forecasts, open the [live dashboard](https://andys3-design.github.io/MLB-Postseason-Forecast-Model/).
-2. To **run the cloud workflow**, go to [Actions](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model/actions) → **MLB Forecast Lab — game-time forecasts** → **Run workflow** on `master`.
-3. To **test locally** from the repository root (Python 3.12 recommended):
-
-   ```powershell
-   cd MLB_Forecast_Lab_Cloud_Automation_COMPLETE
-   py -m pip install -r requirements.txt
-   py -m unittest cloud.test_cloud cloud.test_v7 cloud.test_starter_backfill cloud.test_revision -q
-   py -m cloud.worker render
-   ```
-
-   The render command regenerates the local static site from existing forecast records; it does not generate a new pregame forecast. Run networked data refreshes only in a controlled copy of the repository.
-
-See [deployment and operations](docs/OPERATIONS.md) for the complete GitHub setup, schedule, debugging and recovery process.
-
-## Repository map
-
-| Path | Purpose |
+| Location | Purpose |
 |---|---|
-| [`MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/) | Forecast worker, first-pitch checks, data refresh and historical backfill |
-| [`MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py) | Run-model training and forecasting |
-| [`MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_workflow.py) | End-to-end baseball matchup simulation inputs |
-| [`MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/) | Static website published by GitHub Pages |
-| [`MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/) | Saved originals, any separately labeled revisions, run status |
-| [`.github/workflows/mlb-cloud.yml`](.github/workflows/mlb-cloud.yml) | Cloud schedule, tests, forecast/persist job and Pages deployment |
-| [`docs/`](docs/) | Maintained architecture, model, validation, operations and portfolio documentation |
-| Root-level research scripts and V1–V7 install guides | **Legacy research/history.** Preserved for reproducibility; not the entry point for the deployed cloud app |
+| [`MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/) | Maintained forecasting and scorecard code |
+| [`v4_matchup_core.py`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_matchup_core.py) | Frozen scoring-model training / feature construction |
+| [`v4_simulation.py`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/v4_simulation.py) | Score simulations and probability distribution |
+| [`cloud_records/predictions/`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud_records/predictions/) | Immutable pregame originals and appended official finals |
+| [`cloud/v30_official_cohort.py`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/cloud/v30_official_cohort.py) | Independent full-denominator postseason evaluation |
+| [`site/`](MLB_Forecast_Lab_Cloud_Automation_COMPLETE/site/) | Static GitHub Pages dashboard |
+| [`.github/workflows/`](.github/workflows/) | CI, research, manual deploy and archived schedule definitions |
+| [`docs/`](docs/README.md) | Technical documentation and historic research |
+| Older root-level V1–V7 scripts and guides | Legacy material retained for provenance; **not** the maintained entrypoint |
 
-**Scope note:** Older, unused market-analysis scripts remain at the repository root from earlier experiments. They are **not imported by the maintained cloud workflow**. They have not been deleted because doing so requires a separate dependency and regression audit.
+## Run the tests
 
-## How to interpret the output
+Use Python 3.12. The maintained project lives in the subdirectory below (not the legacy root-level scripts).
 
-- **Expected total runs** is the average over the simulated games.
-- **Illustrative score** is one discrete scoreline selected from the simulated distribution. It is not a claim that exact score is highly likely.
-- **Win probability** is an estimate, not a guarantee. A 55% favorite still loses frequently.
-- **Data quality** flags identify missing pitcher history, lineups or other context.
-- **Original vs updated pregame:** Both have their own timestamps. Only original forecasts enter the primary prospective performance summary, avoiding double-counting.
+```bash
+cd MLB_Forecast_Lab_Cloud_Automation_COMPLETE
+python -m pip install -r requirements-ci-py312.txt
+python -m unittest cloud.test_v30_official_cohort cloud.test_v27_original_persistence cloud.test_v23_elo_ensemble -q
+```
 
-## Documentation
+To render the already recorded dashboard locally without forecasting a future game:
 
-Read [two-stage forecasting](docs/TWO_STAGE_FORECASTS.md) for preliminary/final timing, preserved snapshots and accuracy evaluation. Start with the [documentation index](docs/README.md); recommended reading: [architecture](docs/ARCHITECTURE.md), [model and data](docs/MODEL_AND_DATA.md), [validation](docs/VALIDATION.md), [operations](docs/OPERATIONS.md), [project status and roadmap](docs/ROADMAP.md), and [resume/portfolio guide](docs/PORTFOLIO.md).
+```bash
+python -m cloud.worker render
+```
 
-## Evidence and accuracy status
+**GitHub Actions:** open [the Actions tab](https://github.com/AndyS3-design/MLB-Postseason-Forecast-Model/actions) and manually dispatch the relevant workflow when appropriate. GitHub recurring forecast/backup/daily research schedules were intentionally **paused after the 2026 postseason**; see [season closeout and restart instructions](docs/FINAL_2026_RESULTS.md). Running a worker after a game begins must never be treated as a pregame forecast.
 
-The [V8 measured-results report](docs/V8_RESULTS.md) documents the complete **28-game 2026 postseason retrospective replay** (64.3% winners correct, but a total-run MAE of 2.713 and worse run-error metrics than a simple historical playoff-average baseline) and a **2022–2025 chronological test** on 19,404 team-game observations. These are exploratory studies, **not** evidence of guaranteed or independently verified live accuracy.
+## What this project demonstrates
 
-The [V13 official postseason scoring study](docs/POSTSEASON_SCORING_V13.md) covers 290 official completed playoff games from 2020 through October 13, 2026. It selects a conservative, time-gated scoring correction on 2022–2025 data and keeps current-season results strictly before each forecast date. The current dashboard includes **prospective-only accuracy and data-quality tracking**. New pitcher and bullpen research diagnostics do not automatically alter forecast probabilities.
+I built a working end-to-end system and learned to distinguish successful software deployment from actual predictive performance. The strongest engineering outcomes are **reproducible analysis, time-safe data pipelines, CI/CD, event provenance, immutable evidence, concurrency safety and frank reporting of model limitations**.
 
-## Data credit and limitations
-
-Historical baseball information was obtained free of charge from, and is copyrighted by, **Retrosheet**. See [Retrosheet](https://www.retrosheet.org/) for information and attribution. Current schedules, game results and boxscores are obtained from official MLB data endpoints. Coverage and availability can change.
-
-This repository is an independent educational project, not affiliated with or endorsed by MLB or Retrosheet. It does not establish betting profitability or guaranteed prediction accuracy. The project does not include a license granting others broad reuse rights; contact the repository owner before reusing substantial source code.
-
-
-The [V14 run-distribution view](docs/SCORE_AND_TOTAL_ODDS_V14.md) distinguishes the most common **exact final score** from the favorite and expected run total, and shows no-vig model-implied over/under probabilities for 3.5, 4.5, 5.5 and 6.5 runs. Saved old forecasts remain immutable.
+Historical source attribution: baseball data supplied by **[Retrosheet](https://www.retrosheet.org/)** and official MLB data endpoints. Independent educational project, not affiliated with or endorsed by MLB or Retrosheet. Results do not establish investment profitability or guaranteed future accuracy. No open-source license is granted by this repository; contact the owner for reuse permissions.
