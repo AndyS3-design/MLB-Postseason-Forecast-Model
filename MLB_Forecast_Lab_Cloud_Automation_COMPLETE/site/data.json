@@ -339,7 +339,7 @@
     ]
   },
   "official_schedule_audit": {
-    "as_of_exclusive_et_date": "2026-10-29",
+    "as_of_exclusive_et_date": "2026-10-30",
     "completed_games_imported": 5,
     "identity_or_score_conflicts": [],
     "import_coverage_fraction": 1.0,
@@ -362,7 +362,7 @@
     "tracking_start_date": "2026-10-14",
     "unreadable_original_file_count": 0,
     "window_days": 7,
-    "window_start_date": "2026-10-22"
+    "window_start_date": "2026-10-23"
   },
   "operations": {
     "daily_maintenance": "complete",
@@ -396,7 +396,7 @@
       "status": "ok"
     },
     "refreshed_finished_games": 2470,
-    "run_started_utc": "2026-10-29T17:27:36.224419+00:00",
+    "run_started_utc": "2026-10-30T09:43:21.400113+00:00",
     "status": "finished"
   },
   "predictions": [
@@ -12375,7 +12375,7 @@
     }
   ],
   "prospective_capture": {
-    "as_of_exclusive_et_date": "2026-10-29",
+    "as_of_exclusive_et_date": "2026-10-30",
     "capture_fraction": 0.8182,
     "capture_window_fraction": 1.0,
     "captured_pending_settlement_ids": [],
@@ -12539,5 +12539,5 @@
     "preliminary_without_final_count": 2,
     "status": "small_sample_exploratory"
   },
-  "updated_utc": "2026-10-29T17:27:36.224419+00:00"
+  "updated_utc": "2026-10-30T09:43:21.400113+00:00"
 }

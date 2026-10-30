@@ -1,5 +1,5 @@
 {
-  "as_of_exclusive_et_date": "2026-10-29",
+  "as_of_exclusive_et_date": "2026-10-30",
   "completed_games_imported": 5,
   "identity_or_score_conflicts": [],
   "import_coverage_fraction": 1.0,
@@ -22,5 +22,5 @@
   "tracking_start_date": "2026-10-14",
   "unreadable_original_file_count": 0,
   "window_days": 7,
-  "window_start_date": "2026-10-22"
+  "window_start_date": "2026-10-23"
 }
