@@ -1,4 +1,5 @@
 # GitHub cloud operations runbook
+> **Archived 2026 postseason (October 30, 2026):** Frequent live forecasting, independent backup and daily official-cohort GitHub Actions cron schedules are intentionally **paused**. They remain manually runnable through **Actions → workflow → Run workflow**; PR/push CI still runs where configured. Any discussion below of scheduled execution describes how the project operated **during** the 2026 season, not current automatic activity. See [final results and restart notes](FINAL_2026_RESULTS.md).
 
 **Live site:** https://andys3-design.github.io/MLB-Postseason-Forecast-Model/
 
